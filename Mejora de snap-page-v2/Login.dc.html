@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Gloock&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body { margin:0; background:#F3E8DC; color:#2B211C; font-family:'Raleway',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#7B3A1E; } a:hover { color:#E8795A; }
+  input::placeholder { color:#B8A696; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</helmet>
+
+<div data-screen-label="Login" style="min-height:100vh; display:grid; grid-template-columns:1fr 1fr;">
+
+  <!-- Lado visual -->
+  <div style="position:relative; overflow:hidden; background:#7B3A1E; display:flex; flex-direction:column; justify-content:center; padding:64px;">
+    <div style="position:absolute; top:-60px; right:-60px; width:280px; height:280px; border-radius:50%; background:rgba(251,247,242,0.06);"></div>
+    <div style="position:absolute; bottom:40px; left:44px; font-size:30px; color:rgba(232,121,90,0.5);">✳</div>
+    <div style="position:relative; max-width:400px;">
+      <p style="font-family:'Caveat',cursive; font-size:26px; color:#F0B79E; margin:0 0 12px; transform:rotate(-1.5deg);">bienvenido de vuelta</p>
+      <h1 style="font-family:'Gloock',serif; font-size:clamp(2rem,3.4vw,2.9rem); line-height:1.15; color:#FBF7F2; margin:0 0 20px;">Tus recuerdos te estaban esperando.</h1>
+      <p style="font-size:14.5px; line-height:1.7; color:rgba(251,247,242,0.75); margin:0 0 36px;">Ingresa para ver tus pedidos, seguir tu photobook en producción o empezar uno nuevo.</p>
+      <div style="width:230px; background:#fff; padding:9px 9px 34px; box-shadow:0 16px 36px rgba(0,0,0,0.28); transform:rotate(-4deg);">
+        <div style="width:100%; height:220px;"><image-slot id="login-pol" shape="rect" placeholder="Tu foto favorita"></image-slot></div>
+        <p style="font-family:'Caveat',cursive; font-size:21px; text-align:center; margin:10px 0 0; color:#6E5D52;">tu próxima historia</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div style="display:flex; align-items:center; justify-content:center; padding:48px 32px; background:#FBF7F2;">
+    <div style="width:100%; max-width:380px; animation:fadeUp 0.5s ease both;">
+      <a href="Home.dc.html" style="text-decoration:none; display:flex; align-items:baseline; gap:6px; justify-content:center; margin-bottom:36px;">
+        <span style="font-family:'Gloock',serif; font-size:26px; color:#7B3A1E;">Snap</span>
+        <span style="color:#E8795A; font-size:19px;">✳</span>
+        <span style="font-family:'Gloock',serif; font-size:26px; color:#2B211C;">Page</span>
+      </a>
+      <h2 style="font-family:'Gloock',serif; font-size:26px; text-align:center; margin:0 0 8px;">Iniciar sesión</h2>
+      <p style="font-size:13.5px; color:#A08D7F; text-align:center; margin:0 0 30px;">Ingresa para continuar con tu pedido</p>
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <input type="email" placeholder="Correo electrónico" style="width:100%; box-sizing:border-box; border:1.5px solid #E4D5C5; border-radius:14px; padding:15px 18px; font-size:14px; font-family:'Raleway',sans-serif; background:#fff; outline:none; transition:border-color 0.2s;" style-focus="border-color:#E8795A;">
+        <input type="password" placeholder="Contraseña" style="width:100%; box-sizing:border-box; border:1.5px solid #E4D5C5; border-radius:14px; padding:15px 18px; font-size:14px; font-family:'Raleway',sans-serif; background:#fff; outline:none; transition:border-color 0.2s;" style-focus="border-color:#E8795A;">
+        <button style="width:100%; font-size:13px; font-weight:800; letter-spacing:0.1em; color:#FBF7F2; background:#7B3A1E; border:none; border-radius:999px; padding:16px 0; cursor:pointer; font-family:'Raleway',sans-serif; transition:background 0.2s, transform 0.2s;" style-hover="background:#E8795A; transform:translateY(-1px);">INGRESAR</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:18px;">
+        <a href="#" style="font-size:12px; text-decoration:none; color:#A08D7F;" style-hover="color:#7B3A1E;">¿Olvidaste tu contraseña?</a>
+        <a href="#" style="font-size:12px; font-weight:800; text-decoration:none; color:#E8795A;" style-hover="color:#7B3A1E;">Crear cuenta</a>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:14px; margin:30px 0 20px;">
+        <div style="flex:1; height:1px; background:#EADFD3;"></div>
+        <span style="font-family:'Caveat',cursive; font-size:18px; color:#A08D7F;">¿solo explorando?</span>
+        <div style="flex:1; height:1px; background:#EADFD3;"></div>
+      </div>
+
+      <div style="display:flex; gap:12px;">
+        <a href="MiCuenta.dc.html" style="flex:1; font-size:12px; font-weight:700; letter-spacing:0.06em; text-decoration:none; color:#7B3A1E; border:1.5px solid #E4D5C5; border-radius:14px; padding:13px 0; text-align:center; transition:background 0.2s, border-color 0.2s;" style-hover="background:#F3E8DC; border-color:#D8C4B2;">Entrar como cliente</a>
+        <a href="Admin.dc.html" style="flex:1; font-size:12px; font-weight:700; letter-spacing:0.06em; text-decoration:none; color:#7B3A1E; border:1.5px solid #E4D5C5; border-radius:14px; padding:13px 0; text-align:center; transition:background 0.2s, border-color 0.2s;" style-hover="background:#F3E8DC; border-color:#D8C4B2;">Entrar como admin</a>
+      </div>
+      <p style="font-size:11px; color:#C9B8A8; text-align:center; margin:16px 0 0;">El modo demo usa datos ficticios que no se guardan</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

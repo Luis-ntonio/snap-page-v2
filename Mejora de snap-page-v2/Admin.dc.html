@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Gloock&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#FBF7F2; color:#2B211C; font-family:'Raleway',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#7B3A1E; } a:hover { color:#E8795A; }
+  select { appearance:none; -webkit-appearance:none; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</helmet>
+
+<div data-screen-label="Admin" style="min-height:100vh; display:flex;">
+
+  <!-- Sidebar -->
+  <aside style="width:220px; background:#2B211C; display:flex; flex-direction:column; flex-shrink:0; position:sticky; top:0; height:100vh; box-sizing:border-box;">
+    <div style="padding:26px 24px 22px; border-bottom:1px solid rgba(251,247,242,0.1);">
+      <a href="Home.dc.html" style="text-decoration:none; display:flex; align-items:baseline; gap:5px;">
+        <span style="font-family:'Gloock',serif; font-size:19px; color:#F6E3D5;">Snap</span>
+        <span style="color:#E8795A; font-size:14px;">✳</span>
+        <span style="font-family:'Gloock',serif; font-size:19px; color:#FBF7F2;">Page</span>
+      </a>
+      <p style="font-size:10px; font-weight:800; letter-spacing:0.2em; color:#8A7568; margin:8px 0 0;">PANEL ADMIN</p>
+    </div>
+    <nav style="display:flex; flex-direction:column; gap:4px; padding:18px 14px; flex:1;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+        <button style="display:flex; align-items:center; gap:12px; font-size:12px; font-weight:700; letter-spacing:0.1em; color:{{ n.color }}; background:{{ n.bg }}; border:none; border-radius:12px; padding:13px 16px; cursor:pointer; text-align:left; font-family:'Raleway',sans-serif; transition:all 0.2s;" onClick="{{ n.ir }}">
+          <span style="font-size:15px;">{{ n.icono }}</span>{{ n.label }}
+        </button>
+      </sc-for>
+    </nav>
+    <div style="padding:18px 24px; border-top:1px solid rgba(251,247,242,0.1); display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:#E8795A; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:#FBF7F2; flex-shrink:0;">M</div>
+      <div style="min-width:0;">
+        <p style="font-size:12.5px; font-weight:700; color:#F6E3D5; margin:0;">Malú</p>
+        <a href="Login.dc.html" style="font-size:11px; text-decoration:none; color:#8A7568;" style-hover="color:#E8795A;">Cerrar sesión</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main style="flex:1; min-width:0; padding:32px 36px 48px; box-sizing:border-box;">
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:18px; margin-bottom:26px; flex-wrap:wrap;">
+      <div>
+        <p style="font-family:'Caveat',cursive; font-size:21px; color:#E8795A; margin:0;">lote actual</p>
+        <h1 style="font-family:'Gloock',serif; font-size:26px; margin:0;">Lote 14 — Julio</h1>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+        <input placeholder="Buscar pedido o cliente…" style="border:1.5px solid #E4D5C5; border-radius:999px; padding:11px 20px; font-size:13px; font-family:'Raleway',sans-serif; background:#fff; outline:none; width:230px; transition:border-color 0.2s;" style-focus="border-color:#E8795A;">
+        <button style="font-size:11.5px; font-weight:800; letter-spacing:0.08em; color:#FBF7F2; background:#7B3A1E; border:none; border-radius:999px; padding:12px 22px; cursor:pointer; font-family:'Raleway',sans-serif; transition:background 0.2s;" style-hover="background:#E8795A;">+ NUEVO PEDIDO</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:26px;">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+        <div style="background:#fff; border:1px solid #EADFD3; border-radius:16px; padding:20px 22px; animation:fadeUp 0.4s ease both;">
+          <p style="font-size:11px; font-weight:800; letter-spacing:0.14em; color:#A08D7F; margin:0 0 8px;">{{ s.label }}</p>
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <span style="font-family:'Gloock',serif; font-size:30px; color:{{ s.color }}; white-space:nowrap;">{{ s.valor }}</span>
+            <span style="font-size:12px; color:#A08D7F;">{{ s.sub }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- Pipeline por estado -->
+    <div style="display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap;">
+      <sc-for list="{{ filtrosEstado }}" as="f" hint-placeholder-count="6">
+        <button style="font-size:11px; font-weight:800; letter-spacing:0.08em; padding:9px 16px; border-radius:999px; border:1.5px solid {{ f.borde }}; background:{{ f.bg }}; color:{{ f.color }}; cursor:pointer; font-family:'Raleway',sans-serif; transition:all 0.2s; display:flex; align-items:center; gap:7px;" onClick="{{ f.elegir }}">
+          {{ f.label }} <span style="background:{{ f.pillBg }}; color:{{ f.pillColor }}; border-radius:999px; padding:2px 8px; font-size:10px;">{{ f.count }}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <!-- Tabla -->
+    <div style="background:#fff; border:1px solid #EADFD3; border-radius:20px; overflow:hidden;">
+      <div style="display:grid; grid-template-columns:90px 1.3fr 1.1fr 1fr 1.1fr 1fr 40px; gap:14px; padding:15px 24px; background:#F3E8DC; font-size:10.5px; font-weight:800; letter-spacing:0.12em; color:#8A7568;">
+        <span>N.º</span><span>CLIENTE</span><span>PLAN</span><span>TEMÁTICA</span><span>ESTADO</span><span>RESPONSABLE</span><span></span>
+      </div>
+      <sc-for list="{{ pedidos }}" as="p" hint-placeholder-count="6">
+        <div style="display:grid; grid-template-columns:90px 1.3fr 1.1fr 1fr 1.1fr 1fr 40px; gap:14px; padding:15px 24px; border-top:1px solid #F3EBE0; align-items:center; transition:background 0.15s;" style-hover="background:#FDFAF5;">
+          <span style="font-family:'Gloock',serif; font-size:14px; color:#7B3A1E;">{{ p.numero }}</span>
+          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+            <div style="width:30px; height:30px; border-radius:50%; background:{{ p.avatarBg }}; display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:800; color:#FBF7F2; flex-shrink:0;">{{ p.inicial }}</div>
+            <span style="font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ p.cliente }}</span>
+          </div>
+          <span style="font-size:11px; font-weight:700; color:#6E5D52; background:#F3E8DC; border-radius:999px; padding:5px 12px; justify-self:start;">{{ p.plan }}</span>
+          <span style="font-size:11px; font-weight:700; color:{{ p.temaColor }}; background:{{ p.temaBg }}; border-radius:999px; padding:5px 12px; justify-self:start;">{{ p.tema }}</span>
+          <select onChange="{{ p.cambiarEstado }}" value="{{ p.estado }}" style="font-size:11px; font-weight:800; letter-spacing:0.04em; color:{{ p.estadoColor }}; background:{{ p.estadoBg }}; border:none; border-radius:999px; padding:6px 14px; cursor:pointer; font-family:'Raleway',sans-serif; justify-self:start; outline:none;">
+            <option value="pedido">PEDIDO</option>
+            <option value="diseno">DISEÑO</option>
+            <option value="produccion">PRODUCCIÓN</option>
+            <option value="entrega">ENTREGA</option>
+            <option value="entregado">ENTREGADO</option>
+          </select>
+          <span style="font-size:11px; font-weight:700; color:{{ p.respColor }}; background:{{ p.respBg }}; border-radius:999px; padding:5px 12px; justify-self:start;">{{ p.resp }}</span>
+          <button style="background:none; border:none; cursor:pointer; color:#C9B8A8; font-size:16px; padding:4px;" style-hover="color:#7B3A1E;">✎</button>
+        </div>
+      </sc-for>
+      <sc-if value="{{ sinResultados }}" hint-placeholder-val="{{ false }}">
+        <p style="text-align:center; padding:36px; font-family:'Caveat',cursive; font-size:22px; color:#A08D7F; margin:0;">no hay pedidos en este estado</p>
+      </sc-if>
+    </div>
+    <p style="font-family:'Caveat',cursive; font-size:19px; color:#A08D7F; margin:16px 0 0; text-align:center;">cambia el estado de un pedido directo desde la tabla — el cliente lo ve al instante en su cuenta</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    nav: 'pedidos', filtro: 'todos',
+    estados: { 1: 'diseno', 2: 'produccion', 3: 'pedido', 4: 'entrega', 5: 'entregado', 6: 'diseno', 7: 'produccion' },
+  };
+  renderVals() {
+    const ESTILOS = {
+      pedido: ['#8A6D00', '#FBF0C9'], diseno: ['#1D5F8A', '#D9EBF5'],
+      produccion: ['#6B3FA0', '#EBE0F7'], entrega: ['#3F7A46', '#DDF0DE'], entregado: ['#7B3A1E', '#F6E3D5'],
+    };
+    const RESP = { 'Mari': ['#A03E6B', '#F9E0EC'], 'Malú': ['#B05A1F', '#FBE8D8'], 'Malú y Mari': ['#5B4B9E', '#E6E1F7'] };
+    const TEMAS = { 'Parejas': ['#A03E6B', '#F9E0EC'], 'Viajes': ['#1D5F8A', '#D9EBF5'], 'Cumpleaños': ['#8A6D00', '#FBF0C9'], 'Familia': ['#3F7A46', '#DDF0DE'], '—': ['#8A7568', '#F3EBE0'] };
+    const AVATARES = ['#E8795A', '#7C9A72', '#5B8FA8', '#B05A1F', '#A03E6B', '#5B4B9E', '#8A6D00'];
+    const base = [
+      { id: 1, numero: '0214', cliente: 'Valeria Torres', plan: 'Personalizado', tema: 'Parejas', resp: 'Malú' },
+      { id: 2, numero: '0213', cliente: 'Jorge Ramírez', plan: 'Minimal', tema: 'Viajes', resp: 'Mari' },
+      { id: 3, numero: '0212', cliente: 'Camila Soto', plan: 'Premium', tema: 'Cumpleaños', resp: 'Malú y Mari' },
+      { id: 4, numero: '0211', cliente: 'Diego Fernández', plan: 'Tengo mi diseño', tema: '—', resp: 'Mari' },
+      { id: 5, numero: '0210', cliente: 'Lucía Mendoza', plan: 'Personalizado', tema: 'Familia', resp: 'Malú' },
+      { id: 6, numero: '0209', cliente: 'Renato Aguilar', plan: 'Minimal', tema: 'Parejas', resp: 'Mari' },
+      { id: 7, numero: '0208', cliente: 'Fiorella Paredes', plan: 'Personalizado', tema: 'Viajes', resp: 'Malú y Mari' },
+    ];
+    const conEstado = base.map((p, i) => ({ ...p, estado: this.state.estados[p.id] }));
+    const visibles = conEstado.filter(p => this.state.filtro === 'todos' || p.estado === this.state.filtro);
+    const counts = {};
+    conEstado.forEach(p => { counts[p.estado] = (counts[p.estado] || 0) + 1; });
+    const FILTROS = [['todos', 'TODOS'], ['pedido', 'PEDIDO'], ['diseno', 'DISEÑO'], ['produccion', 'PRODUCCIÓN'], ['entrega', 'ENTREGA'], ['entregado', 'ENTREGADO']];
+    const NAV = [['pedidos', '▤', 'PEDIDOS'], ['fotos', '🖼', 'FOTOS'], ['carpetas', '🗂', 'CARPETAS'], ['chatbot', '💬', 'CHATBOT']];
+    return {
+      navItems: NAV.map(([id, icono, label]) => ({
+        icono, label,
+        color: this.state.nav === id ? '#FBF7F2' : '#8A7568',
+        bg: this.state.nav === id ? 'rgba(232,121,90,0.22)' : 'transparent',
+        ir: () => this.setState({ nav: id }),
+      })),
+      stats: [
+        { label: 'PEDIDOS DEL LOTE', valor: '7', sub: 'de 12 cupos', color: '#2B211C' },
+        { label: 'EN PRODUCCIÓN', valor: String(counts.produccion || 0), sub: 'imprimiéndose', color: '#6B3FA0' },
+        { label: 'POR ENTREGAR', valor: String(counts.entrega || 0), sub: 'este domingo', color: '#3F7A46' },
+        { label: 'INGRESOS DEL LOTE', valor: 'S/ 610', sub: '50% cobrado', color: '#7B3A1E' },
+      ],
+      filtrosEstado: FILTROS.map(([id, label]) => ({
+        label, count: id === 'todos' ? conEstado.length : (counts[id] || 0),
+        borde: this.state.filtro === id ? '#7B3A1E' : '#E4D5C5',
+        bg: this.state.filtro === id ? '#7B3A1E' : '#fff',
+        color: this.state.filtro === id ? '#FBF7F2' : '#8A7568',
+        pillBg: this.state.filtro === id ? 'rgba(251,247,242,0.25)' : '#F3E8DC',
+        pillColor: this.state.filtro === id ? '#FBF7F2' : '#8A7568',
+        elegir: () => this.setState({ filtro: id }),
+      })),
+      pedidos: visibles.map((p, i) => ({
+        ...p,
+        inicial: p.cliente[0],
+        avatarBg: AVATARES[(p.id - 1) % AVATARES.length],
+        estadoColor: ESTILOS[p.estado][0], estadoBg: ESTILOS[p.estado][1],
+        respColor: RESP[p.resp][0], respBg: RESP[p.resp][1],
+        temaColor: TEMAS[p.tema][0], temaBg: TEMAS[p.tema][1],
+        cambiarEstado: (e) => this.setState(s => ({ estados: { ...s.estados, [p.id]: e.target.value } })),
+      })),
+      sinResultados: visibles.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>

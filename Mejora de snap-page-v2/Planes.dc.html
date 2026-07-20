@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Gloock&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body { margin:0; background:#FBF7F2; color:#2B211C; font-family:'Raleway',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#7B3A1E; } a:hover { color:#E8795A; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes popIn { from { opacity:0; transform:scale(0.94) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+</style>
+</helmet>
+
+<div data-screen-label="Planes" style="min-height:100vh; display:flex; flex-direction:column;">
+
+  <div style="background:#7B3A1E; color:#F6E3D5; font-size:11.5px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; text-align:center; padding:9px 16px;">
+    Entrega en 1 semana &nbsp;·&nbsp; Recojo gratis en Matellini &nbsp;·&nbsp; Delivery a todo Lima
+  </div>
+
+  <header style="background:rgba(251,247,242,0.92); backdrop-filter:blur(8px); border-bottom:1px solid #EADFD3; position:sticky; top:0; z-index:50;">
+    <div style="max-width:1140px; margin:0 auto; padding:0 32px; height:64px; display:flex; align-items:center; position:relative;">
+      <nav style="display:flex; gap:32px; flex:1;">
+        <a href="Home.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">INICIO</a>
+        <a href="Planes.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#2B211C;">PLANES</a>
+        <a href="Plantillas.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">PLANTILLAS</a>
+      </nav>
+      <a href="Home.dc.html" style="position:absolute; left:50%; transform:translateX(-50%); text-decoration:none; display:flex; align-items:baseline; gap:6px; white-space:nowrap;">
+        <span style="font-family:'Gloock',serif; font-size:24px; color:#7B3A1E;">Snap</span>
+        <span style="color:#E8795A; font-size:18px;">✳</span>
+        <span style="font-family:'Gloock',serif; font-size:24px; color:#2B211C;">Page</span>
+      </a>
+      <nav style="display:flex; gap:28px; flex:1; justify-content:flex-end; align-items:center;">
+        <a href="Galeria.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">GALERÍA</a>
+        <a href="Login.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">INGRESAR</a>
+        <a href="#" style="font-size:12px; font-weight:700; letter-spacing:0.12em; text-decoration:none; color:#FBF7F2; background:#7B3A1E; padding:10px 20px; border-radius:999px; transition:background 0.2s;" style-hover="background:#E8795A; color:#FBF7F2;">CREA EL TUYO</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Title -->
+  <section style="padding:64px 32px 48px; text-align:center;">
+    <p style="font-family:'Caveat',cursive; font-size:26px; color:#E8795A; margin:0 0 8px; transform:rotate(-1deg); animation:fadeUp 0.6s ease both;">cuatro formas de contar tu historia</p>
+    <h1 style="font-family:'Gloock',serif; font-size:clamp(2.2rem,4vw,3.4rem); margin:0 0 14px; animation:fadeUp 0.6s 0.08s ease both;">Elige tu plan</h1>
+    <p style="font-size:15.5px; color:#6E5D52; margin:0; animation:fadeUp 0.6s 0.16s ease both;">Todos incluyen tapa dura · A4 · 20 páginas · Listo en 1 semana</p>
+  </section>
+
+  <!-- Cards 2x2 -->
+  <section style="padding:0 32px 72px;">
+    <div style="max-width:1020px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:26px;">
+
+      <div style="background:#fff; border:1px solid #EADFD3; border-radius:22px; overflow:hidden; display:grid; grid-template-columns:190px 1fr; transition:transform 0.25s, box-shadow 0.25s; cursor:pointer;" style-hover="transform:translateY(-6px); box-shadow:0 18px 40px rgba(75,46,26,0.15);" onClick="{{ abrirMinimal }}">
+        <div><image-slot id="pl-minimal" shape="rect" placeholder="Minimal"></image-slot></div>
+        <div style="padding:26px 26px 24px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <h2 style="font-family:'Gloock',serif; font-size:22px; margin:0; color:#7B3A1E;">Minimal</h2>
+            <span style="font-weight:800; font-size:17px; white-space:nowrap;">S/ 70</span>
+          </div>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; flex:1;">
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>Elige el estilo de tu portada.</li>
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>1 foto por página — 20 fotos protagonistas.</li>
+          </ul>
+          <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:#7B3A1E;">EMPEZAR →</span>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:2px solid #E8795A; border-radius:22px; overflow:hidden; display:grid; grid-template-columns:190px 1fr; position:relative; transition:transform 0.25s, box-shadow 0.25s;" style-hover="transform:translateY(-6px); box-shadow:0 18px 40px rgba(232,121,90,0.2);">
+        <div style="position:absolute; top:14px; right:14px; background:#E8795A; color:#fff; font-size:10px; font-weight:800; letter-spacing:0.1em; padding:5px 12px; border-radius:999px; z-index:2;">EL MÁS PEDIDO</div>
+        <div><image-slot id="pl-pers" shape="rect" placeholder="Personalizado"></image-slot></div>
+        <div style="padding:26px 26px 24px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <h2 style="font-family:'Gloock',serif; font-size:22px; margin:0; color:#7B3A1E;">Personalizado</h2>
+            <span style="font-weight:800; font-size:17px; white-space:nowrap;">S/ 90</span>
+          </div>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; flex:1;">
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>Arma tu álbum online con nuestras plantillas.</li>
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>Entre 40 y 60 fotos en 20 páginas.</li>
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>Agrega frases personalizadas.</li>
+          </ul>
+          <a href="Plantillas.dc.html" style="font-size:12px; font-weight:800; letter-spacing:0.1em; text-decoration:none; color:#FBF7F2; background:#E8795A; border-radius:999px; padding:12px 22px; text-align:center; align-self:start; transition:background 0.2s;" style-hover="background:#7B3A1E; color:#FBF7F2;">DISEÑAR ONLINE →</a>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #EADFD3; border-radius:22px; overflow:hidden; display:grid; grid-template-columns:190px 1fr; transition:transform 0.25s, box-shadow 0.25s; cursor:pointer;" style-hover="transform:translateY(-6px); box-shadow:0 18px 40px rgba(75,46,26,0.15);" onClick="{{ abrirTengo }}">
+        <div><image-slot id="pl-tengo" shape="rect" placeholder="Tengo mi diseño"></image-slot></div>
+        <div style="padding:26px 26px 24px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <h2 style="font-family:'Gloock',serif; font-size:22px; margin:0; color:#7B3A1E;">Tengo mi diseño</h2>
+            <span style="font-weight:800; font-size:17px; white-space:nowrap;">S/ 70</span>
+          </div>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; flex:1;">
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>Envíanos tu PDF o link de Canva en A4, 20 páginas.</li>
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#6E5D52;"><span style="color:#E8795A;">✳</span>Elige una portada nuestra o manda la tuya.</li>
+          </ul>
+          <span style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:#7B3A1E;">SUBIR MI PDF →</span>
+        </div>
+      </div>
+
+      <div style="background:#2B211C; border-radius:22px; overflow:hidden; display:grid; grid-template-columns:190px 1fr; transition:transform 0.25s, box-shadow 0.25s;" style-hover="transform:translateY(-6px); box-shadow:0 18px 44px rgba(43,33,28,0.35);">
+        <div><image-slot id="pl-premium" shape="rect" placeholder="Premium"></image-slot></div>
+        <div style="padding:26px 26px 24px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <h2 style="font-family:'Gloock',serif; font-size:22px; margin:0; color:#F6E3D5;">Premium</h2>
+            <span style="font-weight:800; font-size:17px; white-space:nowrap; color:#FBF7F2;">S/ 120</span>
+          </div>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; flex:1;">
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#CBB9AB;"><span style="color:#E8795A;">✳</span>Videollamada 1 a 1 con nuestra diseñadora.</li>
+            <li style="display:flex; gap:9px; font-size:13.5px; line-height:1.55; color:#CBB9AB;"><span style="color:#E8795A;">✳</span>Sin límite de elementos en tus 20 páginas.</li>
+          </ul>
+          <a href="#" style="font-size:12px; font-weight:800; letter-spacing:0.1em; text-decoration:none; color:#2B211C; background:#F6E3D5; border-radius:999px; padding:12px 22px; text-align:center; align-self:start; transition:background 0.2s;" style-hover="background:#E8795A; color:#FBF7F2;">AGENDAR VIDEOLLAMADA →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ayuda -->
+  <section style="background:#F3E8DC; padding:56px 32px; text-align:center;">
+    <p style="font-family:'Caveat',cursive; font-size:24px; color:#7B3A1E; margin:0 0 8px;">¿no sabes cuál elegir?</p>
+    <h2 style="font-family:'Gloock',serif; font-size:clamp(1.6rem,2.6vw,2.1rem); margin:0 0 22px;">Cuéntanos tu idea y te guiamos</h2>
+    <a href="https://wa.me/51922272439" style="font-size:12.5px; font-weight:800; letter-spacing:0.1em; text-decoration:none; color:#FBF7F2; background:#7B3A1E; padding:15px 32px; border-radius:999px; display:inline-block; transition:background 0.2s, transform 0.2s;" style-hover="background:#E8795A; transform:translateY(-2px); color:#FBF7F2;">ESCRÍBENOS POR WHATSAPP</a>
+  </section>
+
+  <footer style="background:#2B211C; color:#8A7568; padding:28px 32px; text-align:center; font-size:12.5px;">
+    <a href="Home.dc.html" style="text-decoration:none; color:#CBB9AB;">Snap <span style="color:#E8795A;">✳</span> Page</a> &nbsp;·&nbsp; © 2026 · Lima, Perú
+  </footer>
+
+  <!-- Modal Minimal -->
+  <sc-if value="{{ modalMinimal }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:100; background:rgba(43,33,28,0.55); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:24px;" onClick="{{ cerrar }}">
+      <div style="background:#FBF7F2; border-radius:24px; padding:40px 44px; max-width:420px; width:100%; text-align:center; animation:popIn 0.25s ease both; position:relative;" onClick="{{ stop }}">
+        <button style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:20px; color:#A08D7F; cursor:pointer;" onClick="{{ cerrar }}">✕</button>
+        <p style="font-family:'Caveat',cursive; font-size:22px; color:#E8795A; margin:0 0 4px;">plan minimal · S/ 70</p>
+        <h3 style="font-family:'Gloock',serif; font-size:26px; margin:0 0 10px;">¿Cómo quieres empezar?</h3>
+        <p style="font-size:13.5px; color:#6E5D52; line-height:1.6; margin:0 0 26px;">Sube tus 20 fotos aquí mismo y arma tu vista previa, o envíalas directo por WhatsApp.</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <button style="font-size:12.5px; font-weight:800; letter-spacing:0.1em; color:#FBF7F2; background:#E8795A; border:none; border-radius:999px; padding:15px 0; cursor:pointer; transition:background 0.2s;" style-hover="background:#7B3A1E;" onClick="{{ irDropzone }}">SUBIR MIS FOTOS</button>
+          <a href="https://wa.me/51922272439" style="font-size:12.5px; font-weight:700; letter-spacing:0.1em; text-decoration:none; color:#7B3A1E; border:1.5px solid #D8C4B2; border-radius:999px; padding:14px 0; transition:background 0.2s;" style-hover="background:#F3E8DC;">PEDIR POR WHATSAPP</a>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal Minimal dropzone -->
+  <sc-if value="{{ modalDrop }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:100; background:rgba(43,33,28,0.55); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:24px;" onClick="{{ cerrar }}">
+      <div style="background:#FBF7F2; border-radius:24px; padding:40px 44px; max-width:480px; width:100%; text-align:center; animation:popIn 0.25s ease both; position:relative;" onClick="{{ stop }}">
+        <button style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:20px; color:#A08D7F; cursor:pointer;" onClick="{{ cerrar }}">✕</button>
+        <h3 style="font-family:'Gloock',serif; font-size:24px; margin:0 0 20px;">Sube tus fotos</h3>
+        <div style="border:2px dashed #D8C4B2; border-radius:18px; padding:44px 24px; background:#fff; transition:border-color 0.2s, background 0.2s; cursor:pointer;" style-hover="border-color:#E8795A; background:#FDF3EC;">
+          <div style="font-size:34px; margin-bottom:10px;">⤒</div>
+          <p style="font-weight:700; font-size:14px; margin:0 0 6px;">Arrastra tus fotos aquí</p>
+          <p style="font-size:12.5px; color:#A08D7F; margin:0;">o haz clic para elegirlas · JPG o PNG, alta calidad, enumeradas</p>
+        </div>
+        <p style="font-family:'Caveat',cursive; font-size:19px; color:#A08D7F; margin:18px 0 0;">la primera foto será tu portada y la última la contraportada</p>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal Tengo mi diseño -->
+  <sc-if value="{{ modalTengo }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:100; background:rgba(43,33,28,0.55); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:24px;" onClick="{{ cerrar }}">
+      <div style="background:#FBF7F2; border-radius:24px; padding:40px 44px; max-width:420px; width:100%; text-align:center; animation:popIn 0.25s ease both; position:relative;" onClick="{{ stop }}">
+        <button style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:20px; color:#A08D7F; cursor:pointer;" onClick="{{ cerrar }}">✕</button>
+        <p style="font-family:'Caveat',cursive; font-size:22px; color:#E8795A; margin:0 0 4px;">tengo mi diseño · S/ 70</p>
+        <h3 style="font-family:'Gloock',serif; font-size:26px; margin:0 0 10px;">Envíanos tu archivo</h3>
+        <p style="font-size:13.5px; color:#6E5D52; line-height:1.6; margin:0 0 26px;">Tu diseño en PDF (A4, 20 páginas) o el link de tu proyecto en Canva.</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <button style="font-size:12.5px; font-weight:800; letter-spacing:0.1em; color:#FBF7F2; background:#E8795A; border:none; border-radius:999px; padding:15px 0; cursor:pointer; transition:background 0.2s;" style-hover="background:#7B3A1E;">SUBIR MI PDF</button>
+          <a href="https://wa.me/51922272439" style="font-size:12.5px; font-weight:700; letter-spacing:0.1em; text-decoration:none; color:#7B3A1E; border:1.5px solid #D8C4B2; border-radius:999px; padding:14px 0; transition:background 0.2s;" style-hover="background:#F3E8DC;">ENVIAR LINK DE CANVA</a>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { modal: null };
+  renderVals() {
+    return {
+      modalMinimal: this.state.modal === 'minimal',
+      modalDrop: this.state.modal === 'drop',
+      modalTengo: this.state.modal === 'tengo',
+      abrirMinimal: () => this.setState({ modal: 'minimal' }),
+      abrirTengo: () => this.setState({ modal: 'tengo' }),
+      irDropzone: () => this.setState({ modal: 'drop' }),
+      cerrar: () => this.setState({ modal: null }),
+      stop: (e) => e.stopPropagation(),
+    };
+  }
+}
+</script>
+</body>
+</html>

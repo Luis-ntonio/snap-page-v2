@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Gloock&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#FBF7F2; color:#2B211C; font-family:'Raleway',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#7B3A1E; } a:hover { color:#E8795A; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</helmet>
+
+<div data-screen-label="Mi cuenta" style="min-height:100vh; display:flex; flex-direction:column;">
+
+  <header style="background:rgba(251,247,242,0.92); backdrop-filter:blur(8px); border-bottom:1px solid #EADFD3; position:sticky; top:0; z-index:50;">
+    <div style="max-width:1140px; margin:0 auto; padding:0 32px; height:64px; display:flex; align-items:center; position:relative;">
+      <nav style="display:flex; gap:32px; flex:1;">
+        <a href="Home.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">INICIO</a>
+        <a href="Planes.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">PLANES</a>
+        <a href="Plantillas.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">PLANTILLAS</a>
+      </nav>
+      <a href="Home.dc.html" style="position:absolute; left:50%; transform:translateX(-50%); text-decoration:none; display:flex; align-items:baseline; gap:6px; white-space:nowrap;">
+        <span style="font-family:'Gloock',serif; font-size:24px; color:#7B3A1E;">Snap</span>
+        <span style="color:#E8795A; font-size:18px;">✳</span>
+        <span style="font-family:'Gloock',serif; font-size:24px; color:#2B211C;">Page</span>
+      </a>
+      <nav style="display:flex; gap:28px; flex:1; justify-content:flex-end; align-items:center;">
+        <a href="Galeria.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.16em; text-decoration:none; color:#8A7568;">GALERÍA</a>
+        <span style="font-size:12px; font-weight:700; letter-spacing:0.16em; color:#2B211C;">HOLA, VALERIA</span>
+        <a href="Login.dc.html" style="font-size:12px; font-weight:700; letter-spacing:0.12em; text-decoration:none; color:#7B3A1E; border:1.5px solid #D8C4B2; padding:9px 18px; border-radius:999px; transition:background 0.2s;" style-hover="background:#F3E8DC;">SALIR</a>
+      </nav>
+    </div>
+  </header>
+
+  <div style="max-width:980px; width:100%; margin:0 auto; padding:48px 32px 88px; flex:1; box-sizing:border-box;">
+    <p style="font-family:'Caveat',cursive; font-size:24px; color:#E8795A; margin:0 0 6px;">tu espacio</p>
+    <h1 style="font-family:'Gloock',serif; font-size:clamp(1.9rem,3vw,2.6rem); margin:0 0 30px;">Mi cuenta</h1>
+
+    <!-- Tabs -->
+    <div style="display:flex; gap:8px; margin-bottom:32px; border-bottom:1px solid #EADFD3; padding-bottom:0;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+        <button style="font-size:12px; font-weight:800; letter-spacing:0.12em; padding:12px 22px; border:none; background:none; color:{{ t.color }}; cursor:pointer; border-bottom:2.5px solid {{ t.borde }}; margin-bottom:-1px; transition:all 0.2s; font-family:'Raleway',sans-serif;" onClick="{{ t.elegir }}">{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <!-- Tab pedidos -->
+    <sc-if value="{{ enPedidos }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <sc-for list="{{ pedidos }}" as="p" hint-placeholder-count="2">
+          <div style="background:#fff; border:1px solid #EADFD3; border-radius:20px; padding:26px 30px; animation:fadeUp 0.4s ease both;">
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px;">
+              <span style="font-family:'Gloock',serif; font-size:19px; color:#7B3A1E;">{{ p.numero }}</span>
+              <span style="font-size:11.5px; font-weight:700; color:#6E5D52; background:#F3E8DC; border-radius:999px; padding:6px 14px;">{{ p.plan }}</span>
+              <span style="font-family:'Caveat',cursive; font-size:19px; color:#A08D7F;">{{ p.fecha }}</span>
+              <span style="margin-left:auto; font-weight:800; font-size:15px;">{{ p.precio }}</span>
+            </div>
+            <!-- Timeline de estado -->
+            <div style="display:flex; align-items:center; gap:0;">
+              <sc-for list="{{ p.etapas }}" as="e" hint-placeholder-count="5">
+                <div style="display:flex; align-items:center; flex:{{ e.flex }};">
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:7px; min-width:64px;">
+                    <div style="width:26px; height:26px; border-radius:50%; background:{{ e.bg }}; border:2px solid {{ e.borde }}; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FBF7F2; transition:all 0.3s;">{{ e.icono }}</div>
+                    <span style="font-size:10px; font-weight:700; letter-spacing:0.04em; color:{{ e.textoColor }}; text-align:center;">{{ e.label }}</span>
+                  </div>
+                  <sc-if value="{{ e.conLinea }}" hint-placeholder-val="{{ true }}">
+                    <div style="flex:1; height:2px; background:{{ e.lineaBg }}; margin:0 4px 20px;"></div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:22px; flex-wrap:wrap;">
+              <a href="https://wa.me/51922272439" style="font-size:11.5px; font-weight:800; letter-spacing:0.08em; text-decoration:none; color:#7B3A1E; border:1.5px solid #E4D5C5; border-radius:999px; padding:10px 20px; transition:background 0.2s;" style-hover="background:#F3E8DC;">CONSULTAR POR WHATSAPP</a>
+              <button style="font-size:11.5px; font-weight:800; letter-spacing:0.08em; color:#8A7568; background:none; border:none; cursor:pointer; font-family:'Raleway',sans-serif;" style-hover="color:#7B3A1E;">VER MIS FOTOS →</button>
+            </div>
+          </div>
+        </sc-for>
+        <a href="Planes.dc.html" style="border:2px dashed #D8C4B2; border-radius:20px; padding:30px; text-align:center; text-decoration:none; transition:border-color 0.2s, background 0.2s;" style-hover="border-color:#E8795A; background:#FDF3EC;">
+          <span style="font-family:'Caveat',cursive; font-size:24px; color:#E8795A;">+ empezar un nuevo photobook</span>
+        </a>
+      </div>
+    </sc-if>
+
+    <!-- Tab fotos -->
+    <sc-if value="{{ enFotos }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff; border:1px solid #EADFD3; border-radius:20px; padding:30px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:22px; flex-wrap:wrap;">
+          <div>
+            <h3 style="font-family:'Gloock',serif; font-size:18px; margin:0 0 4px;">Fotos del pedido SP-0214</h3>
+            <p style="font-size:12.5px; color:#A08D7F; margin:0;">18 de 20 fotos subidas · se enumeran solas en el orden que las subes</p>
+          </div>
+          <button style="font-size:11.5px; font-weight:800; letter-spacing:0.08em; color:#FBF7F2; background:#E8795A; border:none; border-radius:999px; padding:12px 22px; cursor:pointer; font-family:'Raleway',sans-serif; transition:background 0.2s;" style-hover="background:#7B3A1E;">⤒ SUBIR FOTOS</button>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px;">
+          <sc-for list="{{ fotos }}" as="f" hint-placeholder-count="18">
+            <div style="aspect-ratio:1; border-radius:10px; background:#F3E8DC; display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer; transition:transform 0.2s;" style-hover="transform:scale(1.04);">
+              <span style="font-family:'Gloock',serif; font-size:15px; color:#C9B8A8;">{{ f }}</span>
+            </div>
+          </sc-for>
+          <div style="aspect-ratio:1; border-radius:10px; border:2px dashed #D8C4B2; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#C9B8A8; font-size:22px; transition:border-color 0.2s, color 0.2s;" style-hover="border-color:#E8795A; color:#E8795A;">+</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- Tab datos -->
+    <sc-if value="{{ enDatos }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff; border:1px solid #EADFD3; border-radius:20px; padding:34px; max-width:460px;">
+        <h3 style="font-family:'Gloock',serif; font-size:18px; margin:0 0 22px;">Mis datos</h3>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <label style="font-size:11px; font-weight:800; letter-spacing:0.12em; color:#A08D7F;">NOMBRE</label>
+            <input value="Valeria Torres" style="border:1.5px solid #E4D5C5; border-radius:12px; padding:13px 16px; font-size:14px; font-family:'Raleway',sans-serif; background:#FBF7F2; outline:none; transition:border-color 0.2s;" style-focus="border-color:#E8795A;">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <label style="font-size:11px; font-weight:800; letter-spacing:0.12em; color:#A08D7F;">TELÉFONO</label>
+            <input value="+51 987 654 321" style="border:1.5px solid #E4D5C5; border-radius:12px; padding:13px 16px; font-size:14px; font-family:'Raleway',sans-serif; background:#FBF7F2; outline:none; transition:border-color 0.2s;" style-focus="border-color:#E8795A;">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <label style="font-size:11px; font-weight:800; letter-spacing:0.12em; color:#A08D7F;">CORREO</label>
+            <input value="valeria@gmail.com" disabled="disabled" style="border:1.5px solid #EADFD3; border-radius:12px; padding:13px 16px; font-size:14px; font-family:'Raleway',sans-serif; background:#F3E8DC; color:#A08D7F; outline:none;">
+          </div>
+          <button style="font-size:12px; font-weight:800; letter-spacing:0.1em; color:#FBF7F2; background:#7B3A1E; border:none; border-radius:999px; padding:14px 0; cursor:pointer; font-family:'Raleway',sans-serif; margin-top:6px; transition:background 0.2s;" style-hover="background:#E8795A;">GUARDAR CAMBIOS</button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <footer style="background:#2B211C; color:#8A7568; padding:28px 32px; text-align:center; font-size:12.5px;">
+    <a href="Home.dc.html" style="text-decoration:none; color:#CBB9AB;">Snap <span style="color:#E8795A;">✳</span> Page</a> &nbsp;·&nbsp; © 2026 · Lima, Perú
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'pedidos' };
+  renderVals() {
+    const ETAPAS = ['Pedido', 'Diseño', 'Producción', 'Entrega', 'Entregado'];
+    const mkEtapas = (actual) => ETAPAS.map((label, i) => ({
+      label,
+      icono: i < actual ? '✓' : (i === actual ? '●' : ''),
+      bg: i < actual ? '#7C9A72' : (i === actual ? '#E8795A' : '#FBF7F2'),
+      borde: i < actual ? '#7C9A72' : (i === actual ? '#E8795A' : '#D8C4B2'),
+      textoColor: i <= actual ? '#2B211C' : '#C9B8A8',
+      conLinea: i < ETAPAS.length - 1,
+      lineaBg: i < actual ? '#7C9A72' : '#EADFD3',
+      flex: i < ETAPAS.length - 1 ? '1' : '0',
+    }));
+    const tabs = [
+      { id: 'pedidos', label: 'MIS PEDIDOS' },
+      { id: 'fotos', label: 'MIS FOTOS' },
+      { id: 'datos', label: 'MIS DATOS' },
+    ];
+    return {
+      tabs: tabs.map(t => ({
+        ...t,
+        color: this.state.tab === t.id ? '#7B3A1E' : '#A08D7F',
+        borde: this.state.tab === t.id ? '#E8795A' : 'transparent',
+        elegir: () => this.setState({ tab: t.id }),
+      })),
+      enPedidos: this.state.tab === 'pedidos',
+      enFotos: this.state.tab === 'fotos',
+      enDatos: this.state.tab === 'datos',
+      pedidos: [
+        { numero: 'SP-0214', plan: 'Personalizado · Parejas', fecha: '12 jul 2026', precio: 'S/ 90', etapas: mkEtapas(2) },
+        { numero: 'SP-0198', plan: 'Minimal', fecha: '28 jun 2026', precio: 'S/ 70', etapas: mkEtapas(4) },
+      ],
+      fotos: Array.from({ length: 18 }, (_, i) => i + 1),
+    };
+  }
+}
+</script>
+</body>
+</html>

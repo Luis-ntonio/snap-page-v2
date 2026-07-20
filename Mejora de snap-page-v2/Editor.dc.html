@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Gloock&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F3E8DC; color:#2B211C; font-family:'Raleway',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#7B3A1E; } a:hover { color:#E8795A; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</helmet>
+
+<div data-screen-label="Editor" style="min-height:100vh; display:flex; flex-direction:column;">
+
+  <!-- Top bar -->
+  <header style="background:#FBF7F2; border-bottom:1px solid #EADFD3; position:sticky; top:0; z-index:50;">
+    <div style="max-width:1240px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; gap:20px;">
+      <a href="Plantillas.dc.html" style="font-size:11.5px; font-weight:800; letter-spacing:0.1em; text-decoration:none; color:#A08D7F; display:flex; align-items:center; gap:6px;" style-hover="color:#7B3A1E;">← SALIR</a>
+      <div style="width:1px; height:22px; background:#EADFD3;"></div>
+      <div style="display:flex; align-items:baseline; gap:8px;">
+        <span style="font-family:'Gloock',serif; font-size:17px; color:#7B3A1E;">Mi Pareja</span>
+        <span style="font-size:11.5px; color:#A08D7F;">plan personalizado · S/ 90</span>
+      </div>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:16px;">
+        <span style="display:flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:#7C9A72;"><span style="width:7px; height:7px; border-radius:50%; background:#7C9A72;"></span>Borrador guardado</span>
+        <span style="font-size:11.5px; font-weight:700; color:#6E5D52; background:#F3E8DC; border-radius:999px; padding:7px 14px;">{{ fotosListas }} / 6 fotos</span>
+        <button style="font-size:11.5px; font-weight:800; letter-spacing:0.08em; color:#FBF7F2; background:#25D366; border:none; border-radius:999px; padding:11px 20px; cursor:pointer; display:flex; align-items:center; gap:7px; transition:transform 0.2s, opacity 0.2s;" style-hover="transform:translateY(-1px);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+          ENVIAR A WHATSAPP
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div style="flex:1; display:grid; grid-template-columns:240px 1fr; max-width:1240px; width:100%; margin:0 auto; gap:0;">
+
+    <!-- Sidebar: portada + tips -->
+    <aside style="padding:28px 20px; border-right:1px solid #E4D5C5; display:flex; flex-direction:column; gap:24px;">
+      <div>
+        <p style="font-size:10.5px; font-weight:800; letter-spacing:0.16em; color:#A08D7F; margin:0 0 12px;">TU PORTADA</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <sc-for list="{{ portadas }}" as="p" hint-placeholder-count="4">
+            <div style="aspect-ratio:3/4; border-radius:10px; border:2px solid {{ p.borde }}; background:{{ p.bg }}; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:6px; transition:all 0.2s;" onClick="{{ p.elegir }}">
+              <span style="font-family:'Caveat',cursive; font-size:15px; color:#6E5D52; text-align:center; line-height:1.2;">{{ p.nombre }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#FBF7F2; border-radius:14px; padding:16px;">
+        <p style="font-family:'Caveat',cursive; font-size:20px; color:#E8795A; margin:0 0 6px;">tip</p>
+        <p style="font-size:12px; line-height:1.6; color:#6E5D52; margin:0;">Haz clic en un recuadro o arrastra una foto encima para llenarlo. Tu avance se guarda solo.</p>
+      </div>
+    </aside>
+
+    <!-- Canvas -->
+    <main style="padding:32px 40px 28px; display:flex; flex-direction:column; align-items:center; gap:20px;">
+      <div style="width:100%; max-width:620px; background:#fff; border-radius:6px; box-shadow:0 26px 56px rgba(75,46,26,0.22); aspect-ratio:210/148; padding:26px; position:relative; animation:fadeUp 0.4s ease both;">
+        <div style="position:absolute; top:10px; right:14px; font-size:10px; font-weight:700; color:#C9B8A8;">página {{ pagina }} / 13</div>
+        <div style="height:100%; display:grid; grid-template-columns:1.2fr 1fr; grid-template-rows:1fr 1fr; gap:14px;">
+          <sc-for list="{{ slots }}" as="s" hint-placeholder-count="3">
+            <div style="border:2px dashed {{ s.borde }}; border-radius:10px; background:{{ s.bg }}; grid-row:{{ s.row }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; transition:all 0.2s;" onClick="{{ s.toggle }}">
+              <sc-if value="{{ s.lleno }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:22px;">🖼</span>
+                <span style="font-size:11px; font-weight:700; color:#7C9A72;">foto {{ s.n }} lista</span>
+                <span style="font-size:10.5px; color:#A08D7F;">clic para quitar</span>
+              </sc-if>
+              <sc-if value="{{ s.vacio }}" hint-placeholder-val="{{ true }}">
+                <span style="font-family:'Gloock',serif; font-size:22px; color:#C9B8A8;">{{ s.n }}</span>
+                <span style="font-size:11px; font-weight:600; color:#A08D7F;">arrastra tu foto aquí</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:absolute; bottom:34px; left:0; right:0; text-align:center; pointer-events:none;">
+          <span style="font-family:'Caveat',cursive; font-size:24px; color:#6E5D52; background:#FBF7F2; padding:4px 18px; border-radius:999px; pointer-events:auto; cursor:text; border:1px dashed #D8C4B2;">escribe aquí tu frase…</span>
+        </div>
+      </div>
+
+      <!-- Page nav -->
+      <div style="display:flex; align-items:center; gap:14px;">
+        <button style="width:40px; height:40px; border-radius:50%; border:1.5px solid #D8C4B2; background:#FBF7F2; cursor:pointer; font-size:16px; color:#7B3A1E; transition:background 0.2s;" style-hover="background:#7B3A1E; color:#FBF7F2;" onClick="{{ prev }}">←</button>
+        <div style="display:flex; gap:7px;">
+          <sc-for list="{{ dots }}" as="d" hint-placeholder-count="13">
+            <button style="width:{{ d.w }}px; height:8px; border-radius:999px; border:none; background:{{ d.bg }}; cursor:pointer; transition:all 0.25s; padding:0;" onClick="{{ d.ir }}"></button>
+          </sc-for>
+        </div>
+        <button style="width:40px; height:40px; border-radius:50%; border:1.5px solid #D8C4B2; background:#FBF7F2; cursor:pointer; font-size:16px; color:#7B3A1E; transition:background 0.2s;" style-hover="background:#7B3A1E; color:#FBF7F2;" onClick="{{ next }}">→</button>
+      </div>
+      <p style="font-family:'Caveat',cursive; font-size:20px; color:#A08D7F; margin:0;">la página gira con una animación de volteo, como un libro real</p>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { pagina: 1, llenos: { 1: true, 2: true }, portadaSel: 0 };
+  renderVals() {
+    const layouts = { 0: [3, 'full'], 1: [3, 'split'], 2: [2, 'full'] };
+    const key = (this.state.pagina - 1) % 3;
+    const count = layouts[key][0];
+    const slots = Array.from({ length: count }, (_, i) => {
+      const n = (this.state.pagina - 1) * 3 + i + 1;
+      const lleno = !!this.state.llenos[n];
+      return {
+        n, lleno, vacio: !lleno,
+        row: count === 2 ? 'span 2' : (i === 0 ? 'span 2' : 'auto'),
+        borde: lleno ? '#7C9A72' : '#D8C4B2',
+        bg: lleno ? '#F0F5EC' : '#FBF7F2',
+        toggle: () => this.setState(s => ({ llenos: { ...s.llenos, [n]: !s.llenos[n] } })),
+      };
+    });
+    const nombres = ['The Story of Us', "I'm in Love", 'Amor Eterno', 'Mi Pareja'];
+    return {
+      pagina: this.state.pagina,
+      fotosListas: Object.values(this.state.llenos).filter(Boolean).length,
+      slots,
+      dots: Array.from({ length: 13 }, (_, i) => ({
+        w: i + 1 === this.state.pagina ? 22 : 8,
+        bg: i + 1 === this.state.pagina ? '#E8795A' : '#D8C4B2',
+        ir: () => this.setState({ pagina: i + 1 }),
+      })),
+      portadas: nombres.map((nombre, i) => ({
+        nombre,
+        borde: this.state.portadaSel === i ? '#E8795A' : '#EADFD3',
+        bg: this.state.portadaSel === i ? '#FDF3EC' : '#fff',
+        elegir: () => this.setState({ portadaSel: i }),
+      })),
+      prev: () => this.setState(s => ({ pagina: Math.max(1, s.pagina - 1) })),
+      next: () => this.setState(s => ({ pagina: Math.min(13, s.pagina + 1) })),
+    };
+  }
+}
+</script>
+</body>
+</html>
