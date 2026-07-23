@@ -172,6 +172,8 @@ CREATE POLICY "Admins can manage carpetas" ON carpetas_admin FOR ALL USING (
 -- 2. "archivos-admin" (private) - admin files (compaginados, portadas)
 -- 3. "galeria" (public) - gallery images
 -- 4. "assets" (public) - hero images, plantilla previews
+-- 5. "disenos-clientes" (private) - PDFs subidos en "Tengo mi diseño" (sin login); se
+--    autocrea desde /api/tengo-diseno/upload-url si no existe (ver lib/supabase/tengoDisenoStorage.ts)
 
 -- ─── FUNCTIONS ───────────────────────────────────────────────────────────────
 -- Handle new user profile creation

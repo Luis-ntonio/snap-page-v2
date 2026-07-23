@@ -12,6 +12,8 @@ export const WA_MESSAGES = {
   personalizado: (plantilla: string, portada: string) =>
     `¡Hola! Quiero el Plan Personalizado con la plantilla "${plantilla}" y portada "${portada}" 💛`,
   tengoDiseno: '¡Hola! Tengo mi diseño listo y quiero imprimirlo con ustedes 🎨',
+  tengoDisenoConPdf: (pdfUrl: string) =>
+    `¡Hola! Tengo mi diseño listo y quiero imprimirlo con ustedes 🎨\nAquí puedes ver mi PDF: ${pdfUrl}`,
   canvaLink: (link: string) =>
     `¡Hola! Aquí está mi link de Canva para mi photobook: ${link}`,
   premium: '¡Hola! Me interesa el Plan Premium y quisiera agendar una reunión ✨',

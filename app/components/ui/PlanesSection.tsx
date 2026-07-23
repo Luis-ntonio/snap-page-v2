@@ -5,6 +5,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
 import { waLink, WA_MESSAGES, GOOGLE_CALENDAR, PASOS } from '@/lib/data';
 import { renderPdfToImages, type PdfPreviewPage } from '@/lib/pdf/renderPdfPreview';
+import { createClient } from '@/lib/supabase/client';
+
+// Bucket privado donde /api/tengo-diseno sube los PDF del cliente (ver lib/supabase/tengoDisenoStorage.ts).
+const BUCKET_TENGO_DISENO = 'disenos-clientes';
 
 const PLANES = [
   {
@@ -43,6 +47,8 @@ export default function PlanesSection() {
   const [pdfProgress, setPdfProgress] = useState<{done:number; total:number}|null>(null);
   const [pdfFile, setPdfFile] = useState<File|null>(null);
   const [pdfSplitSpreads, setPdfSplitSpreads] = useState(true);
+  const [pdfSending, setPdfSending] = useState(false);
+  const [pdfSendError, setPdfSendError] = useState(false);
   const [spread, setSpread] = useState(0);
   const [drag, setDrag]   = useState(false);
   const imgRef = useRef<HTMLInputElement>(null);
@@ -80,6 +86,44 @@ export default function PlanesSection() {
   const close = () => {
     setModal(null); setImgs([]); setPdfUrl(null); setPdfFile(null); setSpread(0);
     setPdfPages(null); setPdfLoading(false); setPdfError(false); setPdfProgress(null);
+    setPdfSending(false); setPdfSendError(false);
+  };
+
+  // Sube el PDF a Storage (directo, sin pasar por nuestro servidor) para poder incluir un link
+  // real en el mensaje de WhatsApp — sin necesitar que el cliente inicie sesión. Si algo falla,
+  // cae de vuelta al mensaje genérico (mismo criterio que el envío del plan Personalizado).
+  const handleComprarTengoDiseno = async () => {
+    if (!pdfFile) return;
+    setPdfSending(true); setPdfSendError(false);
+    try {
+      const initRes = await fetch('/api/tengo-diseno/upload-url', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName: pdfFile.name }),
+      });
+      if (!initRes.ok) throw new Error('upload-url failed');
+      const { path, token } = await initRes.json();
+
+      const supabase = createClient();
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET_TENGO_DISENO)
+        .uploadToSignedUrl(path, token, pdfFile, { contentType: 'application/pdf' });
+      if (uploadError) throw uploadError;
+
+      const linkRes = await fetch('/api/tengo-diseno/link', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+      });
+      if (!linkRes.ok) throw new Error('link failed');
+      const { url } = await linkRes.json();
+
+      window.open(waLink(WA_MESSAGES.tengoDisenoConPdf(url)), '_blank');
+    } catch (err) {
+      console.error('No se pudo subir el PDF a Storage; se envía el mensaje sin link.', err);
+      setPdfSendError(true);
+      window.open(waLink(WA_MESSAGES.tengoDiseno), '_blank');
+    } finally {
+      setPdfSending(false);
+    }
   };
 
   // Build spreads
@@ -328,9 +372,16 @@ export default function PlanesSection() {
 
             {!pdfLoading && !pdfError && pdfPages && <PdfFlipBook pages={pdfPages} />}
 
-            <a href={waLink(WA_MESSAGES.tengoDiseno)} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display:'flex', width:'100%', maxWidth:380, margin:'0 auto', background:'var(--marron)' }}>
-              COMPRAR
-            </a>
+            {pdfSendError && (
+              <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', margin:'0 0 10px' }}>
+                No pudimos subir tu PDF — te escribimos igual, adjúntalo manualmente en el chat.
+              </p>
+            )}
+
+            <button onClick={handleComprarTengoDiseno} disabled={pdfSending} className="btn-primary"
+              style={{ display:'flex', width:'100%', maxWidth:380, margin:'0 auto', background:'var(--marron)', border:'none', cursor: pdfSending?'default':'pointer', opacity: pdfSending?0.7:1 }}>
+              {pdfSending ? 'SUBIENDO PDF…' : 'COMPRAR'}
+            </button>
           </div>
         </Full>
       )}
