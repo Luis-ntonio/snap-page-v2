@@ -47,3 +47,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# material de referencia (PDFs de diseño, no parte de la app servida)
+/plantillas

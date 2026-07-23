@@ -26,6 +26,7 @@ export const parejas: PlantillaLayout = {
     // ── P1: portada interior "Gracias por ser tú" ──
     {
       bg: '#ffffff',
+      frame: { src: '/images/plantillas/marcos/12.svg', size: '200% 100%', position: 'right center' },
       slots: [{ n: 1, x: 0.2, y: 0.28, w: 0.6, h: 0.5 }],
       texts: [
         { key: 't-titulo-1', x: 0.1, y: 0.12, w: 0.8, h: 0.08, preset: 'Gracias por ser tú', align: 'center', italic: true, weight: 700, size: 0.045, color: BROWN },
@@ -46,18 +47,20 @@ export const parejas: PlantillaLayout = {
     // ── P2b: página de corazones con la foto (2) ──
     {
       bg: '#C0392B',
-      pattern: 'hearts',
+      frame: { src: '/images/plantillas/marcos/13.svg', size: '200% 100%', position: 'right center' },
       slots: [{ n: 2, x: 0.08, y: 0.08, w: 0.84, h: 0.84 }],
     },
     // ── P3: foto grande a página completa (empareja con P4 en el visor de 2 páginas) ──
-    {
-      bg: '#000',
-      pattern: 'hearts',
-      slots: [{ n: 3, x: 0.04, y: 0.04, w: 0.92, h: 0.92 }],
-    },
-    // ── P4: grilla 2x2 (4,5,6,7) ──
+    // Mitad IZQUIERDA del marco de corazones-confeti (spread completo con P4).
     {
       bg: '#ffffff',
+      frame: { src: '/images/plantillas/marcos/14.svg', size: '200% 100%', position: 'left center' },
+      slots: [{ n: 3, x: 0.04, y: 0.04, w: 0.92, h: 0.92 }],
+    },
+    // ── P4: grilla 2x2 (4,5,6,7) — mitad DERECHA del marco de corazones-confeti (spread con P3) ──
+    {
+      bg: '#ffffff',
+      frame: { src: '/images/plantillas/marcos/14.svg', size: '200% 100%', position: 'right center' },
       slots: [
         { n: 4, x: 0.06, y: 0.06, w: 0.42, h: 0.42 },
         { n: 5, x: 0.52, y: 0.06, w: 0.42, h: 0.42 },

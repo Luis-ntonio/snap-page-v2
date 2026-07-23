@@ -139,11 +139,23 @@ export interface TextSlot extends SlotRect {
   weight?: number;
 }
 
+export interface FrameLayer {
+  /** Ruta del SVG del marco bajo /public, ej. '/images/plantillas/marcos/12.svg'. */
+  src: string;
+  /** background-size CSS. '200% 100%' para marcos cuyo viewBox es un spread de 2 páginas
+   *  y en esta página solo se muestra la mitad izquierda o derecha del arte. */
+  size?: string;
+  /** background-position CSS, ej. 'left center' | 'right center'. */
+  position?: string;
+}
+
 export interface AlbumPageLayout {
   /** Color de fondo de la página. */
   bg?: string;
   /** Patrón decorativo opcional (fondo fijo, no editable por el cliente). */
   pattern?: 'hearts' | 'landscape' | 'none';
+  /** Marco/borde decorativo (imagen SVG), pintado como fondo detrás de los slots de foto. */
+  frame?: FrameLayer;
   slots: PhotoSlot[];
   texts?: TextSlot[];
 }

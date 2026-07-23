@@ -120,6 +120,17 @@ function drawSlot(ctx: CanvasRenderingContext2D, slot: PhotoSlot, img: HTMLImage
   }
 }
 
+async function drawFrame(ctx: CanvasRenderingContext2D, frame: { src: string; position?: string }, pageW: number, pageH: number) {
+  try {
+    const img = await loadImageUrl(frame.src);
+    // El SVG es un spread de 2 páginas (viewBox ancho = 2x una página); 'left'/'right' recorta la mitad correspondiente.
+    const x = frame.position?.includes('right') ? -pageW : 0;
+    ctx.drawImage(img, x, 0, pageW * 2, pageH);
+  } catch {
+    // si el marco no carga, se deja la página sin el borde decorativo
+  }
+}
+
 function drawHeartsPattern(ctx: CanvasRenderingContext2D, pageW: number, pageH: number) {
   ctx.save();
   ctx.font = `${pageW * 0.028}px sans-serif`;
@@ -166,7 +177,8 @@ async function renderPageCanvas(
 
   ctx.fillStyle = page.bg ?? '#ffffff';
   ctx.fillRect(0, 0, pageW, pageH);
-  if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
+  if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
+  else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
 
   for (const slot of page.slots) {
     const blob = photos[slot.n];

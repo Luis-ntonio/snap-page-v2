@@ -2,7 +2,9 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { waLink, WA_MESSAGES, GOOGLE_CALENDAR } from '@/lib/data';
+import HTMLFlipBook from 'react-pageflip';
+import { waLink, WA_MESSAGES, GOOGLE_CALENDAR, PASOS } from '@/lib/data';
+import { renderPdfToImages, type PdfPreviewPage } from '@/lib/pdf/renderPdfPreview';
 
 const PLANES = [
   {
@@ -35,6 +37,12 @@ export default function PlanesSection() {
   const [imgs, setImgs]   = useState<Img[]>([]);
   const [pdfUrl, setPdfUrl] = useState<string|null>(null);
   const [pdfName, setPdfName] = useState('');
+  const [pdfPages, setPdfPages] = useState<PdfPreviewPage[]|null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState<{done:number; total:number}|null>(null);
+  const [pdfFile, setPdfFile] = useState<File|null>(null);
+  const [pdfSplitSpreads, setPdfSplitSpreads] = useState(true);
   const [spread, setSpread] = useState(0);
   const [drag, setDrag]   = useState(false);
   const imgRef = useRef<HTMLInputElement>(null);
@@ -49,12 +57,30 @@ export default function PlanesSection() {
     setModal('minimal-viewer');
   };
 
-  const addPdf = (files:FileList|null) => {
-    const f=files?.[0]; if (!f||f.type!=='application/pdf') return;
-    setPdfUrl(URL.createObjectURL(f)); setPdfName(f.name); setModal('tengo-viewer');
+  const runPdfPreview = (f: File, splitSpreads: boolean) => {
+    setPdfPages(null); setPdfError(false); setPdfLoading(true); setPdfProgress(null); setSpread(0);
+    renderPdfToImages(f, (done, total)=>setPdfProgress({done, total}), splitSpreads)
+      .then(setPdfPages)
+      .catch((err)=>{ console.error('renderPdfToImages failed:', err); setPdfError(true); })
+      .finally(()=>setPdfLoading(false));
   };
 
-  const close = () => { setModal(null); setImgs([]); setPdfUrl(null); setSpread(0); };
+  const addPdf = (files:FileList|null) => {
+    const f=files?.[0]; if (!f||f.type!=='application/pdf') return;
+    setPdfUrl(URL.createObjectURL(f)); setPdfName(f.name); setPdfFile(f); setModal('tengo-viewer');
+    runPdfPreview(f, pdfSplitSpreads);
+  };
+
+  const toggleSplitSpreads = () => {
+    const next = !pdfSplitSpreads;
+    setPdfSplitSpreads(next);
+    if (pdfFile) runPdfPreview(pdfFile, next);
+  };
+
+  const close = () => {
+    setModal(null); setImgs([]); setPdfUrl(null); setPdfFile(null); setSpread(0);
+    setPdfPages(null); setPdfLoading(false); setPdfError(false); setPdfProgress(null);
+  };
 
   // Build spreads
   // imgs[0] = portada (tapa), imgs[último] = contraportada (tapa)
@@ -157,6 +183,8 @@ export default function PlanesSection() {
         </div>
       </section>
 
+      <Pasos />
+
       {/* Ayuda */}
       <section style={{ background: 'var(--crema-2)', padding: '56px 32px', textAlign: 'center' }}>
         <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>¿no sabes cuál elegir?</p>
@@ -235,40 +263,13 @@ export default function PlanesSection() {
                 width:`${spreads.length>1?(spread/(spreads.length-1))*100:0}%` }} />
             </div>
 
-            {/* Book */}
-            <div style={{ display:'flex', justifyContent:'center', marginBottom:12 }}>
-              {isSingle ? (
-                <div style={{ width:200,height:260,background:'var(--crema-2)',borderRadius:2,boxShadow:'0 4px 20px rgba(75,46,26,0.15)', overflow:'hidden', position:'relative' }}>
-  {cur[0] && <img src={cur[0].url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
-</div>
-              ) : (
-                <div style={{ display:'flex', width:320, height:224, boxShadow:'0 4px 20px rgba(75,46,26,0.15)' }}>
-                  <div style={{ flex:1, overflow:'hidden', borderRight:'1px solid rgba(255,255,255,0.4)', background:'var(--crema-2)' }}>
-                    {cur[0]&&<img src={cur[0]!.url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
-                  </div>
-                  <div style={{ flex:1, overflow:'hidden', background:'#EFE2D5' }}>
-                    {cur[1]&&<img src={cur[1]!.url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Nav */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
-              <button onClick={()=>setSpread(s=>Math.max(0,s-1))} disabled={spread===0}
-                style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
-                  cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:spread===0?0.3:1 }}>
-                <ChevronLeft size={14} color="var(--marron)" />
-              </button>
-              <span style={{ fontSize:11, color:'var(--texto-3)', minWidth:80, textAlign:'center' }}>
-                {spread===0?'Portada':spread===spreads.length-1?'Contraportada':`Pliego ${spread}`}
-              </span>
-              <button onClick={()=>setSpread(s=>Math.min(spreads.length-1,s+1))} disabled={spread===spreads.length-1}
-                style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
-                  cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:spread===spreads.length-1?0.3:1 }}>
-                <ChevronRight size={14} color="var(--marron)" />
-              </button>
-            </div>
+            <SpreadBook cur={cur} isSingle={isSingle} />
+            <SpreadNav
+              spread={spread} total={spreads.length}
+              onPrev={()=>setSpread(s=>Math.max(0,s-1))}
+              onNext={()=>setSpread(s=>Math.min(spreads.length-1,s+1))}
+              label={spread===0?'Portada':spread===spreads.length-1?'Contraportada':`Pliego ${spread}`}
+            />
 
             {/* Notes */}
             <div style={{ marginBottom:24 }}>
@@ -296,13 +297,38 @@ export default function PlanesSection() {
       {/* ── FULLSCREEN: Tengo diseño viewer ── */}
       {modal==='tengo-viewer' && pdfUrl && (
         <Full onBack={()=>setModal('tengo-choose')} onClose={close}>
-          <div style={{ maxWidth:380, margin:'0 auto', padding:'32px 20px' }}>
+          <div style={{ maxWidth:900, margin:'0 auto', padding:'32px 20px' }}>
             <h1 style={{ fontFamily: 'var(--font-display)', color:'var(--marron)', fontSize:'1.8rem', textAlign:'center', marginBottom:16 }}>Tengo mi diseño</h1>
             <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', marginBottom:12 }}>{pdfName}</p>
-            <div style={{ border:'1px solid var(--borde)', borderRadius:12, overflow:'hidden', marginBottom:16, height:420 }}>
-              <iframe src={`${pdfUrl}#toolbar=0`} style={{width:'100%',height:'100%',border:'none'}} title="PDF" />
-            </div>
-            <a href={waLink(WA_MESSAGES.tengoDiseno)} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display:'flex', width:'100%', background:'var(--marron)' }}>
+
+            <label style={{
+              display:'flex', alignItems:'center', gap:8, justifyContent:'center',
+              fontSize:12, color:'var(--texto-2)', margin:'0 auto 20px', maxWidth:420,
+              textAlign:'center', cursor: pdfLoading ? 'default' : 'pointer', opacity: pdfLoading ? 0.5 : 1,
+            }}>
+              <input type="checkbox" checked={pdfSplitSpreads} disabled={pdfLoading} onChange={toggleSplitSpreads}
+                style={{ width:16, height:16, accentColor:'var(--marron)', flexShrink:0 }} />
+              cada hoja de mi PDF trae 2 páginas del álbum, una al lado de la otra
+            </label>
+
+            {pdfLoading && (
+              <p style={{ fontSize:12.5, color:'var(--texto-3)', textAlign:'center', margin:'0 0 20px' }}>
+                Generando vista previa{pdfProgress ? ` (${pdfProgress.done}/${pdfProgress.total})` : '…'}
+              </p>
+            )}
+
+            {!pdfLoading && pdfError && (
+              <>
+                <p style={{ fontSize:12.5, color:'var(--texto-3)', textAlign:'center', margin:'0 0 12px' }}>Vista previa no disponible</p>
+                <div style={{ border:'1px solid var(--borde)', borderRadius:12, overflow:'hidden', marginBottom:16, height:420, maxWidth:380, marginLeft:'auto', marginRight:'auto' }}>
+                  <iframe src={`${pdfUrl}#toolbar=0`} style={{width:'100%',height:'100%',border:'none'}} title="PDF" />
+                </div>
+              </>
+            )}
+
+            {!pdfLoading && !pdfError && pdfPages && <PdfFlipBook pages={pdfPages} />}
+
+            <a href={waLink(WA_MESSAGES.tengoDiseno)} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display:'flex', width:'100%', maxWidth:380, margin:'0 auto', background:'var(--marron)' }}>
               COMPRAR
             </a>
           </div>
@@ -316,12 +342,151 @@ export default function PlanesSection() {
           .planes-card { grid-template-columns: 1fr !important; }
           .planes-card > div:first-child { height: 160px; }
         }
+        @media (max-width: 900px) { .planes-pasos-grid { grid-template-columns: repeat(2,1fr) !important; } }
+        @media (max-width: 640px) { .planes-pasos-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </>
   );
 }
 
 /* ── Primitives ── */
+function Pasos() {
+  return (
+    <section style={{ background: 'var(--marron)', padding: '80px 32px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -40, left: -40, fontSize: 120, color: 'rgba(251,247,242,0.06)', fontFamily: 'var(--font-display)' }}>✳</div>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral-suave)', textAlign: 'center', margin: '0 0 8px' }}>
+          sin complicaciones
+        </p>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.9rem,3vw,2.5rem)', color: 'var(--crema)', textAlign: 'center', margin: '0 0 56px' }}>
+          Así de sencillo
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 36 }} className="planes-pasos-grid">
+          {PASOS.map(p => (
+            <div key={p.numero} style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: 'var(--font-hand)', fontSize: 52, color: 'var(--coral)', lineHeight: 1 }}>
+                {p.numero.replace('.', '')}
+              </div>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--crema)', margin: '12px 0 8px', letterSpacing: '0.04em' }}>
+                {p.titulo}
+              </h3>
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: 'rgba(251,247,242,0.72)', margin: 0 }}>
+                {p.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PdfFlipBook({ pages }: { pages: PdfPreviewPage[] }) {
+  const [pageIdx, setPageIdx] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bookRef = useRef<any>(null);
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ display:'flex', justifyContent:'center', marginBottom:16 }}>
+        <div style={{ width:'100%', maxWidth:900 }}>
+          <HTMLFlipBook
+            ref={bookRef}
+            width={460}
+            height={650}
+            size="stretch"
+            minWidth={320}
+            maxWidth={560}
+            minHeight={453}
+            maxHeight={792}
+            startPage={0}
+            drawShadow
+            flippingTime={500}
+            usePortrait
+            startZIndex={0}
+            autoSize
+            maxShadowOpacity={0.4}
+            showCover
+            mobileScrollSupport={false}
+            clickEventForward
+            useMouseEvents
+            swipeDistance={30}
+            showPageCorners
+            disableFlipByClick={false}
+            className=""
+            style={{}}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onFlip={(e: any) => setPageIdx(e.data)}
+          >
+            {pages.map((p, i) => (
+              <div key={i} style={{ background:'#fff' }}>
+                <img src={p.url} alt="" style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }} />
+              </div>
+            ))}
+          </HTMLFlipBook>
+        </div>
+      </div>
+
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16 }}>
+        <button onClick={()=>bookRef.current?.pageFlip()?.flipPrev()} disabled={pageIdx===0}
+          style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
+            cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:pageIdx===0?0.3:1 }}>
+          <ChevronLeft size={14} color="var(--marron)" />
+        </button>
+        <span style={{ fontSize:11, color:'var(--texto-3)', minWidth:80, textAlign:'center' }}>
+          Página {pageIdx+1} / {pages.length}
+        </span>
+        <button onClick={()=>bookRef.current?.pageFlip()?.flipNext()} disabled={pageIdx>=pages.length-2}
+          style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
+            cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:pageIdx>=pages.length-2?0.3:1 }}>
+          <ChevronRight size={14} color="var(--marron)" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SpreadBook({ cur, isSingle }: { cur: ({url:string}|null)[]; isSingle: boolean }) {
+  return (
+    <div style={{ display:'flex', justifyContent:'center', marginBottom:12 }}>
+      {isSingle ? (
+        <div style={{ width:200,height:260,background:'var(--crema-2)',borderRadius:2,boxShadow:'0 4px 20px rgba(75,46,26,0.15)', overflow:'hidden', position:'relative' }}>
+          {cur[0] && <img src={cur[0].url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
+        </div>
+      ) : (
+        <div style={{ display:'flex', width:320, height:224, boxShadow:'0 4px 20px rgba(75,46,26,0.15)' }}>
+          <div style={{ flex:1, overflow:'hidden', borderRight:'1px solid rgba(255,255,255,0.4)', background:'var(--crema-2)' }}>
+            {cur[0]&&<img src={cur[0].url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
+          </div>
+          <div style={{ flex:1, overflow:'hidden', background:'#EFE2D5' }}>
+            {cur[1]&&<img src={cur[1].url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SpreadNav({ spread, total, onPrev, onNext, label }: {
+  spread:number; total:number; onPrev:()=>void; onNext:()=>void; label:string;
+}) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
+      <button onClick={onPrev} disabled={spread===0}
+        style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
+          cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:spread===0?0.3:1 }}>
+        <ChevronLeft size={14} color="var(--marron)" />
+      </button>
+      <span style={{ fontSize:11, color:'var(--texto-3)', minWidth:80, textAlign:'center' }}>{label}</span>
+      <button onClick={onNext} disabled={spread===total-1}
+        style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
+          cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:spread===total-1?0.3:1 }}>
+        <ChevronRight size={14} color="var(--marron)" />
+      </button>
+    </div>
+  );
+}
+
 function Overlay({ kicker, title, desc, onClose, children, maxWidth = 420 }: {
   kicker?: string; title:string; desc?: string; onClose:()=>void; children:React.ReactNode; maxWidth?: number;
 }) {

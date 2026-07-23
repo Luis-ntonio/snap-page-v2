@@ -44,7 +44,13 @@ export function AlbumPageCanvas({
       containerType: 'size', // habilita la unidad cqh en los textos
       background: page.bg ?? '#fff', borderRadius: 4, overflow: 'hidden',
       boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-      backgroundImage: page.pattern === 'hearts' ? HEARTS_BG : page.pattern === 'landscape' ? LANDSCAPE_BG : undefined,
+      backgroundImage: page.frame ? `url(${page.frame.src})`
+        : page.pattern === 'hearts' ? HEARTS_BG
+        : page.pattern === 'landscape' ? LANDSCAPE_BG
+        : undefined,
+      backgroundSize: page.frame?.size,
+      backgroundPosition: page.frame?.position,
+      backgroundRepeat: page.frame ? 'no-repeat' : undefined,
     }}>
       {page.slots.map((s) => (
         <Slot key={s.n} slot={s} url={urls[s.n]} editable={editable} onSlot={onSlot} onRemove={onRemove} onDropFile={onDropFile} />

@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Mockups del handoff de diseño (Claude Design) — no son código de la app.
     "Mejora de snap-page-v2/**",
+    // Worker vendorizado de pdfjs-dist (minificado, servido tal cual desde /public).
+    "public/pdf.worker.min.mjs",
   ]),
 ]);
 
