@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import type { AlbumPageLayout, PhotoSlot, PlantillaLayout, TextSlot } from '@/types';
+import type { AlbumPageLayout, DecorationLayer, PhotoSlot, PlantillaLayout, TextSlot, TextStylePreset } from '@/types';
 
 // Compone el álbum completo (fondo + fotos + textos de cada página) en un PDF, del lado del cliente.
 // Cada página de la plantilla se dibuja en un <canvas> del tamaño exacto de página que usa jsPDF,
@@ -144,15 +144,15 @@ function drawHeartsPattern(ctx: CanvasRenderingContext2D, pageW: number, pageH: 
   ctx.restore();
 }
 
-function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pageW: number, pageH: number) {
+function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pageW: number, pageH: number, textStyle?: TextStylePreset | null) {
   if (!value) return;
   const rect = { x: t.x * pageW, y: t.y * pageH, w: t.w * pageW, h: t.h * pageH };
   const fontPx = (t.size ?? 0.03) * pageH;
   const weight = t.weight && t.weight >= 700 ? 'bold' : 'normal';
   const style = t.italic ? 'italic' : 'normal';
   ctx.save();
-  ctx.font = `${style} ${weight} ${fontPx}px 'Raleway', sans-serif`;
-  ctx.fillStyle = t.color ?? '#333';
+  ctx.font = `${style} ${weight} ${fontPx}px ${textStyle?.fontFamily ?? "'Raleway', sans-serif"}`;
+  ctx.fillStyle = textStyle?.color ?? t.color ?? '#333';
   ctx.textBaseline = 'top';
   const align = t.align ?? 'left';
   ctx.textAlign = align;
@@ -163,12 +163,31 @@ function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pag
   ctx.restore();
 }
 
+async function drawDecoration(ctx: CanvasRenderingContext2D, d: DecorationLayer, pageW: number, pageH: number) {
+  try {
+    const img = await loadImageUrl(d.src);
+    const rect = { x: d.x * pageW, y: d.y * pageH, w: d.w * pageW, h: d.h * pageH };
+    ctx.save();
+    if (d.rotate) {
+      ctx.translate(rect.x + rect.w / 2, rect.y + rect.h / 2);
+      ctx.rotate((d.rotate * Math.PI) / 180);
+      ctx.drawImage(img, -rect.w / 2, -rect.h / 2, rect.w, rect.h);
+    } else {
+      ctx.drawImage(img, rect.x, rect.y, rect.w, rect.h);
+    }
+    ctx.restore();
+  } catch {
+    // si el elemento decorativo no carga, se omite (no debe romper el resto del PDF)
+  }
+}
+
 async function renderPageCanvas(
   page: AlbumPageLayout,
   photos: Record<number, Blob>,
   texts: Record<string, string>,
   pageW: number,
   pageH: number,
+  textStyle?: TextStylePreset | null,
 ): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas');
   canvas.width = pageW;
@@ -180,6 +199,10 @@ async function renderPageCanvas(
   if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
   else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
 
+  for (const d of (page.decorations ?? []).filter((d) => d.layer === 'back')) {
+    await drawDecoration(ctx, d, pageW, pageH);
+  }
+
   for (const slot of page.slots) {
     const blob = photos[slot.n];
     const img = blob ? await loadImage(blob) : null;
@@ -188,7 +211,11 @@ async function renderPageCanvas(
 
   for (const t of page.texts ?? []) {
     const value = t.editable ? (texts[t.key] ?? '') : (t.preset ?? '');
-    drawText(ctx, t, value, pageW, pageH);
+    drawText(ctx, t, value, pageW, pageH, textStyle);
+  }
+
+  for (const d of (page.decorations ?? []).filter((d) => d.layer === 'front')) {
+    await drawDecoration(ctx, d, pageW, pageH);
   }
 
   return canvas;
@@ -202,6 +229,7 @@ export async function composeAlbumPdf(
   texts: Record<string, string>,
   onProgress?: (done: number, total: number) => void,
   portada?: { imagen: string; nombre: string } | null,
+  textStyle?: TextStylePreset | null,
 ): Promise<Blob> {
   if (typeof document !== 'undefined' && document.fonts) {
     await document.fonts.ready.catch(() => {});
@@ -220,11 +248,39 @@ export async function composeAlbumPdf(
   }
 
   for (let i = 0; i < layout.pages.length; i++) {
-    const canvas = await renderPageCanvas(layout.pages[i], photos, texts, pageW, pageH);
+    const canvas = await renderPageCanvas(layout.pages[i], photos, texts, pageW, pageH, textStyle);
     const imgData = canvas.toDataURL('image/jpeg', 0.85);
     if (portada || i > 0) doc.addPage();
     doc.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
     onProgress?.(++done, total);
+  }
+
+  return doc.output('blob');
+}
+
+/** Compone un PDF simple de 1 imagen por página (portada + interiores + contraportada, en orden) —
+ *  usado por el Plan Minimal, que no tiene una plantilla con slots como el editor Personalizado. */
+export async function composeImagesPdf(images: Blob[], onProgress?: (done: number, total: number) => void): Promise<Blob> {
+  if (typeof document !== 'undefined' && document.fonts) {
+    await document.fonts.ready.catch(() => {});
+  }
+
+  const doc = new jsPDF({ unit: 'px', format: 'a4', compress: true });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+
+  for (let i = 0; i < images.length; i++) {
+    const img = await loadImage(images[i]);
+    const canvas = document.createElement('canvas');
+    canvas.width = pageW;
+    canvas.height = pageH;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, pageW, pageH);
+    drawImageCover(ctx, img, { x: 0, y: 0, w: pageW, h: pageH });
+    if (i > 0) doc.addPage();
+    doc.addImage(canvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, pageW, pageH);
+    onProgress?.(i + 1, images.length);
   }
 
   return doc.output('blob');

@@ -55,6 +55,8 @@ export interface Plantilla {
   hojas: number;
   fotos: number;
   imagen_preview: string;
+  /** Foto de muestra de la plantilla ya diligenciada con fotos de modelo (marketing/referencia). */
+  imagen_muestra?: string;
   imagenes_interiores: string[];
 }
 
@@ -149,6 +151,14 @@ export interface FrameLayer {
   position?: string;
 }
 
+export interface DecorationLayer extends SlotRect {
+  /** Ruta de la imagen del elemento decorativo (idealmente PNG con fondo transparente). */
+  src: string;
+  /** 'front' se dibuja encima de fotos y textos; 'back' detrás (como el patrón/marco). */
+  layer: 'front' | 'back';
+  rotate?: number;
+}
+
 export interface AlbumPageLayout {
   /** Color de fondo de la página. */
   bg?: string;
@@ -158,6 +168,8 @@ export interface AlbumPageLayout {
   frame?: FrameLayer;
   slots: PhotoSlot[];
   texts?: TextSlot[];
+  /** Elementos decorativos posicionables (corazones, etc.), delante o detrás de fotos/textos. */
+  decorations?: DecorationLayer[];
 }
 
 export interface PlantillaLayout {
@@ -172,12 +184,22 @@ export interface PlantillaLayout {
   pages: AlbumPageLayout[];
 }
 
+/** Preset de tipografía/color para los textos del álbum (selector limitado, no tipografía libre). */
+export interface TextStylePreset {
+  id: string;
+  nombre: string;
+  fontFamily: string;
+  /** Si se define, reemplaza el color propio de cada texto de la plantilla. */
+  color?: string;
+}
+
 /** Borrador del álbum en edición (persistido en IndexedDB). */
 export interface AlbumDraft {
   plantillaId: string;
   photos: Record<number, Blob>; // slot.n → imagen
   texts: Record<string, string>; // textSlot.key → valor
   portadaId?: string | null;
+  stylePresetId?: string | null;
   updatedAt: number;
 }
 

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
 import type { PlantillaLayout } from '@/types';
 import { loadDraft, saveDraft, clearDraft } from '@/lib/album/draftStore';
@@ -9,7 +9,7 @@ import { composeAlbumPdf, downloadBlob } from '@/lib/album/pdf';
 import { submitAlbumOrder } from '@/lib/album/submit';
 import { useAuth } from '@/lib/auth';
 import { useDemo } from '@/lib/demo';
-import { waLink, WA_MESSAGES, PORTADAS } from '@/lib/data';
+import { waLink, WA_MESSAGES, PORTADAS, TEXT_STYLE_PRESETS } from '@/lib/data';
 import { PLAN_PRICES } from '@/types';
 import { AlbumPageCanvas } from './album/AlbumPageCanvas';
 
@@ -27,9 +27,14 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
   const [hydrated, setHydrated] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
+  const [reorderMode, setReorderMode] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [stylePresetId, setStylePresetId] = useState<string | null>(null);
+  const [dragSlot, setDragSlot] = useState<number | null>(null);
 
   const portadas = PORTADAS.filter((p) => p.categorias.includes(layout.categoria));
   const portadaSel = portadas.find((p) => p.id === portadaId) ?? null;
+  const textStyle = TEXT_STYLE_PRESETS.find((p) => p.id === stylePresetId) ?? null;
 
   const fileRef = useRef<HTMLInputElement>(null);
   const activeSlot = useRef<number | null>(null);
@@ -65,6 +70,54 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     });
   }, []);
 
+  // Intercambia (o mueve, si uno de los dos está vacío) las fotos de dos recuadros — mismo par de
+  // Blob/URL, solo cambia a qué número de slot están asociados, sin recrear object URLs.
+  const swapPhotos = useCallback((a: number, b: number) => {
+    if (a === b) return;
+    setPhotos((prev) => {
+      const next = { ...prev };
+      const pa = prev[a];
+      const pb = prev[b];
+      if (pb !== undefined) next[a] = pb; else delete next[a];
+      if (pa !== undefined) next[b] = pa; else delete next[b];
+      return next;
+    });
+    setUrls((prev) => {
+      const next = { ...prev };
+      const ua = prev[a];
+      const ub = prev[b];
+      if (ub !== undefined) next[a] = ub; else delete next[a];
+      if (ua !== undefined) next[b] = ua; else delete next[b];
+      urlsRef.current = next;
+      return next;
+    });
+  }, []);
+
+  // Ref (no solo state) para leer la selección sincrónicamente: llamar swapPhotos (con efectos
+  // secundarios) desde dentro del updater de setSelectedSlot dispara dos veces en React Strict Mode
+  // y deshace el intercambio — por eso la decisión se toma aquí, fuera del updater.
+  const selectedSlotRef = useRef<number | null>(null);
+  const onSelectSlot = useCallback((n: number) => {
+    const prev = selectedSlotRef.current;
+    if (prev === null) {
+      selectedSlotRef.current = n;
+      setSelectedSlot(n);
+    } else if (prev === n) {
+      selectedSlotRef.current = null;
+      setSelectedSlot(null);
+    } else {
+      selectedSlotRef.current = null;
+      setSelectedSlot(null);
+      swapPhotos(prev, n);
+    }
+  }, [swapPhotos]);
+
+  const toggleReorderMode = () => {
+    setReorderMode((prev) => !prev);
+    selectedSlotRef.current = null;
+    setSelectedSlot(null);
+  };
+
   // Rehidratar borrador desde IndexedDB (sobrevive recargas y el paso por /register).
   useEffect(() => {
     let cancelled = false;
@@ -73,6 +126,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
       setPhotos(draft.photos ?? {});
       setTexts(draft.texts ?? {});
       setPortadaId(draft.portadaId ?? null);
+      setStylePresetId(draft.stylePresetId ?? null);
       const nextUrls: Record<number, string> = {};
       for (const [n, blob] of Object.entries(draft.photos ?? {})) {
         nextUrls[Number(n)] = URL.createObjectURL(blob as Blob);
@@ -88,11 +142,17 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     };
   }, [layout.id]);
 
-  // Autoguardado en cada cambio (una vez hidratado, para no pisar el borrador con el estado vacío inicial).
+  // Autoguardado en cada cambio, con debounce (una vez hidratado, para no pisar el borrador con el
+  // estado vacío inicial) — evita escribir en IndexedDB (con todos los Blobs de fotos) en cada tecla.
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!hydrated) return;
-    saveDraft({ plantillaId: layout.id, photos, texts, portadaId, updatedAt: Date.now() });
-  }, [photos, texts, portadaId, hydrated, layout.id]);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      saveDraft({ plantillaId: layout.id, photos, texts, portadaId, stylePresetId, updatedAt: Date.now() });
+    }, 600);
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [photos, texts, portadaId, stylePresetId, hydrated, layout.id]);
 
   const openPicker = (n: number) => {
     activeSlot.current = n;
@@ -107,6 +167,31 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     if (fileRef.current) fileRef.current.value = '';
   };
 
+  // Subida múltiple: llena los slots vacíos en orden con el lote de fotos elegido (como en Minimal).
+  const bulkFileRef = useRef<HTMLInputElement>(null);
+  const allSlots = layout.pages.flatMap((p) => p.slots.map((s) => s.n)).sort((a, b) => a - b);
+  const onBulkFiles = (files: FileList | null) => {
+    if (!files) return;
+    const imgs = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    const emptySlots = allSlots.filter((n) => !photos[n]);
+    imgs.slice(0, emptySlots.length).forEach((f, i) => setPhotoBlob(emptySlots[i], f));
+    if (bulkFileRef.current) bulkFileRef.current.value = '';
+  };
+
+  const slotPageIndex = (n: number) => layout.pages.findIndex((p) => p.slots.some((s) => s.n === n));
+
+  // Carrusel de miniaturas (una por cada recuadro de la plantilla, en orden): arrastrar una encima
+  // de otra las intercambia — el mismo swapPhotos que usa "ordenar fotos", pero de forma directa y
+  // visual. Un clic sin arrastrar navega el libro a la página de ese recuadro.
+  const onCarouselDrop = (target: number) => {
+    if (dragSlot !== null && dragSlot !== target) swapPhotos(dragSlot, target);
+    setDragSlot(null);
+  };
+  const onCarouselClick = (n: number) => {
+    if (reorderMode) onSelectSlot(n);
+    else flipTo(slotPageIndex(n));
+  };
+
   const filled = Object.keys(photos).length;
 
   const onSend = async () => {
@@ -117,14 +202,15 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     setSendError('');
     setSending(true);
     try {
-      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaSel);
+      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaSel, textStyle);
       let waMessage = WA_MESSAGES.personalizado(layout.nombre, portadaSel?.nombre ?? 'a definir');
 
       // Solo se intenta registrar en Supabase si hay una sesión REAL (no demo) — usuario.id debe ser un auth.uid() válido.
       if (user) {
         try {
-          const { numero, pdfUrl } = await submitAlbumOrder({ layout, photos, texts, pdf, usuarioId: user.id, portadaId });
-          waMessage = WA_MESSAGES.pedidoPersonalizado(numero, pdfUrl);
+          const { numero, pedidoId } = await submitAlbumOrder({ layout, photos, texts, pdf, usuarioId: user.id, portadaId });
+          const viewerUrl = `${window.location.origin}/mi-pdf/${pedidoId}`;
+          waMessage = WA_MESSAGES.pedidoPersonalizado(numero, viewerUrl);
         } catch (err) {
           console.warn('No se pudo registrar el pedido en Supabase; se entrega el PDF localmente.', err);
           downloadBlob(pdf, `${layout.nombre}.pdf`);
@@ -208,16 +294,77 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
               </div>
             </div>
           )}
+          <div>
+            <p style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--texto-3)', margin: '0 0 12px' }}>ESTILO DE TEXTO</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="editor-portadas-grid">
+              {TEXT_STYLE_PRESETS.map((p) => {
+                const active = stylePresetId === p.id;
+                return (
+                  <button key={p.id} onClick={() => setStylePresetId(active ? null : p.id)} style={{
+                    borderRadius: 10, border: `2px solid ${active ? 'var(--coral)' : 'var(--borde)'}`,
+                    background: active ? '#FDF3EC' : '#fff', cursor: 'pointer', padding: '10px 6px',
+                    fontFamily: p.fontFamily, color: p.color ?? 'var(--tinta)', fontSize: 15,
+                  }}>
+                    {p.nombre}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="editor-tip-card" style={{ background: 'var(--crema)', borderRadius: 14, padding: 16 }}>
             <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--coral)', margin: '0 0 6px' }}>tip</p>
             <p style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--texto-2)', margin: 0 }}>
-              Haz clic en un recuadro o arrastra una foto encima para llenarlo. Tu avance se guarda solo.
+              {reorderMode
+                ? (selectedSlot !== null
+                  ? 'Ahora toca la foto (en cualquier página) con la que quieres intercambiarla.'
+                  : 'Toca una foto para elegirla y luego toca otra para intercambiarlas — funciona entre páginas distintas.')
+                : 'Haz clic en un recuadro o arrastra una foto encima para llenarlo. Para reordenar, arrastra una miniatura del carrusel de abajo sobre otra. Tu avance se guarda solo.'}
             </p>
           </div>
+
+          <button onClick={toggleReorderMode} style={{
+            fontSize: 11.5, fontWeight: 800, letterSpacing: '0.06em',
+            color: reorderMode ? '#fff' : 'var(--marron)',
+            background: reorderMode ? 'var(--coral)' : '#fff',
+            border: `1.5px solid ${reorderMode ? 'var(--coral)' : 'var(--borde-2)'}`, borderRadius: 12,
+            padding: '12px 14px', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <ArrowLeftRight size={14} />
+            {reorderMode ? 'LISTO, TERMINAR DE ORDENAR' : 'ORDENAR FOTOS →'}
+          </button>
+
+          <button onClick={() => bulkFileRef.current?.click()} style={{
+            fontSize: 11.5, fontWeight: 800, letterSpacing: '0.06em', color: 'var(--marron)',
+            background: '#fff', border: '1.5px dashed var(--borde-2)', borderRadius: 12,
+            padding: '12px 14px', cursor: 'pointer', textAlign: 'left',
+          }}>
+            SUBIR VARIAS FOTOS →
+            <span style={{ display: 'block', fontWeight: 400, fontSize: 11, color: 'var(--texto-3)', marginTop: 4 }}>
+              Se asignan en orden a los recuadros vacíos.
+            </span>
+          </button>
+          <input ref={bulkFileRef} type="file" multiple accept="image/*" style={{ display: 'none' }}
+            onChange={(e) => onBulkFiles(e.target.files)} />
         </aside>
 
         {/* Canvas */}
         <main style={{ padding: '32px 40px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+          {/* Portada elegida: se muestra junto al libro (no es una página más del flipbook, que ya tiene
+              una paginación de spreads fija por plantilla) para confirmar que cambiarla no toca fotos/textos. */}
+          {portadaSel && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', maxWidth: 720 }}>
+              <div style={{ width: 48, height: 64, borderRadius: 6, overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.18)', flexShrink: 0 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={portadaSel.imagen} alt={portadaSel.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => (e.currentTarget.style.display = 'none')} />
+              </div>
+              <p style={{ fontSize: 11.5, color: 'var(--texto-3)', margin: 0 }}>
+                Tu portada: <strong style={{ color: 'var(--marron)' }}>{portadaSel.nombre}</strong>. Cambiarla no afecta tus fotos ni textos ya cargados.
+              </p>
+            </div>
+          )}
+
           {/* Página (con animación de volteo; el flip solo se dispara por botones/puntos, no por gestos, para no interferir con el drag&drop de fotos) */}
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             {/* El wrapper decide portrait vs. landscape: page-flip entra en modo "2 páginas" (spread) solo si
@@ -270,6 +417,10 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                     onRemove={removePhoto}
                     onDropFile={(n, file) => setPhotoBlob(n, file)}
                     onText={(k, v) => setTexts((prev) => ({ ...prev, [k]: v }))}
+                    reorderMode={reorderMode}
+                    selectedSlot={selectedSlot}
+                    onSelectSlot={onSelectSlot}
+                    textStyle={textStyle}
                     maxWidth={9999}
                   />
                 </div>
@@ -301,6 +452,48 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
               <ChevronRight size={16} />
             </NavBtn>
           </div>
+
+          {/* Carrusel: una miniatura por cada recuadro de la plantilla, en orden — arrastra una
+              encima de otra para intercambiarlas (afecta directamente la vista del libro de arriba). */}
+          <div style={{ width: '100%', maxWidth: 720 }}>
+            <p style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--texto-3)', margin: '0 0 8px', textAlign: 'center' }}>
+              TODAS TUS FOTOS · ARRASTRA PARA REORDENAR
+            </p>
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '2px 2px 8px' }}>
+              {allSlots.map((n) => {
+                const url = urls[n];
+                const isDragging = dragSlot === n;
+                const isSelected = reorderMode && selectedSlot === n;
+                return (
+                  <div key={n} draggable
+                    onDragStart={() => setDragSlot(n)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); onCarouselDrop(n); }}
+                    onDragEnd={() => setDragSlot(null)}
+                    onClick={() => onCarouselClick(n)}
+                    style={{
+                      flexShrink: 0, width: 48, height: 60, borderRadius: 6, overflow: 'hidden', position: 'relative',
+                      cursor: 'grab', opacity: isDragging ? 0.4 : 1,
+                      border: `2px solid ${isSelected ? 'var(--coral)' : pageIdx === slotPageIndex(n) ? 'var(--marron)' : 'var(--borde)'}`,
+                      background: url ? undefined : 'rgba(0,0,0,0.06)',
+                    }}>
+                    {url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={url} alt="" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', fontSize: 10, fontWeight: 700, color: 'var(--texto-3)' }}>
+                        {n}
+                      </div>
+                    )}
+                    <span style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(43,33,28,0.55)', color: '#fff', fontSize: 8, textAlign: 'center', padding: '1px 0' }}>
+                      {n}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--texto-3)', margin: 0, textAlign: 'center' }}>
             la página gira con una animación de volteo, como un libro real
           </p>

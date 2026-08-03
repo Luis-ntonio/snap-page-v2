@@ -1,7 +1,8 @@
 'use client';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Plus, X } from 'lucide-react';
-import type { AlbumPageLayout, PhotoSlot, TextSlot } from '@/types';
+import { ArrowLeftRight, Plus, X } from 'lucide-react';
+import type { AlbumPageLayout, DecorationLayer, PhotoSlot, TextSlot, TextStylePreset } from '@/types';
 
 const F: React.CSSProperties = { fontFamily: "'Raleway', Arial, sans-serif" };
 const BROWN = '#7B3A1E';
@@ -17,7 +18,7 @@ export const LANDSCAPE_BG =
 
 // Renderiza una página del álbum (fondo + slots fijos + textos).
 // editable=true → subir/quitar fotos y editar textos. editable=false → vista previa de solo lectura.
-export function AlbumPageCanvas({
+export const AlbumPageCanvas = memo(function AlbumPageCanvas({
   page,
   urls = {},
   texts = {},
@@ -26,6 +27,10 @@ export function AlbumPageCanvas({
   onRemove,
   onText,
   onDropFile,
+  reorderMode = false,
+  selectedSlot = null,
+  onSelectSlot,
+  textStyle,
   maxWidth = 380,
 }: {
   page: AlbumPageLayout;
@@ -36,8 +41,16 @@ export function AlbumPageCanvas({
   onRemove?: (n: number) => void;
   onText?: (key: string, value: string) => void;
   onDropFile?: (n: number, file: File) => void;
+  /** Modo "ordenar fotos": el clic en un recuadro selecciona/intercambia en vez de abrir el selector de archivo. */
+  reorderMode?: boolean;
+  selectedSlot?: number | null;
+  onSelectSlot?: (n: number) => void;
+  /** Preset de tipografía/color elegido (null = estilo original de la plantilla). */
+  textStyle?: TextStylePreset | null;
   maxWidth?: number;
 }) {
+  const back = (page.decorations ?? []).filter((d) => d.layer === 'back');
+  const front = (page.decorations ?? []).filter((d) => d.layer === 'front');
   return (
     <div style={{
       position: 'relative', width: '100%', maxWidth, aspectRatio: '0.707',
@@ -52,24 +65,40 @@ export function AlbumPageCanvas({
       backgroundPosition: page.frame?.position,
       backgroundRepeat: page.frame ? 'no-repeat' : undefined,
     }}>
+      {back.map((d, i) => <Decoration key={`back-${i}`} d={d} />)}
       {page.slots.map((s) => (
-        <Slot key={s.n} slot={s} url={urls[s.n]} editable={editable} onSlot={onSlot} onRemove={onRemove} onDropFile={onDropFile} />
+        <Slot key={s.n} slot={s} url={urls[s.n]} editable={editable} onSlot={onSlot} onRemove={onRemove} onDropFile={onDropFile}
+          reorderMode={reorderMode} selected={selectedSlot === s.n} onSelectSlot={onSelectSlot} />
       ))}
       {(page.texts ?? []).map((t) => (
-        <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} />
+        <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} textStyle={textStyle} />
       ))}
+      {front.map((d, i) => <Decoration key={`front-${i}`} d={d} />)}
     </div>
+  );
+});
+
+function Decoration({ d }: { d: DecorationLayer }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={d.src} alt="" style={{
+      position: 'absolute', left: `${d.x * 100}%`, top: `${d.y * 100}%`,
+      width: `${d.w * 100}%`, height: `${d.h * 100}%`,
+      transform: d.rotate ? `rotate(${d.rotate}deg)` : undefined,
+      pointerEvents: 'none', objectFit: 'contain',
+    }} />
   );
 }
 
-function Slot({ slot, url, editable, onSlot, onRemove, onDropFile }: {
+const Slot = memo(function Slot({ slot, url, editable, onSlot, onRemove, onDropFile, reorderMode = false, selected = false, onSelectSlot }: {
   slot: PhotoSlot; url?: string; editable: boolean;
   onSlot?: (n: number) => void; onRemove?: (n: number) => void; onDropFile?: (n: number, file: File) => void;
+  reorderMode?: boolean; selected?: boolean; onSelectSlot?: (n: number) => void;
 }) {
   const isPolaroid = slot.shape === 'polaroid';
   const isCamera = slot.shape === 'camera';
   const { getRootProps, isDragActive } = useDropzone({
-    disabled: !editable,
+    disabled: !editable || reorderMode,
     noClick: true,
     noKeyboard: true,
     multiple: false,
@@ -93,11 +122,12 @@ function Slot({ slot, url, editable, onSlot, onRemove, onDropFile }: {
     }}>
       <div
         {...getRootProps()}
-        onClick={editable ? () => onSlot?.(slot.n) : undefined}
+        onClick={editable ? () => (reorderMode ? onSelectSlot?.(slot.n) : onSlot?.(slot.n)) : undefined}
         style={{
           width: '100%', height: '100%', cursor: editable ? 'pointer' : 'default', position: 'relative',
           background: url ? undefined : isDragActive ? 'rgba(123,58,30,0.15)' : 'rgba(0,0,0,0.06)',
-          border: url ? 'none' : `1.5px dashed rgba(123,58,30,${isDragActive ? 0.9 : editable ? 0.4 : 0.25})`,
+          border: selected ? '2.5px solid var(--coral)' : url ? 'none' : `1.5px dashed rgba(123,58,30,${isDragActive ? 0.9 : editable ? 0.4 : 0.25})`,
+          boxShadow: selected ? '0 0 0 3px rgba(255,111,74,0.25)' : undefined,
           borderRadius: isPolaroid ? 0 : isCamera ? 2 : 4, overflow: 'hidden',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
@@ -106,11 +136,11 @@ function Slot({ slot, url, editable, onSlot, onRemove, onDropFile }: {
           <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, color: isCamera ? '#fff' : BROWN, opacity: editable ? 0.7 : 0.5 }}>
-            {editable && <Plus size={16} />}
+            {editable && !reorderMode && <Plus size={16} />}
             <span style={{ ...F, fontSize: 11, fontWeight: 800 }}>{slot.n}</span>
           </div>
         )}
-        {editable && url && (
+        {editable && url && !reorderMode && (
           <button onClick={(e) => { e.stopPropagation(); onRemove?.(slot.n); }}
             aria-label="Quitar foto"
             style={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%',
@@ -119,12 +149,19 @@ function Slot({ slot, url, editable, onSlot, onRemove, onDropFile }: {
             <X size={11} />
           </button>
         )}
+        {editable && reorderMode && (
+          <div style={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%',
+            background: selected ? 'var(--coral)' : 'rgba(0,0,0,0.55)', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+            <ArrowLeftRight size={10} />
+          </div>
+        )}
         {isCamera && <CameraViewfinderOverlay />}
       </div>
       {isCamera && <CameraBodyButtons />}
     </div>
   );
-}
+});
 
 // Marco tipo visor de cámara (POV de quien toma la foto): esquinas de enfoque + indicador de batería,
 // dibujados sobre la propia foto (como el HUD de la pantalla de una cámara).
@@ -168,18 +205,48 @@ function CameraBodyButtons() {
   );
 }
 
-function TextBox({ slot, value, editable, onText }: {
+const TEXT_SAVE_DEBOUNCE_MS = 400;
+
+const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle }: {
   slot: TextSlot; value: string; editable: boolean; onText?: (key: string, value: string) => void;
+  textStyle?: TextStylePreset | null;
 }) {
+  // Estado local para que la escritura sea instantánea (independiente del re-render del resto del
+  // libro); el valor solo se propaga al padre (y de ahí al autoguardado) con un pequeño debounce.
+  const [local, setLocal] = useState(value);
+  const [syncedValue, setSyncedValue] = useState(value);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Ajuste de estado derivado durante el render (no en un efecto) cuando `value` cambia desde afuera
+  // (p.ej. al hidratar el borrador) — ver https://react.dev/learn/you-might-not-need-an-effect
+  if (value !== syncedValue) {
+    setSyncedValue(value);
+    setLocal(value);
+  }
+
+  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
+
+  const flush = (next: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = null;
+    onText?.(slot.key, next);
+  };
+
+  const handleChange = (next: string) => {
+    setLocal(next);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => flush(next), TEXT_SAVE_DEBOUNCE_MS);
+  };
+
   const base: React.CSSProperties = {
     position: 'absolute',
     left: `${slot.x * 100}%`, top: `${slot.y * 100}%`,
     width: `${slot.w * 100}%`, height: `${slot.h * 100}%`,
-    fontFamily: "'Raleway', Arial, sans-serif",
+    fontFamily: textStyle?.fontFamily ?? "'Raleway', Arial, sans-serif",
     fontSize: `${(slot.size ?? 0.03) * 100}cqh`,
     fontStyle: slot.italic ? 'italic' : 'normal',
     fontWeight: slot.weight ?? 400,
-    color: slot.color ?? '#333',
+    color: textStyle?.color ?? slot.color ?? '#333',
     textAlign: slot.align ?? 'left',
     lineHeight: 1.25,
     whiteSpace: 'pre-line',
@@ -210,10 +277,11 @@ function TextBox({ slot, value, editable, onText }: {
   // Texto editable en el editor.
   return (
     <textarea
-      value={value}
-      onChange={(e) => onText?.(slot.key, e.target.value)}
+      value={local}
+      onChange={(e) => handleChange(e.target.value)}
+      onBlur={(e) => flush(e.target.value)}
       placeholder={slot.placeholder ?? slot.preset ?? ''}
       style={{ ...base, background: 'transparent', border: 'none', resize: 'none', outline: 'none', padding: 0 }}
     />
   );
-}
+});

@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { waLink, WA_MESSAGES, PLANTILLAS, PORTADAS } from '@/lib/data';
@@ -8,6 +8,35 @@ import AlbumPreview, { type AlbumPreviewHandle } from '@/app/components/ui/Album
 import type { Tematica } from '@/types';
 
 const LABELS: Record<string,string> = { parejas:'Mi Pareja', cumpleanos:'Feliz Cumpleaños', viajes:'Aventuras' };
+
+// Bloque de imagen que se oculta por completo (título incluido) si el archivo no existe todavía,
+// en vez de dejar un encabezado con un hueco vacío debajo. La comprobación de carga se hace con un
+// Image() aparte en un efecto (no con onError del <img> renderizado): si la imagen ya falla durante
+// el render del servidor, el error nativo puede dispararse antes de que React hidrate y enganche el
+// listener, y onError nunca llega a llamarse — este patrón evita esa carrera.
+function PreviewImageBlock({ src, label }: { src: string; label: string }) {
+  const [ok, setOk] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    const img = new window.Image();
+    img.onload = () => { if (alive) setOk(true); };
+    img.onerror = () => { if (alive) setOk(false); };
+    img.src = src;
+    return () => { alive = false; };
+  }, [src]);
+  if (!ok) return null;
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--texto-3)', margin: '0 0 14px' }}>
+        {label}
+      </p>
+      <div style={{ background: 'var(--crema-2)', borderRadius: 24, padding: 24, display: 'flex', justifyContent: 'center' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={label} style={{ maxWidth: '100%', maxHeight: 560, borderRadius: 8, boxShadow: '0 12px 32px rgba(75,46,26,0.18)' }} />
+      </div>
+    </div>
+  );
+}
 
 export default function PlantillaDetallePage() {
   const { categoria } = useParams() as { categoria: string };
@@ -83,6 +112,11 @@ export default function PlantillaDetallePage() {
               </div>
             </div>
 
+            {/* Muestra con fotos de modelo — referencia de cómo se ve la plantilla ya diligenciada */}
+            {plantilla?.imagen_muestra && (
+              <PreviewImageBlock src={plantilla.imagen_muestra} label="ASÍ SE VE CON FOTOS" />
+            )}
+
             {/* Preview del libro — visor interactivo existente, solo re-envuelto */}
             <div style={{ background: 'var(--crema-2)', borderRadius: 24, padding: 32, marginBottom: 28 }}>
               {layout ? (
@@ -93,6 +127,11 @@ export default function PlantillaDetallePage() {
                 </div>
               )}
             </div>
+
+            {/* Imagen plana de la plantilla completa, sin interacción */}
+            {plantilla?.imagen_preview && (
+              <PreviewImageBlock src={plantilla.imagen_preview} label="PLANTILLA COMPLETA" />
+            )}
 
             {/* Miniaturas */}
             {layout && (

@@ -84,3 +84,36 @@ export async function renderPdfToImages(
 
   return pages;
 }
+
+// Rasteriza un PDF simple (1 página del álbum = 1 página del PDF, sin imposición de imprenta) a
+// partir de una URL — usado por el visor de "/mi-pdf/[pedidoId]" para los PDFs que esta misma app
+// compone con lib/album/pdf.ts (Minimal y Personalizado), a diferencia de renderPdfToImages()
+// (arriba), que asume el formato de imprenta de un PDF que trae el propio cliente.
+export async function renderPdfPagesFromUrl(
+  url: string,
+  onProgress?: (done: number, total: number) => void,
+): Promise<string[]> {
+  const pdfjsLib = await import('pdfjs-dist');
+  if (!workerConfigured) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+    workerConfigured = true;
+  }
+
+  const pdf = await pdfjsLib.getDocument({ url }).promise;
+  const pages: string[] = [];
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: PREVIEW_SCALE });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const canvasContext = canvas.getContext('2d')!;
+    await page.render({ canvas, canvasContext, viewport }).promise;
+    pages.push(canvas.toDataURL('image/jpeg', 0.85));
+    onProgress?.(i, pdf.numPages);
+    await tick();
+  }
+
+  return pages;
+}

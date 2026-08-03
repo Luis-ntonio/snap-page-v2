@@ -1,4 +1,4 @@
-import type { Plantilla, Portada, FaqItem } from '@/types';
+import type { Plantilla, Portada, FaqItem, TextStylePreset } from '@/types';
 
 export const WHATSAPP = '51922272439';
 export const EMAIL_ADMIN = 'fotolibros.snap@gmail.com';
@@ -9,6 +9,8 @@ export const waLink = (msg: string) =>
 
 export const WA_MESSAGES = {
   minimal: '¡Hola! Quiero realizar un pedido del Plan Minimal 📸',
+  minimalConPdf: (viewerUrl: string) =>
+    `¡Hola! Quiero realizar un pedido del Plan Minimal 📸\nMira mi PDF: ${viewerUrl}`,
   personalizado: (plantilla: string, portada: string) =>
     `¡Hola! Quiero el Plan Personalizado con la plantilla "${plantilla}" y portada "${portada}" 💛`,
   tengoDiseno: '¡Hola! Tengo mi diseño listo y quiero imprimirlo con ustedes 🎨',
@@ -20,8 +22,8 @@ export const WA_MESSAGES = {
   general: '¡Hola! Estoy interesada en crear un photobook 📖',
   pedido: (numero: string) =>
     `¡Hola! Quiero proceder con el pago de mi pedido N° ${numero} 💳`,
-  pedidoPersonalizado: (numero: string, pdfUrl: string) =>
-    `¡Hola! Mi pedido N° ${numero} del Plan Personalizado está listo 🎉\nAquí puedes ver mi diseño: ${pdfUrl}`,
+  pedidoPersonalizado: (numero: string, viewerUrl: string) =>
+    `¡Hola! Mi pedido N° ${numero} del Plan Personalizado está listo 🎉\nAquí puedes ver mi diseño: ${viewerUrl}`,
 };
 
 export const PLANTILLAS: Plantilla[] = [
@@ -32,6 +34,7 @@ export const PLANTILLAS: Plantilla[] = [
     hojas: 10,
     fotos: 39,
     imagen_preview: '/images/plantillas/parejas-1-preview.jpg',
+    imagen_muestra: '/images/plantillas/parejas-1-muestra.jpg',
     imagenes_interiores: [],
   },
   {
@@ -41,6 +44,7 @@ export const PLANTILLAS: Plantilla[] = [
     hojas: 10,
     fotos: 30,
     imagen_preview: '/images/plantillas/parejas-2-preview.jpg',
+    imagen_muestra: '/images/plantillas/parejas-2-muestra.jpg',
     imagenes_interiores: [],
   },
   {
@@ -50,6 +54,7 @@ export const PLANTILLAS: Plantilla[] = [
     hojas: 10,
     fotos: 25,
     imagen_preview: '/images/plantillas/cumple-1-preview.jpg',
+    imagen_muestra: '/images/plantillas/cumple-1-muestra.jpg',
     imagenes_interiores: [],
   },
   {
@@ -59,8 +64,19 @@ export const PLANTILLAS: Plantilla[] = [
     hojas: 10,
     fotos: 35,
     imagen_preview: '/images/plantillas/viajes-1-preview.jpg',
+    imagen_muestra: '/images/plantillas/viajes-1-muestra.jpg',
     imagenes_interiores: [],
   },
+];
+
+// Presets de tipografía/color para los textos del álbum Personalizado — selector limitado (no
+// tipografía libre) para poder resolver el pedido más frecuente de "cambiar la letra/color" sin
+// necesitar un pedido manual por WhatsApp. Usa solo las 3 familias ya cargadas en app/layout.tsx.
+export const TEXT_STYLE_PRESETS: TextStylePreset[] = [
+  { id: 'clasico', nombre: 'Clásico', fontFamily: "'Raleway', Arial, sans-serif" },
+  { id: 'elegante', nombre: 'Elegante', fontFamily: "'Gloock', serif", color: '#5B3A29' },
+  { id: 'manuscrito', nombre: 'Manuscrito', fontFamily: "'Caveat', cursive", color: '#C0392B' },
+  { id: 'moderno', nombre: 'Moderno', fontFamily: "'Raleway', Arial, sans-serif", color: '#1a1410' },
 ];
 
 export const PORTADAS: Portada[] = [

@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/client';
-import { uploadFoto, uploadPdf, signedUrl } from '@/lib/supabase/storage';
+import { uploadFoto, uploadPdf } from '@/lib/supabase/storage';
 import type { PlantillaLayout } from '@/types';
 
 export interface SubmitAlbumResult {
   numero: string;
-  pdfUrl: string;
+  pedidoId: string;
 }
 
 // Sube fotos + PDF del álbum a Storage y registra el pedido en Supabase.
@@ -60,8 +60,7 @@ export async function submitAlbumOrder({
   }
   const { pedido } = await res.json();
 
-  // 4. Link firmado del PDF para el mensaje de WhatsApp (7 días de vigencia).
-  const pdfUrl = await signedUrl(pdfPath, 60 * 60 * 24 * 7, supabase);
-
-  return { numero: pedido.numero, pdfUrl };
+  // El link de WhatsApp ya no lleva la URL firmada cruda del PDF (era descargable directo) —
+  // apunta a /mi-pdf/[pedidoId], que resuelve una URL firmada fresca del lado del servidor.
+  return { numero: pedido.numero, pedidoId: pedido.id };
 }

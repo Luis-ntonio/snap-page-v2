@@ -1,11 +1,19 @@
 'use client';
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
 import { waLink, WA_MESSAGES, GOOGLE_CALENDAR, PASOS } from '@/lib/data';
 import { renderPdfToImages, type PdfPreviewPage } from '@/lib/pdf/renderPdfPreview';
 import { createClient } from '@/lib/supabase/client';
+import { composeImagesPdf } from '@/lib/album/pdf';
+import { uploadPdf } from '@/lib/supabase/storage';
+import { useAuth } from '@/lib/auth';
+import {
+  BASE_PAGE_LIMIT, EXTRA_PAGE_BLOCK, EXTRA_PAGE_PRICE, CANTIDADES_VALIDAS_EJEMPLO,
+  esCantidadValida, calcularPrecio, formatSoles, PRECIO_BASE_MINIMAL, PRECIO_BASE_TENGO_DISENO,
+} from '@/lib/pricing';
 
 // Bucket privado donde /api/tengo-diseno sube los PDF del cliente (ver lib/supabase/tengoDisenoStorage.ts).
 const BUCKET_TENGO_DISENO = 'disenos-clientes';
@@ -34,11 +42,15 @@ const PLANES = [
 ];
 
 type Modal = 'minimal-choose'|'minimal-drop'|'minimal-viewer'|'tengo-choose'|'tengo-viewer'|null;
-interface Img { id:string; url:string; name:string; }
+interface Img { id:string; url:string; name:string; file:File; }
 
 export default function PlanesSection() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [modal, setModal] = useState<Modal>(null);
   const [imgs, setImgs]   = useState<Img[]>([]);
+  const [minimalSending, setMinimalSending] = useState(false);
+  const [minimalSendError, setMinimalSendError] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string|null>(null);
   const [pdfName, setPdfName] = useState('');
   const [pdfPages, setPdfPages] = useState<PdfPreviewPage[]|null>(null);
@@ -51,16 +63,61 @@ export default function PlanesSection() {
   const [pdfSendError, setPdfSendError] = useState(false);
   const [spread, setSpread] = useState(0);
   const [drag, setDrag]   = useState(false);
+  const [dragIdx, setDragIdx] = useState<number|null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
   const pdfRef = useRef<HTMLInputElement>(null);
 
   const addImgs = (files: FileList|null) => {
     if (!files) return;
     const n: Img[] = Array.from(files).filter(f=>f.type.startsWith('image/')).map(f=>({
-      id:`${Date.now()}-${Math.random()}`, url:URL.createObjectURL(f), name:f.name.replace(/\.[^.]+$/,''),
+      id:`${Date.now()}-${Math.random()}`, url:URL.createObjectURL(f), name:f.name.replace(/\.[^.]+$/,''), file:f,
     }));
     setImgs(prev=>[...prev,...n]);
     setModal('minimal-viewer');
+  };
+
+  // Sube el álbum compuesto a Storage y registra el pedido, para poder mandar por WhatsApp un link
+  // a un visor propio (sin descarga directa) en vez de descartar las fotos como hacía antes.
+  // Requiere sesión real (no demo) para poder asociar el archivo a una carpeta de usuario/pedido.
+  const handleComprarMinimal = async () => {
+    if (!cantidadValidaMinimal) return;
+    if (!user) { router.push('/login?next=/planes'); return; }
+    setMinimalSending(true); setMinimalSendError(false);
+    try {
+      const pdf = await composeImagesPdf(imgs.map((i) => i.file));
+      const pedidoId = crypto.randomUUID();
+      const pdfPath = await uploadPdf(user.id, pedidoId, pdf);
+      const res = await fetch('/api/pedidos', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pedidoId, plan: 'minimal', pdf_path: pdfPath }),
+      });
+      if (!res.ok) throw new Error('No se pudo registrar el pedido');
+      const { pedido } = await res.json();
+      const viewerUrl = `${window.location.origin}/mi-pdf/${pedido.id}`;
+      window.open(waLink(WA_MESSAGES.minimalConPdf(viewerUrl)), '_blank');
+    } catch (err) {
+      console.error('No se pudo subir el álbum de Minimal; se envía el mensaje sin link.', err);
+      setMinimalSendError(true);
+      window.open(waLink(WA_MESSAGES.minimal), '_blank');
+    } finally {
+      setMinimalSending(false);
+    }
+  };
+
+  const removeImg = (id: string) => {
+    setImgs(prev => prev.filter(im => im.id !== id));
+    setSpread(0);
+  };
+
+  const moveImg = (from: number, to: number) => {
+    if (from === to) return;
+    setImgs(prev => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+    setSpread(0);
   };
 
   const runPdfPreview = (f: File, splitSpreads: boolean) => {
@@ -150,6 +207,13 @@ export default function PlanesSection() {
   spreads.push([contraportada]);
   const cur = spreads[spread]??[null];
   const isSingle = spread===0||spread===spreads.length-1;
+
+  const cantidadValidaMinimal = esCantidadValida(imgs.length);
+  const precioMinimal = calcularPrecio(imgs.length, PRECIO_BASE_MINIMAL);
+
+  const totalPaginasTengo = pdfPages?.length ?? 0;
+  const cantidadValidaTengo = totalPaginasTengo === 0 || esCantidadValida(totalPaginasTengo);
+  const precioTengo = calcularPrecio(totalPaginasTengo, PRECIO_BASE_TENGO_DISENO);
 
   return (
     <>
@@ -277,20 +341,33 @@ export default function PlanesSection() {
           <div style={{ maxWidth:380, margin:'0 auto', padding:'32px 20px' }}>
             <h1 style={{ fontFamily: 'var(--font-display)', color:'var(--marron)', fontSize:'2rem', textAlign:'center', marginBottom:28 }}>Minimal</h1>
 
-            {/* Thumbnails */}
+            {/* Thumbnails — arrastra para reordenar, × para eliminar */}
             <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4, marginBottom:4 }}>
               {imgs.map((img,i)=>{
                 const si = i===0?1:1+Math.ceil(i/2);
                 return (
-                  <button key={img.id} onClick={()=>setSpread(si)} style={{
-                    flexShrink:0, width:52, height:64, padding:0, cursor:'pointer',
-                    border:`2px solid ${spread===si?'var(--marron)':'var(--borde)'}`,
-                    borderRadius:4, overflow:'hidden', position:'relative',
-                  }}>
-                    <img src={img.url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />
-                    <span style={{ position:'absolute',bottom:0,left:0,right:0,background:'rgba(43,33,28,0.5)',
-                      color:'#fff',fontSize:8,textAlign:'center',padding:'1px 0' }}>{i+1}</span>
-                  </button>
+                  <div key={img.id} draggable
+                    onDragStart={()=>setDragIdx(i)}
+                    onDragOver={e=>e.preventDefault()}
+                    onDrop={e=>{ e.preventDefault(); if(dragIdx!==null) moveImg(dragIdx,i); setDragIdx(null); }}
+                    onDragEnd={()=>setDragIdx(null)}
+                    style={{ flexShrink:0, width:52, height:64, position:'relative', cursor:'grab',
+                      opacity: dragIdx===i?0.4:1 }}>
+                    <button onClick={()=>setSpread(si)} style={{
+                      width:'100%', height:'100%', padding:0, cursor:'pointer',
+                      border:`2px solid ${spread===si?'var(--marron)':'var(--borde)'}`,
+                      borderRadius:4, overflow:'hidden', position:'relative',
+                    }}>
+                      <img src={img.url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" draggable={false} />
+                      <span style={{ position:'absolute',bottom:0,left:0,right:0,background:'rgba(43,33,28,0.5)',
+                        color:'#fff',fontSize:8,textAlign:'center',padding:'1px 0' }}>{i+1}</span>
+                    </button>
+                    <button onClick={e=>{ e.stopPropagation(); removeImg(img.id); }} aria-label="Eliminar foto" style={{
+                      position:'absolute', top:-6, right:-6, width:16, height:16, padding:0, lineHeight:1,
+                      borderRadius:'50%', background:'var(--coral)', color:'#fff', border:'2px solid #fff',
+                      fontSize:10, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center',
+                    }}>×</button>
+                  </div>
                 );
               })}
               <button onClick={()=>imgRef.current?.click()} style={{
@@ -316,14 +393,43 @@ export default function PlanesSection() {
             />
 
             {/* Notes */}
-            <div style={{ marginBottom:24 }}>
+            <div style={{ marginBottom:16 }}>
               <p style={{ fontSize:11, color:'var(--texto-3)', marginBottom:2 }}>• La primera y última página interna van solas.</p>
               <p style={{ fontSize:11, color:'var(--texto-3)' }}>• Las demás páginas van en pliegos (doble).</p>
             </div>
 
-            <a href={waLink(WA_MESSAGES.minimal)} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display:'flex', width:'100%', background:'var(--marron)' }}>
-              COMPRAR
-            </a>
+            <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', margin:'0 0 10px' }}>
+              Hasta {BASE_PAGE_LIMIT} páginas incluidas · páginas extra +{formatSoles(EXTRA_PAGE_PRICE)} cada {EXTRA_PAGE_BLOCK} · cambio de tamaño tiene costo extra
+            </p>
+
+            {!cantidadValidaMinimal && (
+              <p style={{ fontSize:11.5, color:'var(--coral)', fontWeight:700, textAlign:'center', margin:'0 0 10px' }}>
+                La cantidad de fotos debe ser portada + contraportada + un múltiplo de 4 fotos interiores
+                (ej: {CANTIDADES_VALIDAS_EJEMPLO.join(', ')}…). Tienes {imgs.length} foto{imgs.length===1?'':'s'}.
+              </p>
+            )}
+
+            <p style={{ fontFamily:'var(--font-display)', fontSize:18, color:'var(--marron)', textAlign:'center', margin:'0 0 16px' }}>
+              Precio total: {formatSoles(precioMinimal.total)}
+              {precioMinimal.extra > 0 && (
+                <span style={{ fontSize:11.5, fontWeight:400, color:'var(--texto-3)', display:'block', marginTop:2 }}>
+                  (+{formatSoles(precioMinimal.extra)} por {precioMinimal.paginasExtra} página{precioMinimal.paginasExtra===1?'':'s'} extra)
+                </span>
+              )}
+            </p>
+
+            {minimalSendError && (
+              <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', margin:'0 0 10px' }}>
+                No pudimos subir tu álbum — te escribimos igual, cuéntanos por WhatsApp y lo resolvemos.
+              </p>
+            )}
+
+            <button onClick={handleComprarMinimal} disabled={!cantidadValidaMinimal || minimalSending} className="btn-primary"
+              style={{ display:'flex', width:'100%', background:'var(--marron)', border:'none',
+                cursor: (!cantidadValidaMinimal || minimalSending) ? 'default' : 'pointer',
+                opacity: (!cantidadValidaMinimal || minimalSending) ? 0.5 : 1 }}>
+              {minimalSending ? 'SUBIENDO…' : user ? 'COMPRAR' : 'INICIAR SESIÓN PARA COMPRAR'}
+            </button>
           </div>
         </Full>
       )}
@@ -343,7 +449,10 @@ export default function PlanesSection() {
         <Full onBack={()=>setModal('tengo-choose')} onClose={close}>
           <div style={{ maxWidth:900, margin:'0 auto', padding:'32px 20px' }}>
             <h1 style={{ fontFamily: 'var(--font-display)', color:'var(--marron)', fontSize:'1.8rem', textAlign:'center', marginBottom:16 }}>Tengo mi diseño</h1>
-            <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', marginBottom:12 }}>{pdfName}</p>
+            <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', marginBottom:6 }}>{pdfName}</p>
+            <p style={{ fontSize:11.5, color:'var(--texto-3)', textAlign:'center', margin:'0 0 12px' }}>
+              La primera página de tu PDF será tu portada y la última tu contraportada.
+            </p>
 
             <label style={{
               display:'flex', alignItems:'center', gap:8, justifyContent:'center',
@@ -372,14 +481,37 @@ export default function PlanesSection() {
 
             {!pdfLoading && !pdfError && pdfPages && <PdfFlipBook pages={pdfPages} />}
 
+            {!pdfLoading && !pdfError && pdfPages && (
+              <>
+                <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', margin:'0 0 10px' }}>
+                  Hasta {BASE_PAGE_LIMIT} páginas incluidas · páginas extra +{formatSoles(EXTRA_PAGE_PRICE)} cada {EXTRA_PAGE_BLOCK} · cambio de tamaño tiene costo extra
+                </p>
+                {!cantidadValidaTengo && (
+                  <p style={{ fontSize:11.5, color:'var(--coral)', fontWeight:700, textAlign:'center', margin:'0 0 10px' }}>
+                    La cantidad de páginas debe ser portada + contraportada + un múltiplo de 4 páginas interiores
+                    (ej: {CANTIDADES_VALIDAS_EJEMPLO.join(', ')}…). Tu PDF tiene {totalPaginasTengo} página{totalPaginasTengo===1?'':'s'}.
+                  </p>
+                )}
+                <p style={{ fontFamily:'var(--font-display)', fontSize:18, color:'var(--marron)', textAlign:'center', margin:'0 0 16px' }}>
+                  Precio total: {formatSoles(precioTengo.total)}
+                  {precioTengo.extra > 0 && (
+                    <span style={{ fontSize:11.5, fontWeight:400, color:'var(--texto-3)', display:'block', marginTop:2 }}>
+                      (+{formatSoles(precioTengo.extra)} por {precioTengo.paginasExtra} página{precioTengo.paginasExtra===1?'':'s'} extra)
+                    </span>
+                  )}
+                </p>
+              </>
+            )}
+
             {pdfSendError && (
               <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', margin:'0 0 10px' }}>
                 No pudimos subir tu PDF — te escribimos igual, adjúntalo manualmente en el chat.
               </p>
             )}
 
-            <button onClick={handleComprarTengoDiseno} disabled={pdfSending} className="btn-primary"
-              style={{ display:'flex', width:'100%', maxWidth:380, margin:'0 auto', background:'var(--marron)', border:'none', cursor: pdfSending?'default':'pointer', opacity: pdfSending?0.7:1 }}>
+            <button onClick={handleComprarTengoDiseno} disabled={pdfSending || !cantidadValidaTengo} className="btn-primary"
+              style={{ display:'flex', width:'100%', maxWidth:380, margin:'0 auto', background:'var(--marron)', border:'none',
+                cursor: (pdfSending || !cantidadValidaTengo)?'default':'pointer', opacity: (pdfSending || !cantidadValidaTengo)?0.5:1 }}>
               {pdfSending ? 'SUBIENDO PDF…' : 'COMPRAR'}
             </button>
           </div>
@@ -485,7 +617,7 @@ function PdfFlipBook({ pages }: { pages: PdfPreviewPage[] }) {
           <ChevronLeft size={14} color="var(--marron)" />
         </button>
         <span style={{ fontSize:11, color:'var(--texto-3)', minWidth:80, textAlign:'center' }}>
-          Página {pageIdx+1} / {pages.length}
+          {pageIdx===0 ? 'Portada' : pageIdx===pages.length-1 ? 'Contraportada' : `Página ${pageIdx+1} / ${pages.length}`}
         </span>
         <button onClick={()=>bookRef.current?.pageFlip()?.flipNext()} disabled={pageIdx>=pages.length-2}
           style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
