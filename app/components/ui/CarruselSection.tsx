@@ -27,11 +27,11 @@ export default function CarruselSection() {
   const items = PORTADAS.length ? PORTADAS : [];
   return (
     <section style={{
-      background: 'var(--crema)', borderTop: '1px solid var(--borde)', borderBottom: '1px solid var(--borde)',
+      background: 'var(--marron)', borderTop: '1px solid var(--borde)', borderBottom: '1px solid var(--borde)',
       padding: '40px 0', overflow: 'hidden',
     }}>
       <p style={{
-        fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--marron)',
+        fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--crema)',
         textAlign: 'center', margin: '0 0 24px', transform: 'rotate(-1deg)',
       }}>
         photobooks que ya son parte de una historia
