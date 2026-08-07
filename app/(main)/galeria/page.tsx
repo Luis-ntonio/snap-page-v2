@@ -81,7 +81,7 @@ export default function GaleriaPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ background: 'var(--crema-2)', padding: '56px 32px', textAlign: 'center' }}>
+      <section style={{ background: '#FFFFFF', padding: '56px 32px', textAlign: 'center' }}>
         <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>el siguiente puede ser el tuyo</p>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,2.6vw,2.1rem)', margin: '0 0 22px', color: 'var(--tinta)' }}>Empieza tu photobook hoy</h2>
         <a href="/planes" className="btn-primary" style={{ background: 'var(--coral)', padding: '15px 32px', boxShadow: '0 8px 22px rgba(232,121,90,0.32)' }}>

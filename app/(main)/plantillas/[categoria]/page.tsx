@@ -30,7 +30,7 @@ function PreviewImageBlock({ src, label }: { src: string; label: string }) {
       <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--texto-3)', margin: '0 0 14px' }}>
         {label}
       </p>
-      <div style={{ background: 'var(--crema-2)', borderRadius: 24, padding: 24, display: 'flex', justifyContent: 'center' }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 24, padding: 24, display: 'flex', justifyContent: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={label} style={{ maxWidth: '100%', maxHeight: 560, borderRadius: 8, boxShadow: '0 12px 32px rgba(75,46,26,0.18)' }} />
       </div>
@@ -118,7 +118,7 @@ export default function PlantillaDetallePage() {
             )}
 
             {/* Preview del libro — visor interactivo existente, solo re-envuelto */}
-            <div style={{ background: 'var(--crema-2)', borderRadius: 24, padding: 32, marginBottom: 28 }}>
+            <div style={{ background: 'var(--crema)', borderRadius: 24, padding: 32, marginBottom: 28 }}>
               {layout ? (
                 <AlbumPreview ref={previewRef} layout={layout} />
               ) : (

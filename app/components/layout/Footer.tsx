@@ -10,7 +10,7 @@ const footerLink: React.CSSProperties = {
 export default function Footer() {
   return (
     <footer style={{
-      background: 'var(--tinta)',
+      background: 'var(--marron)',
       color: '#CBB9AB',
       padding: '56px 32px 32px',
       fontFamily: 'var(--font-body)',

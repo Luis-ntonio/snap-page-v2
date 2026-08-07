@@ -27,7 +27,7 @@ export default function CarruselSection() {
   const items = PORTADAS.length ? PORTADAS : [];
   return (
     <section style={{
-      background: 'var(--crema-2)', borderTop: '1px solid var(--borde)', borderBottom: '1px solid var(--borde)',
+      background: 'var(--crema)', borderTop: '1px solid var(--borde)', borderBottom: '1px solid var(--borde)',
       padding: '40px 0', overflow: 'hidden',
     }}>
       <p style={{

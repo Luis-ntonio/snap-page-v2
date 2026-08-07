@@ -294,7 +294,7 @@ export default function PlanesSection() {
       <Pasos />
 
       {/* Ayuda */}
-      <section style={{ background: 'var(--crema-2)', padding: '56px 32px', textAlign: 'center' }}>
+      <section style={{ background: '#FFFFFF', padding: '56px 32px', textAlign: 'center' }}>
         <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>¿no sabes cuál elegir?</p>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,2.6vw,2.1rem)', margin: '0 0 22px', color: 'var(--tinta)' }}>Cuéntanos tu idea y te guiamos</h2>
         <a href={waLink(WA_MESSAGES.general)} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ background: 'var(--marron)', padding: '15px 32px' }}>

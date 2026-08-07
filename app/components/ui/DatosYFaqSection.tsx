@@ -11,7 +11,7 @@ export default function DatosYFaqSection({ faq = FAQ_DEFAULT }: { faq?: FaqItem[
   ];
 
   return (
-    <section style={{ background: 'var(--crema-2)', padding: '88px 32px' }}>
+    <section style={{ background: '#FFFFFF', padding: '88px 32px' }}>
       <div style={{
         maxWidth: 1080, margin: '0 auto', display: 'grid',
         gridTemplateColumns: '1fr 1.1fr', gap: 64,
