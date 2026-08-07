@@ -15,7 +15,7 @@ const RESP_STYLES: Record<string, [string, string]> = {
 };
 const ESTADO_STYLES: Record<EstadoPedido, [string, string]> = {
   'pedido-realizado': ['#8A6D00', '#FBF0C9'], diseno: ['#1D5F8A', '#D9EBF5'],
-  produccion: ['#6B3FA0', '#EBE0F7'], entrega: ['#3F7A46', '#DDF0DE'], entregado: ['#7B3A1E', '#F6E3D5'],
+  produccion: ['#6B3FA0', '#EBE0F7'], entrega: ['#3F7A46', '#DDF0DE'], entregado: ['#7E451B', '#F6E3D5'],
 };
 const TEMA_LABELS: Record<Tematica, string> = {
   parejas: 'Parejas', viajes: 'Viajes', cumpleanos: 'Cumpleaños', familia: 'Familia', otro: '—',
@@ -145,13 +145,13 @@ export default function AdminPedidosPage() {
             <button key={id} onClick={() => setFiltro(id)} style={{
               fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', padding: '9px 16px', borderRadius: 999,
               border: `1.5px solid ${active ? 'var(--marron)' : 'var(--borde-2)'}`,
-              background: active ? 'var(--marron)' : '#fff', color: active ? '#FBF7F2' : '#8A7568',
+              background: active ? 'var(--marron)' : '#fff', color: active ? '#F5F7F6' : '#8A7568',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
             }}>
               {label}
               <span style={{
-                background: active ? 'rgba(251,247,242,0.25)' : 'var(--crema-2)',
-                color: active ? '#FBF7F2' : '#8A7568', borderRadius: 999, padding: '2px 8px', fontSize: 10,
+                background: active ? 'rgba(245,247,246,0.25)' : 'var(--crema-2)',
+                color: active ? '#F5F7F6' : '#8A7568', borderRadius: 999, padding: '2px 8px', fontSize: 10,
               }}>
                 {count}
               </span>
@@ -176,7 +176,7 @@ export default function AdminPedidosPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                 <div style={{
                   width: 30, height: 30, borderRadius: '50%', background: AVATARES[i % AVATARES.length], flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11.5, fontWeight: 800, color: '#FBF7F2',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11.5, fontWeight: 800, color: '#F5F7F6',
                 }}>
                   {row.cliente_nombre[0]?.toUpperCase()}
                 </div>

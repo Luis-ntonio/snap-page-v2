@@ -49,7 +49,7 @@ export default function PlantillasPage() {
                   <span style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--coral-suave)' }}>
                     {fotos} fotos · {hojas} hojas
                   </span>
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3rem)', color: '#FBF7F2' }}>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3rem)', color: '#F5F7F6' }}>
                     {c.label}
                   </span>
                 </div>

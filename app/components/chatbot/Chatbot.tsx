@@ -104,7 +104,7 @@ export default function Chatbot() {
                 {faqs.map((faq, i) => (
                   <button key={i} onClick={() => handleFaq(faq)}
                     className="w-full text-left text-xs px-3 py-2 rounded-xl transition-colors"
-                    style={{ border: '1px solid rgba(123,58,30,0.2)', color: 'var(--marron)', background: '#fff' }}>
+                    style={{ border: '1px solid rgba(126,69,27,0.2)', color: 'var(--marron)', background: '#fff' }}>
                     {faq.pregunta}
                   </button>
                 ))}

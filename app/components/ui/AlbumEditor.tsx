@@ -257,7 +257,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
               {filled} / {layout.fotos} fotos
             </span>
             <button onClick={onSend} disabled={sending} style={{
-              fontSize: 11.5, fontWeight: 800, letterSpacing: '0.08em', color: '#FBF7F2', background: '#25D366',
+              fontSize: 11.5, fontWeight: 800, letterSpacing: '0.08em', color: '#F5F7F6', background: '#25D366',
               border: 'none', borderRadius: 999, padding: '11px 20px', cursor: sending ? 'default' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 7, opacity: sending ? 0.7 : 1, whiteSpace: 'nowrap',
             }}>

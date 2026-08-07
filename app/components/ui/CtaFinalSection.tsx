@@ -17,7 +17,7 @@ export default function CtaFinalSection() {
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,3.4vw,2.9rem)', lineHeight: 1.15, margin: '0 0 30px', color: 'var(--tinta)' }}>
           Empieza tu photobook hoy.
         </h2>
-        <Link href="/planes" className="btn-primary" style={{ background: 'var(--marron)', padding: '17px 40px', boxShadow: '0 10px 28px rgba(123,58,30,0.3)' }}>
+        <Link href="/planes" className="btn-primary" style={{ background: 'var(--marron)', padding: '17px 40px', boxShadow: '0 10px 28px rgba(126,69,27,0.3)' }}>
           CREA EL TUYO — DESDE S/ 70
         </Link>
       </div>

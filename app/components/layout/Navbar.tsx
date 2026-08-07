@@ -60,7 +60,7 @@ export default function Navbar() {
       <header style={{
         position: 'sticky',
         top: 32, // debajo del DemoBanner fijo (32px)
-        background: 'rgba(251,247,242,0.92)',
+        background: 'rgba(245,247,246,0.92)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         borderBottom: '1px solid var(--borde)',

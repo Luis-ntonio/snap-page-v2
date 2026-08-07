@@ -7,7 +7,7 @@ import type { PlantillaLayout } from '@/types';
 import { AlbumPageCanvas } from './album/AlbumPageCanvas';
 
 const F: React.CSSProperties = { fontFamily: "'Raleway', Arial, sans-serif" };
-const BROWN = '#7B3A1E';
+const BROWN = '#7E451B';
 
 export interface AlbumPreviewHandle {
   flipTo: (n: number) => void;

@@ -222,7 +222,7 @@ export default function MiCuentaPage() {
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, minWidth: 64 }}>
                             <div style={{
                               width: 26, height: 26, borderRadius: '50%', background: bg, border: `2px solid ${borde}`,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#FBF7F2',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#F5F7F6',
                             }}>
                               {done ? '✓' : current ? '●' : ''}
                             </div>

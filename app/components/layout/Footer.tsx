@@ -21,7 +21,7 @@ export default function Footer() {
           gridTemplateColumns: '1.4fr 1fr 1fr',
           gap: 48,
           paddingBottom: 40,
-          borderBottom: '1px solid rgba(251,247,242,0.12)',
+          borderBottom: '1px solid rgba(245,247,246,0.12)',
         }}
           className="footer-grid"
         >

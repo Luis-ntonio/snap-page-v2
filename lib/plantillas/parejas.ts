@@ -13,7 +13,7 @@ import type { PlantillaLayout } from '@/types';
 // que va sola al inicio, y el total de páginas debe ser PAR contando desde el índice 1 (para que la última,
 // P13, quede sola al final tal como en el PDF).
 
-const BROWN = '#7B3A1E';
+const BROWN = '#7E451B';
 
 export const parejas: PlantillaLayout = {
   id: 'parejas',

@@ -82,7 +82,7 @@ export default function PlantillaDetallePage() {
                 fontSize: 12, fontWeight: 800, letterSpacing: '0.14em', padding: '11px 26px',
                 borderRadius: 999, border: `1.5px solid ${active ? 'var(--marron)' : 'var(--borde-2)'}`,
                 background: active ? 'var(--marron)' : 'transparent',
-                color: active ? '#FBF7F2' : '#8A7568', cursor: 'pointer', transition: 'all 0.2s',
+                color: active ? '#F5F7F6' : '#8A7568', cursor: 'pointer', transition: 'all 0.2s',
               }}>
                 {t.toUpperCase()}
               </button>

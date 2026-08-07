@@ -80,12 +80,12 @@ function drawImageCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, re
 
 function drawSlotPlaceholder(ctx: CanvasRenderingContext2D, rect: { x: number; y: number; w: number; h: number }, label: string) {
   ctx.save();
-  ctx.strokeStyle = 'rgba(123,58,30,0.35)';
+  ctx.strokeStyle = 'rgba(126,69,27,0.35)';
   ctx.setLineDash([6, 6]);
   ctx.lineWidth = 2;
   ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
   ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(123,58,30,0.55)';
+  ctx.fillStyle = 'rgba(126,69,27,0.55)';
   ctx.font = `bold ${Math.max(12, rect.h * 0.08)}px Raleway, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';

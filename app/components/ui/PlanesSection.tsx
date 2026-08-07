@@ -228,7 +228,7 @@ export default function PlanesSection() {
                   <div style={{ padding: '26px 26px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
                       <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, margin: 0, color: plan.dark ? '#F6E3D5' : 'var(--marron)' }}>{plan.nombre}</h2>
-                      <span style={{ fontWeight: 800, fontSize: 17, whiteSpace: 'nowrap', color: plan.dark ? '#FBF7F2' : 'var(--tinta)' }}>{plan.precio}</span>
+                      <span style={{ fontWeight: 800, fontSize: 17, whiteSpace: 'nowrap', color: plan.dark ? '#F5F7F6' : 'var(--tinta)' }}>{plan.precio}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
                       {plan.bullets.map((b,i)=>(
@@ -240,7 +240,7 @@ export default function PlanesSection() {
                     {plan.id === 'personalizado' && (
                       <span style={{
                         fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', textDecoration: 'none',
-                        color: '#FBF7F2', background: 'var(--coral)', borderRadius: 999, padding: '12px 22px',
+                        color: '#F5F7F6', background: 'var(--coral)', borderRadius: 999, padding: '12px 22px',
                         textAlign: 'center', alignSelf: 'start',
                       }}>{plan.cta}</span>
                     )}
@@ -536,7 +536,7 @@ export default function PlanesSection() {
 function Pasos() {
   return (
     <section style={{ background: 'var(--marron)', padding: '80px 32px', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: -40, left: -40, fontSize: 120, color: 'rgba(251,247,242,0.06)', fontFamily: 'var(--font-display)' }}>✳</div>
+      <div style={{ position: 'absolute', top: -40, left: -40, fontSize: 120, color: 'rgba(245,247,246,0.06)', fontFamily: 'var(--font-display)' }}>✳</div>
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral-suave)', textAlign: 'center', margin: '0 0 8px' }}>
           sin complicaciones
@@ -553,7 +553,7 @@ function Pasos() {
               <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--crema)', margin: '12px 0 8px', letterSpacing: '0.04em' }}>
                 {p.titulo}
               </h3>
-              <p style={{ fontSize: 13, lineHeight: 1.65, color: 'rgba(251,247,242,0.72)', margin: 0 }}>
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: 'rgba(245,247,246,0.72)', margin: 0 }}>
                 {p.desc}
               </p>
             </div>

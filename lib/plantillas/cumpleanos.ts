@@ -9,7 +9,7 @@ import type { PlantillaLayout } from '@/types';
 // las empareje solo. El total (20 páginas = 10 hojas × 2 caras) y el hecho de que showCover=true deje la
 // portada (P1) y la contraportada (P11) solas al abrir/cerrar el libro confirman este conteo.
 
-const BROWN = '#7B3A1E';
+const BROWN = '#7E451B';
 const INK = '#333';
 
 export const cumpleanos: PlantillaLayout = {

@@ -51,7 +51,7 @@ export default function GaleriaPage() {
               fontSize: 11.5, fontWeight: 800, letterSpacing: '0.12em', padding: '10px 22px', borderRadius: 999,
               border: `1.5px solid ${active ? 'var(--marron)' : 'var(--borde-2)'}`,
               background: active ? 'var(--marron)' : 'transparent',
-              color: active ? '#FBF7F2' : '#8A7568', cursor: 'pointer', transition: 'all 0.2s',
+              color: active ? '#F5F7F6' : '#8A7568', cursor: 'pointer', transition: 'all 0.2s',
             }}>
               {f.label}
             </button>

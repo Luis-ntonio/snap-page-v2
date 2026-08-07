@@ -122,7 +122,7 @@ function EditForm({ p, r, onP, onR, onSave, onCancel, saving, isNew }: {
   onSave: () => void; onCancel: () => void; saving: boolean; isNew?: boolean;
 }) {
   return (
-    <div className={`bg-white rounded-2xl p-4 space-y-3 ${isNew ? 'border-2' : 'border border-[var(--borde)]'}`} style={isNew ? { borderColor: 'rgba(123,58,30,0.2)' } : undefined}>
+    <div className={`bg-white rounded-2xl p-4 space-y-3 ${isNew ? 'border-2' : 'border border-[var(--borde)]'}`} style={isNew ? { borderColor: 'rgba(126,69,27,0.2)' } : undefined}>
       <input value={p} onChange={e => onP(e.target.value)} placeholder="Pregunta"
         className="w-full border border-[var(--borde-2)] rounded-xl px-3 py-2.5 text-sm outline-none" />
       <textarea value={r} onChange={e => onR(e.target.value)} placeholder="Respuesta" rows={3}

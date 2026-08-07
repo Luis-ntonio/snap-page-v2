@@ -14,7 +14,7 @@ export default function EditorPage() {
         <p style={{ fontFamily: "'Raleway', sans-serif", color: '#666', fontSize: 15, marginBottom: 16 }}>
           El editor de esta plantilla estará disponible pronto.
         </p>
-        <Link href="/plantillas" style={{ fontFamily: "'Raleway', sans-serif", color: '#7B3A1E', fontWeight: 700, fontSize: 13 }}>
+        <Link href="/plantillas" style={{ fontFamily: "'Raleway', sans-serif", color: '#7E451B', fontWeight: 700, fontSize: 13 }}>
           ← Ver plantillas
         </Link>
       </main>

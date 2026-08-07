@@ -54,11 +54,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         width: 220, background: 'var(--tinta)', display: 'flex', flexDirection: 'column',
         flexShrink: 0, position: 'sticky', top: 0, height: '100vh', boxSizing: 'border-box',
       }}>
-        <div style={{ padding: '26px 24px 22px', borderBottom: '1px solid rgba(251,247,242,0.1)' }}>
+        <div style={{ padding: '26px 24px 22px', borderBottom: '1px solid rgba(245,247,246,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
             <span style={{ fontFamily: 'var(--font-display)', fontSize: 19, color: '#F6E3D5' }}>Snap</span>
             <span style={{ color: 'var(--coral)', fontSize: 14 }}>✳</span>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 19, color: '#FBF7F2' }}>Page</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 19, color: '#F5F7F6' }}>Page</span>
           </div>
           <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.2em', color: '#8A7568', margin: '8px 0 0' }}>PANEL ADMIN</p>
         </div>
@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <Link key={href} href={href} style={{
                 display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, fontWeight: 700, letterSpacing: '0.1em',
-                color: active ? '#FBF7F2' : '#8A7568', background: active ? 'rgba(232,121,90,0.22)' : 'transparent',
+                color: active ? '#F5F7F6' : '#8A7568', background: active ? 'rgba(232,121,90,0.22)' : 'transparent',
                 borderRadius: 12, padding: '13px 16px', textDecoration: 'none', transition: 'all 0.2s',
               }}>
                 <Icon size={15} />{label}
@@ -76,10 +76,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
-        <div style={{ padding: '18px 24px', borderTop: '1px solid rgba(251,247,242,0.1)', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '18px 24px', borderTop: '1px solid rgba(245,247,246,0.1)', display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
             width: 36, height: 36, borderRadius: '50%', background: 'var(--coral)', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#FBF7F2', flexShrink: 0,
+            alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#F5F7F6', flexShrink: 0,
           }}>
             {nombreAdmin[0]?.toUpperCase()}
           </div>

@@ -5,7 +5,7 @@ import { ArrowLeftRight, Plus, X } from 'lucide-react';
 import type { AlbumPageLayout, DecorationLayer, PhotoSlot, TextSlot, TextStylePreset } from '@/types';
 
 const F: React.CSSProperties = { fontFamily: "'Raleway', Arial, sans-serif" };
-const BROWN = '#7B3A1E';
+const BROWN = '#7E451B';
 
 // Fondo de corazones (patrón CSS ligero) para páginas con pattern:'hearts'.
 export const HEARTS_BG =
@@ -125,8 +125,8 @@ const Slot = memo(function Slot({ slot, url, editable, onSlot, onRemove, onDropF
         onClick={editable ? () => (reorderMode ? onSelectSlot?.(slot.n) : onSlot?.(slot.n)) : undefined}
         style={{
           width: '100%', height: '100%', cursor: editable ? 'pointer' : 'default', position: 'relative',
-          background: url ? undefined : isDragActive ? 'rgba(123,58,30,0.15)' : 'rgba(0,0,0,0.06)',
-          border: selected ? '2.5px solid var(--coral)' : url ? 'none' : `1.5px dashed rgba(123,58,30,${isDragActive ? 0.9 : editable ? 0.4 : 0.25})`,
+          background: url ? undefined : isDragActive ? 'rgba(126,69,27,0.15)' : 'rgba(0,0,0,0.06)',
+          border: selected ? '2.5px solid var(--coral)' : url ? 'none' : `1.5px dashed rgba(126,69,27,${isDragActive ? 0.9 : editable ? 0.4 : 0.25})`,
           boxShadow: selected ? '0 0 0 3px rgba(255,111,74,0.25)' : undefined,
           borderRadius: isPolaroid ? 0 : isCamera ? 2 : 4, overflow: 'hidden',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
