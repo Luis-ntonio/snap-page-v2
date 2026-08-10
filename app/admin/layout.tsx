@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutList, Image as ImageIcon, Folder, MessageCircle } from 'lucide-react';
+import { LayoutList, Image as ImageIcon, Images, Folder, MessageCircle } from 'lucide-react';
 import { useDemo } from '@/lib/demo';
 import { useAuth } from '@/lib/auth';
 
@@ -10,6 +10,7 @@ const NAV = [
   { href: '/admin', label: 'PEDIDOS', icon: LayoutList },
   { href: '/admin/fotos', label: 'FOTOS', icon: ImageIcon },
   { href: '/admin/carpetas', label: 'CARPETAS', icon: Folder },
+  { href: '/admin/contenido', label: 'CONTENIDO', icon: Images },
   { href: '/admin/chatbot', label: 'CHATBOT', icon: MessageCircle },
 ];
 

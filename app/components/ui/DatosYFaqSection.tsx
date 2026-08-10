@@ -1,5 +1,6 @@
 'use client';
 import { FAQ_DEFAULT, DATOS_GENERALES } from '@/lib/data';
+import { mediaUrl } from '@/lib/media';
 import type { FaqItem } from '@/types';
 
 export default function DatosYFaqSection({ faq = FAQ_DEFAULT }: { faq?: FaqItem[] }) {
@@ -24,7 +25,7 @@ export default function DatosYFaqSection({ faq = FAQ_DEFAULT }: { faq?: FaqItem[
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.7rem,2.6vw,2.2rem)', margin: '0 0 24px', color: 'var(--tinta)' }}>Datos generales</h2>
           <div style={{ borderRadius: 20, overflow: 'hidden', height: 220, marginBottom: 26, boxShadow: '0 14px 34px rgba(75,46,26,0.16)' }}>
             <img
-              src="/images/photobook-datos.jpg"
+              src={mediaUrl('datos-generales/foto.jpg')}
               alt="Photobook"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.style.background = 'var(--borde)'; }}

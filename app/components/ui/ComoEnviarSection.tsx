@@ -1,3 +1,5 @@
+import { mediaUrl } from '@/lib/media';
+
 export default function ComoEnviarSection() {
   return (
     <section style={{ padding: '88px 32px' }}>
@@ -24,10 +26,10 @@ export default function ComoEnviarSection() {
         }}>
           <video
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            src="/videos/como-enviar.mp4"
+            src={mediaUrl('como-enviar/video.mp4')}
             controls
             playsInline
-            poster="/images/video-poster.jpg"
+            poster={mediaUrl('como-enviar/poster.jpg')}
           />
         </div>
       </div>

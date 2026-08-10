@@ -26,6 +26,9 @@ export const WA_MESSAGES = {
     `¡Hola! Mi pedido N° ${numero} del Plan Personalizado está listo 🎉\nAquí puedes ver mi diseño: ${viewerUrl}`,
 };
 
+// imagen_preview/imagen_muestra son claves relativas al bucket público `assets` (Supabase
+// Storage), no rutas de /public — se resuelven con mediaUrl() (lib/media.ts). Administrables
+// desde /admin/contenido; ver lib/mediaSlots.ts para la lista completa de espacios.
 export const PLANTILLAS: Plantilla[] = [
   {
     id: 'parejas-1',
@@ -33,8 +36,8 @@ export const PLANTILLAS: Plantilla[] = [
     categoria: 'parejas',
     hojas: 10,
     fotos: 39,
-    imagen_preview: '/images/plantillas/parejas-1-preview.jpg',
-    imagen_muestra: '/images/plantillas/parejas-1-muestra.jpg',
+    imagen_preview: 'plantillas/parejas-1-preview.jpg',
+    imagen_muestra: 'plantillas/parejas-1-muestra.jpg',
     imagenes_interiores: [],
   },
   {
@@ -43,8 +46,8 @@ export const PLANTILLAS: Plantilla[] = [
     categoria: 'parejas',
     hojas: 10,
     fotos: 30,
-    imagen_preview: '/images/plantillas/parejas-2-preview.jpg',
-    imagen_muestra: '/images/plantillas/parejas-2-muestra.jpg',
+    imagen_preview: 'plantillas/parejas-2-preview.jpg',
+    imagen_muestra: 'plantillas/parejas-2-muestra.jpg',
     imagenes_interiores: [],
   },
   {
@@ -53,8 +56,8 @@ export const PLANTILLAS: Plantilla[] = [
     categoria: 'cumpleanos',
     hojas: 10,
     fotos: 25,
-    imagen_preview: '/images/plantillas/cumple-1-preview.jpg',
-    imagen_muestra: '/images/plantillas/cumple-1-muestra.jpg',
+    imagen_preview: 'plantillas/cumple-1-preview.jpg',
+    imagen_muestra: 'plantillas/cumple-1-muestra.jpg',
     imagenes_interiores: [],
   },
   {
@@ -63,8 +66,8 @@ export const PLANTILLAS: Plantilla[] = [
     categoria: 'viajes',
     hojas: 10,
     fotos: 35,
-    imagen_preview: '/images/plantillas/viajes-1-preview.jpg',
-    imagen_muestra: '/images/plantillas/viajes-1-muestra.jpg',
+    imagen_preview: 'plantillas/viajes-1-preview.jpg',
+    imagen_muestra: 'plantillas/viajes-1-muestra.jpg',
     imagenes_interiores: [],
   },
 ];
@@ -79,29 +82,30 @@ export const TEXT_STYLE_PRESETS: TextStylePreset[] = [
   { id: 'moderno', nombre: 'Moderno', fontFamily: "'Raleway', Arial, sans-serif", color: '#1a1410' },
 ];
 
+// imagen es una clave relativa al bucket público `assets` — ver comentario de PLANTILLAS arriba.
 export const PORTADAS: Portada[] = [
   {
     id: 'portada-1',
     nombre: 'The Story of Us',
-    imagen: '/images/portadas/portada-1.jpg',
+    imagen: 'portadas/portada-1.jpg',
     categorias: ['parejas'],
   },
   {
     id: 'portada-2',
     nombre: 'I\'m in Love',
-    imagen: '/images/portadas/portada-2.jpg',
+    imagen: 'portadas/portada-2.jpg',
     categorias: ['parejas'],
   },
   {
     id: 'portada-3',
     nombre: 'Aventuras',
-    imagen: '/images/portadas/portada-3.jpg',
+    imagen: 'portadas/portada-3.jpg',
     categorias: ['viajes'],
   },
   {
     id: 'portada-4',
     nombre: 'Feliz Día',
-    imagen: '/images/portadas/portada-4.jpg',
+    imagen: 'portadas/portada-4.jpg',
     categorias: ['cumpleanos'],
   },
 ];

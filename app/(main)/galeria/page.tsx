@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 type Cat = 'todos' | 'parejas' | 'viajes' | 'cumpleanos' | 'familia';
 
@@ -13,24 +14,43 @@ const FILTROS: { id: Cat; label: string }[] = [
 
 const ROTS = [-2, 1.5, -1, 2, -1.5, 1, -2.5, 1.8, -1.2];
 
-const ITEMS = [
-  { cat: 'parejas', h: 300, caption: 'The Story of Us', seed: 'gal-0' },
-  { cat: 'viajes', h: 220, caption: 'Cusco, juntos', seed: 'gal-1' },
-  { cat: 'cumpleanos', h: 260, caption: 'los 30 de Andrea', seed: 'gal-2' },
-  { cat: 'familia', h: 240, caption: 'domingos en casa', seed: 'gal-3' },
-  { cat: 'parejas', h: 250, caption: 'nuestro aniversario', seed: 'gal-4' },
-  { cat: 'viajes', h: 300, caption: 'Máncora 2025', seed: 'gal-5' },
-  { cat: 'familia', h: 220, caption: 'bienvenida, Luna', seed: 'gal-6' },
-  { cat: 'cumpleanos', h: 280, caption: 'quinceañera', seed: 'gal-7' },
-  { cat: 'parejas', h: 230, caption: "I'm in Love", seed: 'gal-8' },
-] as const;
+// Fila de la tabla `galeria` (Supabase) — administrable desde /admin/contenido.
+// `plantilla` guarda la temática (parejas/viajes/cumpleanos/familia) para poder filtrar.
+interface GaleriaRow {
+  id: string;
+  imagen_url: string;
+  descripcion: string | null;
+  plantilla: string | null;
+  orden: number;
+}
 
 export default function GaleriaPage() {
+  const [rows, setRows] = useState<GaleriaRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<Cat>('todos');
   const [sel, setSel] = useState<number | null>(null);
 
-  const items = ITEMS.map((it, i) => ({ ...it, rot: ROTS[i % ROTS.length], idx: i }))
-    .filter(it => filtro === 'todos' || it.cat === filtro);
+  useEffect(() => {
+    let alive = true;
+    const supabase = createClient();
+    supabase
+      .from('galeria')
+      .select('id, imagen_url, descripcion, plantilla, orden')
+      .eq('activo', true)
+      .order('orden')
+      .then(({ data }) => {
+        if (!alive) return;
+        setRows((data ?? []) as GaleriaRow[]);
+        setLoading(false);
+      });
+    return () => { alive = false; };
+  }, []);
+
+  const items = rows
+    .map((r, i) => ({ ...r, rot: ROTS[i % ROTS.length], idx: i }))
+    .filter(it => filtro === 'todos' || it.plantilla === filtro);
+
+  const selected = sel !== null ? items.find(it => it.idx === sel) ?? null : null;
 
   return (
     <main>
@@ -61,23 +81,37 @@ export default function GaleriaPage() {
 
       {/* Masonry */}
       <section style={{ padding: '0 32px 88px' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', columns: 3, columnGap: 22 }} className="galeria-masonry">
-          {items.map(it => (
-            <div key={it.idx} className="galeria-item" onClick={() => setSel(it.idx)} style={{
-              breakInside: 'avoid', marginBottom: 22, background: '#fff', padding: '9px 9px 30px',
-              boxShadow: '0 10px 26px rgba(75,46,26,0.13)', transform: `rotate(${it.rot}deg)`,
-              transition: 'transform 0.25s, box-shadow 0.25s', cursor: 'pointer',
-            }}>
-              <div style={{ width: '100%', height: it.h }}>
-                <img src={`https://picsum.photos/seed/${it.seed}/400/${it.h}`} alt={it.caption}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        {loading ? (
+          <div style={{ maxWidth: 1080, margin: '0 auto', columns: 3, columnGap: 22 }} className="galeria-masonry">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="skeleton" style={{ breakInside: 'avoid', marginBottom: 22, borderRadius: 12, height: 220 + (i % 3) * 40 }} />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--texto-3)', maxWidth: 420, margin: '0 auto' }}>
+            Todavía no hay fotos en la galería. Se agregan desde el panel admin, en Contenido.
+          </p>
+        ) : (
+          <div style={{ maxWidth: 1080, margin: '0 auto', columns: 3, columnGap: 22 }} className="galeria-masonry">
+            {items.map(it => (
+              <div key={it.id} className="galeria-item" onClick={() => setSel(it.idx)} style={{
+                breakInside: 'avoid', marginBottom: 22, background: '#fff', padding: '9px 9px 30px',
+                boxShadow: '0 10px 26px rgba(75,46,26,0.13)', transform: `rotate(${it.rot}deg)`,
+                transition: 'transform 0.25s, box-shadow 0.25s', cursor: 'pointer',
+              }}>
+                <div style={{ width: '100%' }}>
+                  <img src={it.imagen_url} alt={it.descripcion ?? ''}
+                    style={{ width: '100%', height: 'auto', objectFit: 'cover', display: 'block' }} />
+                </div>
+                {it.descripcion && (
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, textAlign: 'center', margin: '10px 0 0', color: 'var(--texto-2)' }}>
+                    {it.descripcion}
+                  </p>
+                )}
               </div>
-              <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, textAlign: 'center', margin: '10px 0 0', color: 'var(--texto-2)' }}>
-                {it.caption}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* CTA */}
@@ -90,7 +124,7 @@ export default function GaleriaPage() {
       </section>
 
       {/* Lightbox */}
-      {sel !== null && (
+      {selected && (
         <div onClick={() => setSel(null)} style={{
           position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,33,28,0.85)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
@@ -103,11 +137,13 @@ export default function GaleriaPage() {
               position: 'absolute', top: 10, right: 14, background: 'none', border: 'none',
               fontSize: 20, color: '#fff', cursor: 'pointer', zIndex: 2, textShadow: '0 1px 4px rgba(0,0,0,0.5)',
             }}>✕</button>
-            <img src={`https://picsum.photos/seed/${ITEMS[sel].seed}/500/${ITEMS[sel].h * 2}`} alt={ITEMS[sel].caption}
+            <img src={selected.imagen_url} alt={selected.descripcion ?? ''}
               style={{ width: '100%', display: 'block' }} />
-            <div style={{ padding: '16px 20px', borderTop: '1px solid var(--borde)' }}>
-              <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--tinta)', margin: 0 }}>{ITEMS[sel].caption}</p>
-            </div>
+            {selected.descripcion && (
+              <div style={{ padding: '16px 20px', borderTop: '1px solid var(--borde)' }}>
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--tinta)', margin: 0 }}>{selected.descripcion}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

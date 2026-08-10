@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { waLink, WA_MESSAGES, PLANTILLAS, PORTADAS } from '@/lib/data';
+import { mediaUrl } from '@/lib/media';
 import { getPlantillaLayout } from '@/lib/plantillas';
 import AlbumPreview, { type AlbumPreviewHandle } from '@/app/components/ui/AlbumPreview';
 import type { Tematica } from '@/types';
@@ -114,7 +115,7 @@ export default function PlantillaDetallePage() {
 
             {/* Muestra con fotos de modelo — referencia de cómo se ve la plantilla ya diligenciada */}
             {plantilla?.imagen_muestra && (
-              <PreviewImageBlock src={plantilla.imagen_muestra} label="ASÍ SE VE CON FOTOS" />
+              <PreviewImageBlock src={mediaUrl(plantilla.imagen_muestra)} label="ASÍ SE VE CON FOTOS" />
             )}
 
             {/* Preview del libro — visor interactivo existente, solo re-envuelto */}
@@ -130,7 +131,7 @@ export default function PlantillaDetallePage() {
 
             {/* Imagen plana de la plantilla completa, sin interacción */}
             {plantilla?.imagen_preview && (
-              <PreviewImageBlock src={plantilla.imagen_preview} label="PLANTILLA COMPLETA" />
+              <PreviewImageBlock src={mediaUrl(plantilla.imagen_preview)} label="PLANTILLA COMPLETA" />
             )}
 
             {/* Miniaturas */}
@@ -171,7 +172,7 @@ export default function PlantillaDetallePage() {
                     background: active ? '#FDF3EC' : '#fff', transition: 'all 0.2s',
                   }}>
                     <div style={{ aspectRatio: '3/4', borderRadius: 10, overflow: 'hidden', background: 'var(--borde)', marginBottom: 10 }}>
-                      <img src={p.imagen} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      <img src={mediaUrl(p.imagen)} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={e => (e.currentTarget.style.display = 'none')} />
                     </div>
                     <p style={{ fontFamily: 'var(--font-hand)', fontSize: 19, textAlign: 'center', margin: 0, color: 'var(--tinta)' }}>{p.nombre}</p>

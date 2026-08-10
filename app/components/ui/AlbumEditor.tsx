@@ -10,6 +10,7 @@ import { submitAlbumOrder } from '@/lib/album/submit';
 import { useAuth } from '@/lib/auth';
 import { useDemo } from '@/lib/demo';
 import { waLink, WA_MESSAGES, PORTADAS, TEXT_STYLE_PRESETS } from '@/lib/data';
+import { mediaUrl } from '@/lib/media';
 import { PLAN_PRICES } from '@/types';
 import { AlbumPageCanvas } from './album/AlbumPageCanvas';
 
@@ -202,7 +203,8 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     setSendError('');
     setSending(true);
     try {
-      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaSel, textStyle);
+      const portadaParaPdf = portadaSel ? { ...portadaSel, imagen: mediaUrl(portadaSel.imagen) } : null;
+      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaParaPdf, textStyle);
       let waMessage = WA_MESSAGES.personalizado(layout.nombre, portadaSel?.nombre ?? 'a definir');
 
       // Solo se intenta registrar en Supabase si hay una sesión REAL (no demo) — usuario.id debe ser un auth.uid() válido.
@@ -283,7 +285,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                       background: active ? '#FDF3EC' : '#fff', cursor: 'pointer', padding: 6, position: 'relative',
                       overflow: 'hidden', transition: 'all 0.2s',
                     }}>
-                      <img src={p.imagen} alt={p.nombre} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
+                      <img src={mediaUrl(p.imagen)} alt={p.nombre} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
                         onError={(e) => (e.currentTarget.style.display = 'none')} />
                       <span style={{ position: 'relative', fontFamily: 'var(--font-hand)', fontSize: 15, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.5)', textAlign: 'center', lineHeight: 1.2, display: 'block' }}>
                         {p.nombre}
@@ -356,7 +358,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', maxWidth: 720 }}>
               <div style={{ width: 48, height: 64, borderRadius: 6, overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.18)', flexShrink: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={portadaSel.imagen} alt={portadaSel.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                <img src={mediaUrl(portadaSel.imagen)} alt={portadaSel.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => (e.currentTarget.style.display = 'none')} />
               </div>
               <p style={{ fontSize: 11.5, color: 'var(--texto-3)', margin: 0 }}>

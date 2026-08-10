@@ -1,8 +1,10 @@
+'use client';
 import { PORTADAS } from '@/lib/data';
+import { mediaUrl } from '@/lib/media';
 
 const rotations = [-2, 2.5, -1.5, 2, -2.5, 1.5];
 
-function Card({ id, nombre, rotate, offset }: { id: string; nombre: string; rotate: number; offset: number }) {
+function Card({ id, nombre, imagen, rotate, offset }: { id: string; nombre: string; imagen: string; rotate: number; offset: number }) {
   return (
     <div style={{
       width: 180, background: '#fff', padding: '8px 8px 14px',
@@ -11,8 +13,9 @@ function Card({ id, nombre, rotate, offset }: { id: string; nombre: string; rota
     }}>
       <div style={{ width: '100%', height: 210 }}>
         <img
-          src={`https://picsum.photos/seed/snap-cover-${id}/300/420`}
+          src={mediaUrl(imagen)}
           alt={nombre}
+          onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = `https://picsum.photos/seed/snap-cover-${id}/300/420`; }}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
       </div>
@@ -40,7 +43,7 @@ export default function CarruselSection() {
         {[0, 1].map(dup => (
           <div key={dup} style={{ display: 'flex', gap: 28 }} aria-hidden={dup === 1}>
             {items.map((p, i) => (
-              <Card key={`${dup}-${p.id}`} id={p.id} nombre={p.nombre} rotate={rotations[i % rotations.length]} offset={i % 3 === 0 ? 14 : 0} />
+              <Card key={`${dup}-${p.id}`} id={p.id} nombre={p.nombre} imagen={p.imagen} rotate={rotations[i % rotations.length]} offset={i % 3 === 0 ? 14 : 0} />
             ))}
           </div>
         ))}

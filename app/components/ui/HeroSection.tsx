@@ -1,9 +1,11 @@
+'use client';
 import Link from 'next/link';
+import { mediaUrl } from '@/lib/media';
 
 const polaroids = [
-  { id: 1, seed: 'snap-hero-1', caption: 'nuestro aniversario', top: 18, left: '8%', right: undefined, w: 240, h: 250, rotate: -7, z: 1 },
-  { id: 2, seed: 'snap-hero-2', caption: 'Cusco 2025', top: 120, left: undefined, right: 0, w: 230, h: 240, rotate: 5, z: 2 },
-  { id: 3, seed: 'snap-hero-3', caption: 'los domingos en casa', top: undefined, left: '22%', right: undefined, w: 190, h: 190, rotate: -2, z: 3 },
+  { id: 1, slot: 'hero/polaroid-1.jpg', seed: 'snap-hero-1', caption: 'nuestro aniversario', top: 18, left: '8%', right: undefined, w: 240, h: 250, rotate: -7, z: 1 },
+  { id: 2, slot: 'hero/polaroid-2.jpg', seed: 'snap-hero-2', caption: 'Cusco 2025', top: 120, left: undefined, right: 0, w: 230, h: 240, rotate: 5, z: 2 },
+  { id: 3, slot: 'hero/polaroid-3.jpg', seed: 'snap-hero-3', caption: 'los domingos en casa', top: undefined, left: '22%', right: undefined, w: 190, h: 190, rotate: -2, z: 3 },
 ];
 
 export default function HeroSection() {
@@ -68,8 +70,9 @@ export default function HeroSection() {
               }} />
               <div style={{ width: '100%', height: p.h }}>
                 <img
-                  src={`https://picsum.photos/seed/${p.seed}/400/${Math.round(400 * p.h / p.w)}`}
+                  src={mediaUrl(p.slot)}
                   alt={p.caption}
+                  onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = `https://picsum.photos/seed/${p.seed}/400/${Math.round(400 * p.h / p.w)}`; }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
               </div>

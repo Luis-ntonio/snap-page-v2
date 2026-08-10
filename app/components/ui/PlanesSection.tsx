@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
 import { waLink, WA_MESSAGES, GOOGLE_CALENDAR, PASOS } from '@/lib/data';
+import { mediaUrl } from '@/lib/media';
 import { renderPdfToImages, type PdfPreviewPage } from '@/lib/pdf/renderPdfPreview';
 import { createClient } from '@/lib/supabase/client';
 import { composeImagesPdf } from '@/lib/album/pdf';
@@ -20,22 +21,22 @@ const BUCKET_TENGO_DISENO = 'disenos-clientes';
 
 const PLANES = [
   {
-    id: 'minimal', nombre: 'Minimal', precio: 'S/ 70', img: '/images/planes/minimal.jpg', dark: false, destacado: false,
+    id: 'minimal', nombre: 'Minimal', precio: 'S/ 70', img: mediaUrl('planes/minimal.jpg'), dark: false, destacado: false,
     bullets: ['Elige el estilo de tu portada.', '1 foto por página — 20 fotos protagonistas.'],
     cta: 'EMPEZAR →',
   },
   {
-    id: 'personalizado', nombre: 'Personalizado', precio: 'S/ 90', img: '/images/planes/personalizado.jpg', dark: false, destacado: true,
+    id: 'personalizado', nombre: 'Personalizado', precio: 'S/ 90', img: mediaUrl('planes/personalizado.jpg'), dark: false, destacado: true,
     bullets: ['Arma tu álbum online con nuestras plantillas.', 'Entre 40 y 60 fotos en 20 páginas.', 'Agrega frases personalizadas.'],
     cta: 'DISEÑAR ONLINE →',
   },
   {
-    id: 'tengo-mi-diseno', nombre: 'Tengo mi diseño', precio: 'S/ 70', img: '/images/planes/tengo-diseno.jpg', dark: false, destacado: false,
+    id: 'tengo-mi-diseno', nombre: 'Tengo mi diseño', precio: 'S/ 70', img: mediaUrl('planes/tengo-diseno.jpg'), dark: false, destacado: false,
     bullets: ['Envíanos tu PDF o link de Canva en A4, 20 páginas.', 'Elige una portada nuestra o manda la tuya.'],
     cta: 'SUBIR MI PDF →',
   },
   {
-    id: 'premium', nombre: 'Premium', precio: 'S/ 120', img: '/images/planes/premium.jpg', dark: true, destacado: false,
+    id: 'premium', nombre: 'Premium', precio: 'S/ 120', img: mediaUrl('planes/premium.jpg'), dark: true, destacado: false,
     bullets: ['Videollamada 1 a 1 con nuestra diseñadora.', 'Sin límite de elementos en tus 20 páginas.'],
     cta: 'AGENDAR VIDEOLLAMADA →',
   },
