@@ -10,7 +10,7 @@ import PasosSection from './PasosSection';
 import { renderPdfToImages, type PdfPreviewPage } from '@/lib/pdf/renderPdfPreview';
 import { createClient } from '@/lib/supabase/client';
 import { composeImagesPdf } from '@/lib/album/pdf';
-import { uploadPdf } from '@/lib/supabase/storage';
+import { uploadFoto, uploadPdf } from '@/lib/supabase/storage';
 import { useAuth } from '@/lib/auth';
 import {
   BASE_PAGE_LIMIT, EXTRA_PAGE_BLOCK, EXTRA_PAGE_PRICE, CANTIDADES_VALIDAS_EJEMPLO,
@@ -86,12 +86,21 @@ export default function PlanesSection() {
     if (!user) { router.push('/login?next=/planes'); return; }
     setMinimalSending(true); setMinimalSendError(false);
     try {
+      const supabase = createClient();
       const pdf = await composeImagesPdf(imgs.map((i) => i.file));
       const pedidoId = crypto.randomUUID();
-      const pdfPath = await uploadPdf(user.id, pedidoId, pdf);
+      const pdfPath = await uploadPdf(user.id, pedidoId, pdf, supabase);
+      // Además del PDF compuesto, se sube cada foto por separado para que "Mis fotos" en Mi
+      // cuenta y la descarga en ZIP funcionen también para el plan Minimal (antes solo se
+      // guardaba el álbum ya compuesto, sin registro de las fotos individuales usadas).
+      const fotos = await Promise.all(imgs.map(async (img, i) => {
+        const ext = img.file.name.split('.').pop() || 'jpg';
+        const storage_path = await uploadFoto(user.id, pedidoId, img.file, `foto-${i + 1}.${ext}`, supabase);
+        return { nombre: img.name, storage_path, orden: i };
+      }));
       const res = await fetch('/api/pedidos', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: pedidoId, plan: 'minimal', pdf_path: pdfPath }),
+        body: JSON.stringify({ id: pedidoId, plan: 'minimal', pdf_path: pdfPath, fotos }),
       });
       if (!res.ok) throw new Error('No se pudo registrar el pedido');
       const { pedido } = await res.json();

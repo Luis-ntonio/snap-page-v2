@@ -33,6 +33,7 @@ export interface Pedido {
   responsable?: string;
   nota_admin?: string;
   canva_link?: string;
+  pdf_path?: string;
   created_at: string;
   updated_at: string;
 }

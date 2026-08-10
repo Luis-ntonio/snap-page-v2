@@ -239,6 +239,11 @@ export default function MiCuentaPage() {
                   </div>
 
                   <div style={{ display: 'flex', gap: 12, marginTop: 22, flexWrap: 'wrap' }}>
+                    {pedido.pdf_path && (
+                      <a href={`/mi-pdf/${pedido.id}`} target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ padding: '10px 20px', fontSize: 11.5 }}>
+                        VER MI ÁLBUM
+                      </a>
+                    )}
                     <a href={waLink(WA_MESSAGES.pedido(pedido.numero))} target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ padding: '10px 20px', fontSize: 11.5 }}>
                       CONSULTAR POR WHATSAPP
                     </a>
