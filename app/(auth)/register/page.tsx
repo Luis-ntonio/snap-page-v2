@@ -1,7 +1,12 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+
+// Lee ?next= desde la URL en el momento de la acción (mismo patrón que login/page.tsx).
+const getNext = (fallback = '/mi-cuenta') =>
+  (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('next')) || fallback;
 
 const inputStyle: React.CSSProperties = {
   width: '100%', boxSizing: 'border-box', border: '1.5px solid var(--borde-2)', borderRadius: 14,
@@ -16,6 +21,7 @@ const focusHandlers = {
 
 export default function RegisterPage() {
   const supabase = createClient();
+  const router = useRouter();
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
@@ -32,15 +38,18 @@ export default function RegisterPage() {
     if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return; }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { nombre, telefono } },
     });
-
-    if (error) setError(error.message);
-    else setSuccess('¡Cuenta creada! Revisa tu correo para confirmar tu cuenta.');
     setLoading(false);
+
+    if (error) { setError(error.message); return; }
+    // Si la confirmación de correo está desactivada en Supabase, signUp() ya deja una sesión
+    // activa (sin correo de por medio) — en ese caso se entra directo, sin pedir que "revise su correo".
+    if (data.session) { router.push(getNext()); return; }
+    setSuccess('¡Cuenta creada! Revisa tu correo para confirmar tu cuenta.');
   };
 
   return (
