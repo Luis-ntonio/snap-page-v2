@@ -29,7 +29,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { error } = await signIn(email, password);
+    // trim: teclados móviles a veces agregan un espacio invisible al final por autocompletar/swipe.
+    const { error } = await signIn(email.trim(), password);
     setLoading(false);
     if (error) { setError(error); return; }
     router.push(getNext());
@@ -55,10 +56,12 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <input type="email" required placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)}
+          autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false}
           style={inputStyle}
           onFocus={e => (e.currentTarget.style.borderColor = 'var(--coral)')}
           onBlur={e => (e.currentTarget.style.borderColor = 'var(--borde-2)')} />
         <input type="password" required placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)}
+          autoComplete="current-password" autoCapitalize="none" autoCorrect="off" spellCheck={false}
           style={inputStyle}
           onFocus={e => (e.currentTarget.style.borderColor = 'var(--coral)')}
           onBlur={e => (e.currentTarget.style.borderColor = 'var(--borde-2)')} />
