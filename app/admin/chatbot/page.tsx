@@ -59,7 +59,7 @@ export default function AdminChatbotPage() {
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="font-semibold text-lg text-[var(--tinta)]" style={{ fontFamily: 'var(--font-display)' }}>Chatbot · Preguntas frecuentes</h2>
+          <h2 className="font-semibold text-lg text-[var(--tinta)]">Chatbot · Preguntas frecuentes</h2>
           <p className="text-sm text-[var(--texto-3)] mt-0.5">Las respuestas del chatbot se editan aquí en tiempo real</p>
         </div>
         <button onClick={startNew} className="btn-primary" style={{ background: 'var(--marron)', padding: '10px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>

@@ -25,14 +25,8 @@ export default function HeroSection() {
         className="hero-grid"
       >
         <div className="anim-fadeUp">
-          <p style={{
-            fontFamily: 'var(--font-hand)', fontSize: 26, color: 'var(--coral)',
-            margin: '0 0 10px', transform: 'rotate(-1.5deg)',
-          }}>
-            hecho a mano, con amor
-          </p>
           <h1 style={{
-            fontFamily: 'var(--font-display)', fontSize: 'clamp(2.6rem,4.6vw,4.2rem)',
+            fontWeight: 800, fontSize: 'clamp(2.6rem,4.6vw,4.2rem)',
             lineHeight: 1.06, margin: '0 0 22px', color: 'var(--tinta)',
           }}>
             Tus recuerdos merecen más que una galería<span style={{ color: 'var(--coral)' }}>.</span>
@@ -76,7 +70,7 @@ export default function HeroSection() {
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
               </div>
-              <p style={{ fontFamily: 'var(--font-hand)', fontSize: 22, textAlign: 'center', margin: '12px 0 0', color: 'var(--texto-2)' }}>
+              <p style={{ fontStyle: 'italic', fontSize: 22, textAlign: 'center', margin: '12px 0 0', color: 'var(--texto-2)' }}>
                 {p.caption}
               </p>
             </div>

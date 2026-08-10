@@ -12,10 +12,10 @@ export default function PlantillasPage() {
     <main style={{ padding: '64px 32px 88px' }}>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 26, color: 'var(--coral)', margin: '0 0 8px', transform: 'rotate(-1deg)' }}>
+          <p style={{ fontStyle: 'italic', fontSize: 26, color: 'var(--coral)', margin: '0 0 8px', transform: 'rotate(-1deg)' }}>
             plan personalizado · S/ 90
           </p>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem,4vw,3.2rem)', margin: '0 0 12px', color: 'var(--tinta)' }}>
+          <h1 style={{ fontWeight: 800, fontSize: 'clamp(2.2rem,4vw,3.2rem)', margin: '0 0 12px', color: 'var(--tinta)' }}>
             Elige tu plantilla
           </h1>
           <p style={{ fontSize: 15, color: 'var(--texto-2)', margin: 0 }}>
@@ -46,10 +46,10 @@ export default function PlantillasPage() {
                   position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
                   alignItems: odd ? 'flex-end' : 'flex-start', justifyContent: 'center', padding: '0 44px',
                 }}>
-                  <span style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--coral-suave)' }}>
+                  <span style={{ fontStyle: 'italic', fontSize: 22, color: 'var(--coral-suave)' }}>
                     {fotos} fotos · {hojas} hojas
                   </span>
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3rem)', color: '#F5F7F6' }}>
+                  <span style={{ fontWeight: 800, fontSize: 'clamp(2rem,4.5vw,3rem)', color: '#F5F7F6' }}>
                     {c.label}
                   </span>
                 </div>

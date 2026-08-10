@@ -21,8 +21,8 @@ export default function DatosYFaqSection({ faq = FAQ_DEFAULT }: { faq?: FaqItem[
       >
         {/* Left */}
         <div>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral)', margin: '0 0 8px' }}>lo que recibes</p>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.7rem,2.6vw,2.2rem)', margin: '0 0 24px', color: 'var(--tinta)' }}>Datos generales</h2>
+          <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--coral)', margin: '0 0 8px' }}>lo que recibes</p>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.7rem,2.6vw,2.2rem)', margin: '0 0 24px', color: 'var(--tinta)' }}>Datos generales</h2>
           <div style={{ borderRadius: 20, overflow: 'hidden', height: 220, marginBottom: 26, boxShadow: '0 14px 34px rgba(75,46,26,0.16)' }}>
             <img
               src={mediaUrl('datos-generales/foto.jpg')}
@@ -46,8 +46,8 @@ export default function DatosYFaqSection({ faq = FAQ_DEFAULT }: { faq?: FaqItem[
 
         {/* Right */}
         <div>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral)', margin: '0 0 8px' }}>resolvemos tus dudas</p>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.7rem,2.6vw,2.2rem)', margin: '0 0 24px', color: 'var(--tinta)' }}>Preguntas frecuentes</h2>
+          <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--coral)', margin: '0 0 8px' }}>resolvemos tus dudas</p>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.7rem,2.6vw,2.2rem)', margin: '0 0 24px', color: 'var(--tinta)' }}>Preguntas frecuentes</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {faq.map((q, i) => (
               <details key={q.id} open={i === 0} style={{

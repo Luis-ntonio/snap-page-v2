@@ -19,7 +19,7 @@ function Card({ id, nombre, imagen, rotate, offset }: { id: string; nombre: stri
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
       </div>
-      <p style={{ fontFamily: 'var(--font-hand)', fontSize: 19, textAlign: 'center', margin: '8px 0 0', color: 'var(--texto-2)' }}>
+      <p style={{ fontStyle: 'italic', fontSize: 19, textAlign: 'center', margin: '8px 0 0', color: 'var(--texto-2)' }}>
         {nombre}
       </p>
     </div>
@@ -34,7 +34,7 @@ export default function CarruselSection() {
       padding: '40px 0', overflow: 'hidden',
     }}>
       <p style={{
-        fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--crema)',
+        fontStyle: 'italic', fontSize: 24, color: 'var(--crema)',
         textAlign: 'center', margin: '0 0 24px', transform: 'rotate(-1deg)',
       }}>
         photobooks que ya son parte de una historia

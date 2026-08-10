@@ -140,7 +140,7 @@ function RealFotos() {
         <div className="py-10 text-center text-sm text-[var(--texto-3)]">Aún no hay pedidos con fotos.</div>
       ) : !cliente ? (
         <div>
-          <h2 className="font-semibold text-lg text-[var(--tinta)] mb-5" style={{ fontFamily: 'var(--font-display)' }}>Fotos por cliente</h2>
+          <h2 className="font-semibold text-lg text-[var(--tinta)] mb-5">Fotos por cliente</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {clientes.map((c) => (
               <button key={c.usuarioId} onClick={() => setCliente(c)}

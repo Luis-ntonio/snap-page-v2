@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
         <span style={{ color: 'var(--coral)', fontSize: 19 }}>✳</span>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, color: 'var(--tinta)' }}>Page</span>
       </Link>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, textAlign: 'center', margin: '0 0 8px', color: 'var(--tinta)' }}>Recuperar contraseña</h2>
+      <h2 style={{ fontWeight: 800, fontSize: 26, textAlign: 'center', margin: '0 0 8px', color: 'var(--tinta)' }}>Recuperar contraseña</h2>
       <p style={{ fontSize: 13.5, color: 'var(--texto-3)', textAlign: 'center', margin: '0 0 30px' }}>Te enviamos un enlace a tu correo</p>
 
       {error && <p style={{ fontSize: 12, color: '#c0392b', textAlign: 'center', margin: '0 0 16px', background: '#FBEAEA', padding: '8px 12px', borderRadius: 10 }}>{error}</p>}

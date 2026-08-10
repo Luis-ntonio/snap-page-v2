@@ -113,8 +113,8 @@ export default function AdminPedidosPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 26, flexWrap: 'wrap' }}>
         <div>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 21, color: 'var(--coral)', margin: 0 }}>lote actual</p>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, margin: 0, color: 'var(--tinta)' }}>{lote ?? 'Lote actual'}</h1>
+          <p style={{ fontStyle: 'italic', fontSize: 21, color: 'var(--coral)', margin: 0 }}>lote actual</p>
+          <h1 style={{ fontWeight: 800, fontSize: 26, margin: 0, color: 'var(--tinta)' }}>{lote ?? 'Lote actual'}</h1>
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
           <input placeholder="Buscar pedido o cliente…" value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{
@@ -172,7 +172,7 @@ export default function AdminPedidosPage() {
           </div>
           {visibles.map((row, i) => (
             <div key={row.id} className="admin-tabla-row admin-tabla-body-row" style={{ borderTop: '1px solid #F3EBE0' }}>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: 'var(--marron)' }}>{row.numero}</span>
+              <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--marron)' }}>{row.numero}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                 <div style={{
                   width: 30, height: 30, borderRadius: '50%', background: AVATARES[i % AVATARES.length], flexShrink: 0,
@@ -216,13 +216,13 @@ export default function AdminPedidosPage() {
             </div>
           ))}
           {visibles.length === 0 && (
-            <p style={{ textAlign: 'center', padding: 36, fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--texto-3)', margin: 0 }}>
+            <p style={{ textAlign: 'center', padding: 36, fontStyle: 'italic', fontSize: 22, color: 'var(--texto-3)', margin: 0 }}>
               no hay pedidos en este estado
             </p>
           )}
         </div>
       )}
-      <p style={{ fontFamily: 'var(--font-hand)', fontSize: 19, color: 'var(--texto-3)', margin: '16px 0 0', textAlign: 'center' }}>
+      <p style={{ fontStyle: 'italic', fontSize: 19, color: 'var(--texto-3)', margin: '16px 0 0', textAlign: 'center' }}>
         cambia el estado de un pedido directo desde la tabla — el cliente lo ve al instante en su cuenta
       </p>
 
@@ -243,7 +243,7 @@ function StatCard({ label, valor, sub, color }: { label: string; valor: string; 
     <div style={{ background: '#fff', border: '1px solid var(--borde)', borderRadius: 16, padding: '20px 22px' }}>
       <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.14em', color: 'var(--texto-3)', margin: '0 0 8px' }}>{label}</p>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 30, color, whiteSpace: 'nowrap' }}>{valor}</span>
+        <span style={{ fontWeight: 800, fontSize: 30, color, whiteSpace: 'nowrap' }}>{valor}</span>
         <span style={{ fontSize: 12, color: 'var(--texto-3)' }}>{sub}</span>
       </div>
     </div>

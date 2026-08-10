@@ -10,10 +10,10 @@ export default function ComoEnviarSection() {
         className="como-enviar-grid"
       >
         <div>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral)', margin: '0 0 8px' }}>
+          <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--coral)', margin: '0 0 8px' }}>
             te lo mostramos en video
           </p>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,2.8vw,2.4rem)', lineHeight: 1.2, margin: '0 0 18px', color: 'var(--tinta)' }}>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.8rem,2.8vw,2.4rem)', lineHeight: 1.2, margin: '0 0 18px', color: 'var(--tinta)' }}>
             ¿Cómo enviar tus fotos?
           </h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--texto-2)', margin: '0 0 24px' }}>

@@ -32,7 +32,7 @@ export default function AdminContenidoPage() {
   if (!user) {
     return (
       <div className="max-w-2xl">
-        <h2 className="font-semibold text-lg text-[var(--tinta)]" style={{ fontFamily: 'var(--font-display)' }}>Contenido</h2>
+        <h2 className="font-semibold text-lg text-[var(--tinta)]">Contenido</h2>
         <p className="text-sm text-[var(--texto-3)] mt-3 bg-white border border-[var(--borde)] rounded-2xl p-4">
           Esta sección requiere una sesión real de Supabase (no el modo demo). Inicia sesión con tu
           cuenta admin para poder subir o reemplazar imágenes y video.
@@ -44,7 +44,7 @@ export default function AdminContenidoPage() {
   return (
     <div className="max-w-3xl space-y-10">
       <div>
-        <h2 className="font-semibold text-lg text-[var(--tinta)]" style={{ fontFamily: 'var(--font-display)' }}>Contenido</h2>
+        <h2 className="font-semibold text-lg text-[var(--tinta)]">Contenido</h2>
         <p className="text-sm text-[var(--texto-3)] mt-0.5">Imágenes y video que se ven en el sitio — se reemplazan aquí, sin tocar código.</p>
       </div>
       <RecursosFijos />

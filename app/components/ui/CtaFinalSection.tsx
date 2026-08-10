@@ -9,12 +9,12 @@ export default function CtaFinalSection() {
       }} />
       <div style={{ maxWidth: 560, margin: '0 auto', position: 'relative' }}>
         <p style={{
-          fontFamily: 'var(--font-hand)', fontSize: 26, color: 'var(--coral)',
+          fontStyle: 'italic', fontSize: 26, color: 'var(--coral)',
           margin: '0 0 10px', transform: 'rotate(-1.5deg)',
         }}>
           tu historia ya está lista para imprimirse
         </p>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,3.4vw,2.9rem)', lineHeight: 1.15, margin: '0 0 30px', color: 'var(--tinta)' }}>
+        <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,3.4vw,2.9rem)', lineHeight: 1.15, margin: '0 0 30px', color: 'var(--tinta)' }}>
           Empieza tu photobook hoy.
         </h2>
         <Link href="/planes" className="btn-primary" style={{ background: 'var(--marron)', padding: '17px 40px', boxShadow: '0 10px 28px rgba(126,69,27,0.3)' }}>

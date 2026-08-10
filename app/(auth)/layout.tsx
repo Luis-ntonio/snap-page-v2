@@ -9,10 +9,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div style={{ position: 'absolute', top: -60, right: -60, width: 280, height: 280, borderRadius: '50%', background: 'rgba(245,247,246,0.06)' }} />
         <div className="auth-visual-extra" style={{ position: 'absolute', bottom: 40, left: 44, fontSize: 30, color: 'rgba(232,121,90,0.5)' }}>✳</div>
         <div style={{ position: 'relative', maxWidth: 400 }}>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 26, color: 'var(--coral-suave)', margin: '0 0 12px', transform: 'rotate(-1.5deg)' }}>
+          <p style={{ fontStyle: 'italic', fontSize: 26, color: 'var(--coral-suave)', margin: '0 0 12px', transform: 'rotate(-1.5deg)' }}>
             bienvenido de vuelta
           </p>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,3.4vw,2.9rem)', lineHeight: 1.15, color: 'var(--crema)', margin: '0 0 20px' }}>
+          <h1 style={{ fontWeight: 800, fontSize: 'clamp(2rem,3.4vw,2.9rem)', lineHeight: 1.15, color: 'var(--crema)', margin: '0 0 20px' }}>
             Tus recuerdos te estaban esperando.
           </h1>
           <p className="auth-visual-extra" style={{ fontSize: 14.5, lineHeight: 1.7, color: 'rgba(245,247,246,0.75)', margin: '0 0 36px' }}>
@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div style={{ width: '100%', height: 220 }}>
               <img src="https://picsum.photos/seed/snap-login/300/300" alt="Tu foto favorita" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
-            <p style={{ fontFamily: 'var(--font-hand)', fontSize: 21, textAlign: 'center', margin: '10px 0 0', color: 'var(--texto-2)' }}>
+            <p style={{ fontStyle: 'italic', fontSize: 21, textAlign: 'center', margin: '10px 0 0', color: 'var(--texto-2)' }}>
               tu próxima historia
             </p>
           </div>

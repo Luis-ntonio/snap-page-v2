@@ -70,8 +70,8 @@ export default function PlantillaDetallePage() {
         </button>
 
         <div style={{ textAlign: 'center', marginBottom: 30 }}>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral)', margin: '0 0 6px' }}>plantilla</p>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem,4vw,3.2rem)', margin: 0, color: 'var(--tinta)' }}>{label}</h1>
+          <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--coral)', margin: '0 0 6px' }}>plantilla</p>
+          <h1 style={{ fontWeight: 800, fontSize: 'clamp(2.2rem,4vw,3.2rem)', margin: 0, color: 'var(--tinta)' }}>{label}</h1>
         </div>
 
         {/* Tabs */}
@@ -96,11 +96,11 @@ export default function PlantillaDetallePage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 36, marginBottom: 32, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 44, lineHeight: 1, color: 'var(--marron)' }}>{hojas}</span>
+                <span style={{ fontWeight: 800, fontSize: 44, lineHeight: 1, color: 'var(--marron)' }}>{hojas}</span>
                 <span style={{ fontSize: 13.5, color: 'var(--texto-2)' }}>hojas</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 44, lineHeight: 1, color: 'var(--marron)' }}>{fotos}</span>
+                <span style={{ fontWeight: 800, fontSize: 44, lineHeight: 1, color: 'var(--marron)' }}>{fotos}</span>
                 <span style={{ fontSize: 13.5, color: 'var(--texto-2)' }}>fotos</span>
               </div>
               <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -146,7 +146,7 @@ export default function PlantillaDetallePage() {
                       aspectRatio: '210/148', background: '#fff', border: '1px solid var(--borde)', borderRadius: 8,
                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer',
                     }}>
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--marron)' }}>{i + 1}</span>
+                      <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--marron)' }}>{i + 1}</span>
                       <span style={{ fontSize: 10, color: 'var(--texto-3)' }}>{pg.slots.length} fotos</span>
                     </div>
                   ))}
@@ -175,7 +175,7 @@ export default function PlantillaDetallePage() {
                       <img src={mediaUrl(p.imagen)} alt={p.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={e => (e.currentTarget.style.display = 'none')} />
                     </div>
-                    <p style={{ fontFamily: 'var(--font-hand)', fontSize: 19, textAlign: 'center', margin: 0, color: 'var(--tinta)' }}>{p.nombre}</p>
+                    <p style={{ fontStyle: 'italic', fontSize: 19, textAlign: 'center', margin: 0, color: 'var(--tinta)' }}>{p.nombre}</p>
                   </div>
                 );
               })}

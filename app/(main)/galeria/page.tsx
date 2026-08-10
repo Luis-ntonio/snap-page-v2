@@ -55,10 +55,10 @@ export default function GaleriaPage() {
   return (
     <main>
       <section style={{ padding: '64px 32px 36px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-hand)', fontSize: 26, color: 'var(--coral)', margin: '0 0 8px', transform: 'rotate(-1deg)' }}>
+        <p style={{ fontStyle: 'italic', fontSize: 26, color: 'var(--coral)', margin: '0 0 8px', transform: 'rotate(-1deg)' }}>
           historias que ya viven en papel
         </p>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem,4vw,3.2rem)', margin: '0 0 12px', color: 'var(--tinta)' }}>Galería</h1>
+        <h1 style={{ fontWeight: 800, fontSize: 'clamp(2.2rem,4vw,3.2rem)', margin: '0 0 12px', color: 'var(--tinta)' }}>Galería</h1>
         <p style={{ fontSize: 15, color: 'var(--texto-2)', margin: 0 }}>Photobooks reales, hechos para clientes reales.</p>
       </section>
 
@@ -104,7 +104,7 @@ export default function GaleriaPage() {
                     style={{ width: '100%', height: 'auto', objectFit: 'cover', display: 'block' }} />
                 </div>
                 {it.descripcion && (
-                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, textAlign: 'center', margin: '10px 0 0', color: 'var(--texto-2)' }}>
+                  <p style={{ fontStyle: 'italic', fontSize: 20, textAlign: 'center', margin: '10px 0 0', color: 'var(--texto-2)' }}>
                     {it.descripcion}
                   </p>
                 )}
@@ -116,8 +116,8 @@ export default function GaleriaPage() {
 
       {/* CTA */}
       <section style={{ background: '#FFFFFF', padding: '56px 32px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>el siguiente puede ser el tuyo</p>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,2.6vw,2.1rem)', margin: '0 0 22px', color: 'var(--tinta)' }}>Empieza tu photobook hoy</h2>
+        <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>el siguiente puede ser el tuyo</p>
+        <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.6rem,2.6vw,2.1rem)', margin: '0 0 22px', color: 'var(--tinta)' }}>Empieza tu photobook hoy</h2>
         <a href="/planes" className="btn-primary" style={{ background: 'var(--coral)', padding: '15px 32px', boxShadow: '0 8px 22px rgba(232,121,90,0.32)' }}>
           VER PLANES
         </a>
@@ -141,7 +141,7 @@ export default function GaleriaPage() {
               style={{ width: '100%', display: 'block' }} />
             {selected.descripcion && (
               <div style={{ padding: '16px 20px', borderTop: '1px solid var(--borde)' }}>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--tinta)', margin: 0 }}>{selected.descripcion}</p>
+                <p style={{ fontStyle: 'italic', fontSize: 20, color: 'var(--tinta)', margin: 0 }}>{selected.descripcion}</p>
               </div>
             )}
           </div>

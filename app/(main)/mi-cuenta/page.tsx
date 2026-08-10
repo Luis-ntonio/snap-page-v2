@@ -160,8 +160,8 @@ export default function MiCuentaPage() {
       <div style={{ maxWidth: 980, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 30, flexWrap: 'wrap' }}>
           <div>
-            <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral)', margin: '0 0 6px' }}>tu espacio</p>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.9rem,3vw,2.6rem)', margin: 0, color: 'var(--tinta)' }}>Mi cuenta</h1>
+            <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--coral)', margin: '0 0 6px' }}>tu espacio</p>
+            <h1 style={{ fontWeight: 800, fontSize: 'clamp(1.9rem,3vw,2.6rem)', margin: 0, color: 'var(--tinta)' }}>Mi cuenta</h1>
           </div>
           <button onClick={handleLogout} className="btn-outline" style={{ padding: '9px 18px', fontSize: 12 }}>SALIR</button>
         </div>
@@ -199,11 +199,11 @@ export default function MiCuentaPage() {
               return (
                 <div key={pedido.id} style={{ background: '#fff', border: '1px solid var(--borde)', borderRadius: 20, padding: '26px 30px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 19, color: 'var(--marron)' }}>{pedido.numero}</span>
+                    <span style={{ fontWeight: 800, fontSize: 19, color: 'var(--marron)' }}>{pedido.numero}</span>
                     <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--texto-2)', background: 'var(--crema-2)', borderRadius: 999, padding: '6px 14px' }}>
                       {PLAN_LABELS[pedido.plan]}{tematicaLabel ? ` · ${tematicaLabel}` : ''}
                     </span>
-                    <span style={{ fontFamily: 'var(--font-hand)', fontSize: 19, color: 'var(--texto-3)' }}>
+                    <span style={{ fontStyle: 'italic', fontSize: 19, color: 'var(--texto-3)' }}>
                       {new Date(pedido.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                     <span style={{ marginLeft: 'auto', fontWeight: 800, fontSize: 15, color: 'var(--tinta)' }}>S/ {pedido.precio}</span>
@@ -256,7 +256,7 @@ export default function MiCuentaPage() {
               border: '2px dashed var(--borde-2)', borderRadius: 20, padding: 30, textAlign: 'center',
               textDecoration: 'none', transition: 'border-color 0.2s, background 0.2s',
             }}>
-              <span style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral)' }}>+ empezar un nuevo photobook</span>
+              <span style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--coral)' }}>+ empezar un nuevo photobook</span>
             </a>
           </div>
         )}
@@ -270,7 +270,7 @@ export default function MiCuentaPage() {
         {/* ─── DATOS ─── */}
         {tab === 'datos' && (
           <div style={{ background: '#fff', border: '1px solid var(--borde)', borderRadius: 20, padding: 34, maxWidth: 460 }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: '0 0 22px', color: 'var(--tinta)' }}>Mis datos</h3>
+            <h3 style={{ fontWeight: 800, fontSize: 18, margin: '0 0 22px', color: 'var(--tinta)' }}>Mis datos</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <Field label="NOMBRE" value={editNombre} onChange={setEditNombre} />
               <Field label="TELÉFONO" value={editTel} onChange={setEditTel} />
@@ -351,7 +351,7 @@ function FotosDriveTab({ pedidos, fotosMap, loading, onAdd, onDelete, onRename, 
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22, flexWrap: 'wrap' }}>
         <div>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: '0 0 4px', color: 'var(--tinta)' }}>Fotos del pedido {selected.numero}</h3>
+          <h3 style={{ fontWeight: 800, fontSize: 18, margin: '0 0 4px', color: 'var(--tinta)' }}>Fotos del pedido {selected.numero}</h3>
           <p style={{ fontSize: 12.5, color: 'var(--texto-3)', margin: 0 }}>{fotos.length} fotos subidas · se enumeran solas en el orden que las subes</p>
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>

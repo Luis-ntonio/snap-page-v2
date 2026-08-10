@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
-import { waLink, WA_MESSAGES, GOOGLE_CALENDAR, PASOS } from '@/lib/data';
+import { waLink, WA_MESSAGES, GOOGLE_CALENDAR } from '@/lib/data';
 import { mediaUrl } from '@/lib/media';
+import PasosSection from './PasosSection';
 import { renderPdfToImages, type PdfPreviewPage } from '@/lib/pdf/renderPdfPreview';
 import { createClient } from '@/lib/supabase/client';
 import { composeImagesPdf } from '@/lib/album/pdf';
@@ -228,7 +229,7 @@ export default function PlanesSection() {
                   <div><img src={plan.img} alt={plan.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e=>(e.currentTarget.style.background = plan.dark ? '#3a2f28' : 'var(--crema-2)')} /></div>
                   <div style={{ padding: '26px 26px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
-                      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, margin: 0, color: plan.dark ? '#F6E3D5' : 'var(--marron)' }}>{plan.nombre}</h2>
+                      <h2 style={{ fontWeight: 800, fontSize: 22, margin: 0, color: plan.dark ? '#F6E3D5' : 'var(--marron)' }}>{plan.nombre}</h2>
                       <span style={{ fontWeight: 800, fontSize: 17, whiteSpace: 'nowrap', color: plan.dark ? '#F5F7F6' : 'var(--tinta)' }}>{plan.precio}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
@@ -292,12 +293,12 @@ export default function PlanesSection() {
         </div>
       </section>
 
-      <Pasos />
+      <PasosSection />
 
       {/* Ayuda */}
       <section style={{ background: '#FFFFFF', padding: '56px 32px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>¿no sabes cuál elegir?</p>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,2.6vw,2.1rem)', margin: '0 0 22px', color: 'var(--tinta)' }}>Cuéntanos tu idea y te guiamos</h2>
+        <p style={{ fontStyle: 'italic', fontSize: 24, color: 'var(--marron)', margin: '0 0 8px' }}>¿no sabes cuál elegir?</p>
+        <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.6rem,2.6vw,2.1rem)', margin: '0 0 22px', color: 'var(--tinta)' }}>Cuéntanos tu idea y te guiamos</h2>
         <a href={waLink(WA_MESSAGES.general)} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ background: 'var(--marron)', padding: '15px 32px' }}>
           ESCRÍBENOS POR WHATSAPP
         </a>
@@ -330,7 +331,7 @@ export default function PlanesSection() {
             <input ref={imgRef} type="file" multiple accept="image/*" style={{display:'none'}}
               onChange={e=>addImgs(e.target.files)} />
           </div>
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 19, color: 'var(--texto-3)', margin: '18px 0 0' }}>
+          <p style={{ fontStyle: 'italic', fontSize: 19, color: 'var(--texto-3)', margin: '18px 0 0' }}>
             la primera foto será tu portada y la última la contraportada
           </p>
         </Overlay>
@@ -340,7 +341,7 @@ export default function PlanesSection() {
       {modal==='minimal-viewer' && (
         <Full onBack={()=>setModal('minimal-drop')} onClose={close}>
           <div style={{ maxWidth:380, margin:'0 auto', padding:'32px 20px' }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', color:'var(--marron)', fontSize:'2rem', textAlign:'center', marginBottom:28 }}>Minimal</h1>
+            <h1 style={{ fontWeight: 800, color:'var(--marron)', fontSize:'2rem', textAlign:'center', marginBottom:28 }}>Minimal</h1>
 
             {/* Thumbnails — arrastra para reordenar, × para eliminar */}
             <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4, marginBottom:4 }}>
@@ -410,7 +411,7 @@ export default function PlanesSection() {
               </p>
             )}
 
-            <p style={{ fontFamily:'var(--font-display)', fontSize:18, color:'var(--marron)', textAlign:'center', margin:'0 0 16px' }}>
+            <p style={{ fontWeight:700, fontSize:18, color:'var(--marron)', textAlign:'center', margin:'0 0 16px' }}>
               Precio total: {formatSoles(precioMinimal.total)}
               {precioMinimal.extra > 0 && (
                 <span style={{ fontSize:11.5, fontWeight:400, color:'var(--texto-3)', display:'block', marginTop:2 }}>
@@ -449,7 +450,7 @@ export default function PlanesSection() {
       {modal==='tengo-viewer' && pdfUrl && (
         <Full onBack={()=>setModal('tengo-choose')} onClose={close}>
           <div style={{ maxWidth:900, margin:'0 auto', padding:'32px 20px' }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', color:'var(--marron)', fontSize:'1.8rem', textAlign:'center', marginBottom:16 }}>Tengo mi diseño</h1>
+            <h1 style={{ fontWeight: 800, color:'var(--marron)', fontSize:'1.8rem', textAlign:'center', marginBottom:16 }}>Tengo mi diseño</h1>
             <p style={{ fontSize:11, color:'var(--texto-3)', textAlign:'center', marginBottom:6 }}>{pdfName}</p>
             <p style={{ fontSize:11.5, color:'var(--texto-3)', textAlign:'center', margin:'0 0 12px' }}>
               La primera página de tu PDF será tu portada y la última tu contraportada.
@@ -493,7 +494,7 @@ export default function PlanesSection() {
                     (ej: {CANTIDADES_VALIDAS_EJEMPLO.join(', ')}…). Tu PDF tiene {totalPaginasTengo} página{totalPaginasTengo===1?'':'s'}.
                   </p>
                 )}
-                <p style={{ fontFamily:'var(--font-display)', fontSize:18, color:'var(--marron)', textAlign:'center', margin:'0 0 16px' }}>
+                <p style={{ fontWeight:700, fontSize:18, color:'var(--marron)', textAlign:'center', margin:'0 0 16px' }}>
                   Precio total: {formatSoles(precioTengo.total)}
                   {precioTengo.extra > 0 && (
                     <span style={{ fontSize:11.5, fontWeight:400, color:'var(--texto-3)', display:'block', marginTop:2 }}>
@@ -526,45 +527,12 @@ export default function PlanesSection() {
           .planes-card { grid-template-columns: 1fr !important; }
           .planes-card > div:first-child { height: 160px; }
         }
-        @media (max-width: 900px) { .planes-pasos-grid { grid-template-columns: repeat(2,1fr) !important; } }
-        @media (max-width: 640px) { .planes-pasos-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </>
   );
 }
 
 /* ── Primitives ── */
-function Pasos() {
-  return (
-    <section style={{ background: 'var(--marron)', padding: '80px 32px', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: -40, left: -40, fontSize: 120, color: 'rgba(245,247,246,0.06)', fontFamily: 'var(--font-display)' }}>✳</div>
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <p style={{ fontFamily: 'var(--font-hand)', fontSize: 24, color: 'var(--coral-suave)', textAlign: 'center', margin: '0 0 8px' }}>
-          sin complicaciones
-        </p>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.9rem,3vw,2.5rem)', color: 'var(--crema)', textAlign: 'center', margin: '0 0 56px' }}>
-          Así de sencillo
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 36 }} className="planes-pasos-grid">
-          {PASOS.map(p => (
-            <div key={p.numero} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-hand)', fontSize: 52, color: 'var(--coral)', lineHeight: 1 }}>
-                {p.numero.replace('.', '')}
-              </div>
-              <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--crema)', margin: '12px 0 8px', letterSpacing: '0.04em' }}>
-                {p.titulo}
-              </h3>
-              <p style={{ fontSize: 13, lineHeight: 1.65, color: 'rgba(245,247,246,0.72)', margin: 0 }}>
-                {p.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function PdfFlipBook({ pages }: { pages: PdfPreviewPage[] }) {
   const [pageIdx, setPageIdx] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -683,8 +651,8 @@ function Overlay({ kicker, title, desc, onClose, children, maxWidth = 420 }: {
         onClick={e=>e.stopPropagation()}>
         <button onClick={onClose} style={{ position:'absolute',top:16,right:20,background:'none',border:'none',
           fontSize:20,color:'var(--texto-3)',cursor:'pointer',lineHeight:1 }}>✕</button>
-        {kicker && <p style={{ fontFamily:'var(--font-hand)', fontSize:22, color:'var(--coral)', margin:'0 0 4px' }}>{kicker}</p>}
-        <h3 style={{ fontFamily:'var(--font-display)', fontSize:26, margin:'0 0 10px', color:'var(--tinta)' }}>{title}</h3>
+        {kicker && <p style={{ fontStyle:'italic', fontSize:22, color:'var(--coral)', margin:'0 0 4px' }}>{kicker}</p>}
+        <h3 style={{ fontWeight:800, fontSize:26, margin:'0 0 10px', color:'var(--tinta)' }}>{title}</h3>
         {desc && <p style={{ fontSize:13.5, color:'var(--texto-2)', lineHeight:1.6, margin:'0 0 26px' }}>{desc}</p>}
         <div style={{ display:'flex',flexDirection:'column',gap:12 }}>{children}</div>
       </div>

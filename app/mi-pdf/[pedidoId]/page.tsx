@@ -23,7 +23,7 @@ export default function MiPdfPage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--crema-2)', padding: '48px 20px 72px' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', textAlign: 'center', color: 'var(--marron)', fontSize: '2rem', margin: '0 0 8px' }}>
+        <h1 style={{ fontWeight: 800, textAlign: 'center', color: 'var(--marron)', fontSize: '2rem', margin: '0 0 8px' }}>
           Tu álbum
         </h1>
         <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--texto-3)', margin: '0 0 32px' }}>

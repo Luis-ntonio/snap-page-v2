@@ -245,7 +245,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
           </button>
           <div style={{ width: 1, height: 22, background: 'var(--borde)' }} />
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, whiteSpace: 'nowrap' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 17, color: 'var(--marron)' }}>{layout.nombre}</span>
+            <span style={{ fontWeight: 800, fontSize: 17, color: 'var(--marron)' }}>{layout.nombre}</span>
             <span style={{ fontSize: 11.5, color: 'var(--texto-3)' }}>plan personalizado · {PLAN_PRICES.personalizado}</span>
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -287,7 +287,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                     }}>
                       <img src={mediaUrl(p.imagen)} alt={p.nombre} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
                         onError={(e) => (e.currentTarget.style.display = 'none')} />
-                      <span style={{ position: 'relative', fontFamily: 'var(--font-hand)', fontSize: 15, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.5)', textAlign: 'center', lineHeight: 1.2, display: 'block' }}>
+                      <span style={{ position: 'relative', fontStyle: 'italic', fontSize: 15, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.5)', textAlign: 'center', lineHeight: 1.2, display: 'block' }}>
                         {p.nombre}
                       </span>
                     </button>
@@ -315,7 +315,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
           </div>
 
           <div className="editor-tip-card" style={{ background: 'var(--crema)', borderRadius: 14, padding: 16 }}>
-            <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--coral)', margin: '0 0 6px' }}>tip</p>
+            <p style={{ fontStyle: 'italic', fontSize: 20, color: 'var(--coral)', margin: '0 0 6px' }}>tip</p>
             <p style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--texto-2)', margin: 0 }}>
               {reorderMode
                 ? (selectedSlot !== null
@@ -496,7 +496,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
             </div>
           </div>
 
-          <p style={{ fontFamily: 'var(--font-hand)', fontSize: 20, color: 'var(--texto-3)', margin: 0, textAlign: 'center' }}>
+          <p style={{ fontStyle: 'italic', fontSize: 20, color: 'var(--texto-3)', margin: 0, textAlign: 'center' }}>
             la página gira con una animación de volteo, como un libro real
           </p>
 

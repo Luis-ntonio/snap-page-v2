@@ -54,7 +54,7 @@ export default function ResetPasswordPage() {
         <span style={{ color: 'var(--coral)', fontSize: 19 }}>✳</span>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, color: 'var(--tinta)' }}>Page</span>
       </Link>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, textAlign: 'center', margin: '0 0 8px', color: 'var(--tinta)' }}>Nueva contraseña</h2>
+      <h2 style={{ fontWeight: 800, fontSize: 26, textAlign: 'center', margin: '0 0 8px', color: 'var(--tinta)' }}>Nueva contraseña</h2>
 
       {checking ? (
         <p style={{ fontSize: 13.5, color: 'var(--texto-3)', textAlign: 'center', margin: '30px 0' }}>Verificando enlace...</p>

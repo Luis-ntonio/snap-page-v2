@@ -9,10 +9,10 @@ export default function PlanesPage() {
   return (
     <main>
       <section style={{ padding: '64px 32px 48px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-hand)', fontSize: 26, color: 'var(--coral)', margin: '0 0 8px', transform: 'rotate(-1deg)' }}>
+        <p style={{ fontStyle: 'italic', fontSize: 26, color: 'var(--coral)', margin: '0 0 8px', transform: 'rotate(-1deg)' }}>
           cuatro formas de contar tu historia
         </p>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem,4vw,3.4rem)', margin: '0 0 14px', color: 'var(--tinta)' }}>
+        <h1 style={{ fontWeight: 800, fontSize: 'clamp(2.2rem,4vw,3.4rem)', margin: '0 0 14px', color: 'var(--tinta)' }}>
           Elige tu plan
         </h1>
         <p style={{ fontSize: 15.5, color: 'var(--texto-2)', margin: 0 }}>
