@@ -61,7 +61,7 @@ export const viajes: PlantillaLayout = {
         { n: 7, x: 0.58, y: 0.15, w: 0.4, h: 0.2, shape: 'camera' },
       ],
       texts: [
-        { key: 'texto-3', x: 0.08, y: 0.0, w: 0.6, h: 0.06, preset: 'Julio 2024', align: 'left', italic: true, size: 0.022, color: '#999' },
+        { key: 'texto-3', x: 0.08, y: 0.0, w: 0.6, h: 0.06, preset: 'Julio 2024', editable: true, align: 'left', italic: true, size: 0.022, color: '#999' },
       ],
     },
     // ── P6: "verano con gelato" + foto grande (12) — empareja con P7 ──
@@ -69,7 +69,7 @@ export const viajes: PlantillaLayout = {
       bg: '#8fb7c9',
       slots: [{ n: 12, x: 0.06, y: 0.1, w: 0.88, h: 0.82 }],
       texts: [
-        { key: 'texto-4', x: 0.06, y: 0.02, w: 0.88, h: 0.08, preset: 'verano con gelato', align: 'left', italic: true, weight: 700, size: 0.036, color: '#fff' },
+        { key: 'texto-4', x: 0.06, y: 0.02, w: 0.88, h: 0.08, preset: 'verano con gelato', editable: true, align: 'left', italic: true, weight: 700, size: 0.036, color: '#fff' },
       ],
     },
     // ── P7: columna 13,14,15 ──

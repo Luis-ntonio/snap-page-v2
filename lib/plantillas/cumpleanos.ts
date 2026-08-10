@@ -33,7 +33,7 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-2', x: 0.1, y: 0.08, w: 0.8, h: 0.08, preset: 'De mamá', align: 'left', italic: true, weight: 700, size: 0.04, color: BROWN },
+        { key: 't-titulo-2', x: 0.1, y: 0.08, w: 0.8, h: 0.08, preset: 'De mamá', editable: true, align: 'left', italic: true, weight: 700, size: 0.04, color: BROWN },
         { key: 'texto-2', x: 0.1, y: 0.2, w: 0.8, h: 0.6, placeholder: 'Mensaje de mamá para ti...', editable: true, align: 'left', size: 0.024, color: INK },
       ],
     },
@@ -55,7 +55,7 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-3', x: 0.1, y: 0.1, w: 0.8, h: 0.08, preset: 'De tu abuelo', align: 'left', italic: true, weight: 700, size: 0.04, color: BROWN },
+        { key: 't-titulo-3', x: 0.1, y: 0.1, w: 0.8, h: 0.08, preset: 'De tu abuelo', editable: true, align: 'left', italic: true, weight: 700, size: 0.04, color: BROWN },
         { key: 'texto-3', x: 0.1, y: 0.22, w: 0.8, h: 0.6, placeholder: 'Mensaje del abuelo...', editable: true, align: 'left', size: 0.024, color: INK },
       ],
     },
@@ -64,7 +64,7 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-4', x: 0.1, y: 0.08, w: 0.8, h: 0.08, preset: 'De tu hermano mayor', align: 'left', italic: true, weight: 700, size: 0.036, color: BROWN },
+        { key: 't-titulo-4', x: 0.1, y: 0.08, w: 0.8, h: 0.08, preset: 'De tu hermano mayor', editable: true, align: 'left', italic: true, weight: 700, size: 0.036, color: BROWN },
         { key: 'texto-4', x: 0.1, y: 0.2, w: 0.8, h: 0.6, placeholder: 'Mensaje de tu hermano...', editable: true, align: 'left', size: 0.024, color: INK },
       ],
     },
@@ -81,8 +81,8 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#f7f5f2',
       slots: [{ n: 7, x: 0.08, y: 0.3, w: 0.84, h: 0.62 }],
       texts: [
-        { key: 't-titulo-5', x: 0.06, y: 0.05, w: 0.88, h: 0.14, preset: '¡Feliz\ncumpleaños!', align: 'left', italic: true, weight: 800, size: 0.05, color: INK },
-        { key: 'texto-5', x: 0.06, y: 0.2, w: 0.7, h: 0.06, preset: 'tus mejores amigos', editable: false, align: 'left', italic: true, size: 0.026, color: '#888' },
+        { key: 't-titulo-5', x: 0.06, y: 0.05, w: 0.88, h: 0.14, preset: '¡Feliz\ncumpleaños!', editable: true, align: 'left', italic: true, weight: 800, size: 0.05, color: INK },
+        { key: 'texto-5', x: 0.06, y: 0.2, w: 0.7, h: 0.06, preset: 'tus mejores amigos', editable: true, align: 'left', italic: true, size: 0.026, color: '#888' },
       ],
     },
     // ── P5b: grilla 2x2 (8,9,10,11) ──
@@ -105,7 +105,7 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-6', x: 0.1, y: 0.12, w: 0.8, h: 0.12, preset: 'De tu hermana\nfavorita', align: 'left', italic: true, weight: 700, size: 0.036, color: BROWN },
+        { key: 't-titulo-6', x: 0.1, y: 0.12, w: 0.8, h: 0.12, preset: 'De tu hermana\nfavorita', editable: true, align: 'left', italic: true, weight: 700, size: 0.036, color: BROWN },
         { key: 'texto-6', x: 0.1, y: 0.3, w: 0.8, h: 0.55, placeholder: 'Mensaje de tu hermana...', editable: true, align: 'left', size: 0.024, color: INK },
       ],
     },
@@ -128,7 +128,7 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-8', x: 0.1, y: 0.1, w: 0.8, h: 0.14, preset: 'Con amor,\nde la abuela', align: 'left', italic: true, weight: 700, size: 0.036, color: BROWN },
+        { key: 't-titulo-8', x: 0.1, y: 0.1, w: 0.8, h: 0.14, preset: 'Con amor,\nde la abuela', editable: true, align: 'left', italic: true, weight: 700, size: 0.036, color: BROWN },
         { key: 'texto-7', x: 0.1, y: 0.28, w: 0.8, h: 0.55, placeholder: 'Mensaje de la abuela...', editable: true, align: 'left', size: 0.024, color: INK },
       ],
     },
@@ -142,7 +142,7 @@ export const cumpleanos: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-9', x: 0.1, y: 0.08, w: 0.8, h: 0.08, preset: 'De tu viejo querido', align: 'left', italic: true, weight: 700, size: 0.034, color: BROWN },
+        { key: 't-titulo-9', x: 0.1, y: 0.08, w: 0.8, h: 0.08, preset: 'De tu viejo querido', editable: true, align: 'left', italic: true, weight: 700, size: 0.034, color: BROWN },
         { key: 'texto-8', x: 0.1, y: 0.2, w: 0.8, h: 0.6, placeholder: 'Mensaje...', editable: true, align: 'left', size: 0.024, color: INK },
       ],
     },

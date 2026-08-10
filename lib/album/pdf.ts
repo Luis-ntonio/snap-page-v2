@@ -144,7 +144,7 @@ function drawHeartsPattern(ctx: CanvasRenderingContext2D, pageW: number, pageH: 
   ctx.restore();
 }
 
-function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pageW: number, pageH: number, textStyle?: TextStylePreset | null) {
+function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pageW: number, pageH: number, textStyle?: TextStylePreset | null, colorOverride?: string) {
   if (!value) return;
   const rect = { x: t.x * pageW, y: t.y * pageH, w: t.w * pageW, h: t.h * pageH };
   const fontPx = (t.size ?? 0.03) * pageH;
@@ -152,7 +152,9 @@ function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pag
   const style = t.italic ? 'italic' : 'normal';
   ctx.save();
   ctx.font = `${style} ${weight} ${fontPx}px ${textStyle?.fontFamily ?? "'Raleway', sans-serif"}`;
-  ctx.fillStyle = textStyle?.color ?? t.color ?? '#333';
+  // Un color elegido para ESE bloque (paleta por texto) pisa el estilo global del álbum, que a su
+  // vez pisa el color de fábrica de la plantilla.
+  ctx.fillStyle = colorOverride ?? textStyle?.color ?? t.color ?? '#333';
   ctx.textBaseline = 'top';
   const align = t.align ?? 'left';
   ctx.textAlign = align;
@@ -188,6 +190,7 @@ async function renderPageCanvas(
   pageW: number,
   pageH: number,
   textStyle?: TextStylePreset | null,
+  textColors?: Record<string, string>,
 ): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas');
   canvas.width = pageW;
@@ -210,8 +213,10 @@ async function renderPageCanvas(
   }
 
   for (const t of page.texts ?? []) {
-    const value = t.editable ? (texts[t.key] ?? '') : (t.preset ?? '');
-    drawText(ctx, t, value, pageW, pageH, textStyle);
+    // Si es editable pero el cliente no lo tocó, se usa el preset de fábrica como valor real (no
+    // solo como placeholder) para que el PDF final no salga con ese bloque en blanco.
+    const value = t.editable ? (texts[t.key] || t.preset || '') : (t.preset ?? '');
+    drawText(ctx, t, value, pageW, pageH, textStyle, textColors?.[t.key]);
   }
 
   for (const d of (page.decorations ?? []).filter((d) => d.layer === 'front')) {
@@ -230,6 +235,7 @@ export async function composeAlbumPdf(
   onProgress?: (done: number, total: number) => void,
   portada?: { imagen: string; nombre: string } | null,
   textStyle?: TextStylePreset | null,
+  textColors?: Record<string, string>,
 ): Promise<Blob> {
   if (typeof document !== 'undefined' && document.fonts) {
     await document.fonts.ready.catch(() => {});
@@ -248,7 +254,7 @@ export async function composeAlbumPdf(
   }
 
   for (let i = 0; i < layout.pages.length; i++) {
-    const canvas = await renderPageCanvas(layout.pages[i], photos, texts, pageW, pageH, textStyle);
+    const canvas = await renderPageCanvas(layout.pages[i], photos, texts, pageW, pageH, textStyle, textColors);
     const imgData = canvas.toDataURL('image/jpeg', 0.85);
     if (portada || i > 0) doc.addPage();
     doc.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);

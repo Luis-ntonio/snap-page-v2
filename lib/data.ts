@@ -82,6 +82,19 @@ export const TEXT_STYLE_PRESETS: TextStylePreset[] = [
   { id: 'moderno', nombre: 'Moderno', fontFamily: "'Raleway', Arial, sans-serif", color: '#1a1410' },
 ];
 
+// Paleta de colores para pintar UN bloque de texto a la vez en el editor del álbum Personalizado
+// (a diferencia de TEXT_STYLE_PRESETS.color, que repinta todo el álbum de una).
+export const TEXT_COLOR_PALETTE: { nombre: string; color: string }[] = [
+  { nombre: 'Tinta', color: '#2B211C' },
+  { nombre: 'Marrón', color: '#7E451B' },
+  { nombre: 'Coral', color: '#E8795A' },
+  { nombre: 'Vino', color: '#C0392B' },
+  { nombre: 'Verde', color: '#7C9A72' },
+  { nombre: 'Azul noche', color: '#2C3E50' },
+  { nombre: 'Gris cálido', color: '#6E5D52' },
+  { nombre: 'Blanco', color: '#FFFFFF' },
+];
+
 // imagen es una clave relativa al bucket público `assets` — ver comentario de PLANTILLAS arriba.
 export const PORTADAS: Portada[] = [
   {

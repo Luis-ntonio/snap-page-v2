@@ -31,6 +31,8 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
   selectedSlot = null,
   onSelectSlot,
   textStyle,
+  textColors = {},
+  onTextFocus,
   maxWidth = 380,
 }: {
   page: AlbumPageLayout;
@@ -47,6 +49,10 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
   onSelectSlot?: (n: number) => void;
   /** Preset de tipografía/color elegido (null = estilo original de la plantilla). */
   textStyle?: TextStylePreset | null;
+  /** Color elegido para UN bloque de texto en particular (key → color), pisa textStyle.color. */
+  textColors?: Record<string, string>;
+  /** Avisa qué bloque de texto se está editando, para mostrar la paleta de color de ESE bloque. */
+  onTextFocus?: (slot: TextSlot) => void;
   maxWidth?: number;
 }) {
   const back = (page.decorations ?? []).filter((d) => d.layer === 'back');
@@ -71,7 +77,8 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
           reorderMode={reorderMode} selected={selectedSlot === s.n} onSelectSlot={onSelectSlot} />
       ))}
       {(page.texts ?? []).map((t) => (
-        <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} textStyle={textStyle} />
+        <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} textStyle={textStyle}
+          color={textColors[t.key]} onFocus={onTextFocus ? () => onTextFocus(t) : undefined} />
       ))}
       {front.map((d, i) => <Decoration key={`front-${i}`} d={d} />)}
     </div>
@@ -207,9 +214,12 @@ function CameraBodyButtons() {
 
 const TEXT_SAVE_DEBOUNCE_MS = 400;
 
-const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle }: {
+const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle, color, onFocus }: {
   slot: TextSlot; value: string; editable: boolean; onText?: (key: string, value: string) => void;
   textStyle?: TextStylePreset | null;
+  /** Color elegido para ESTE bloque en particular — pisa textStyle.color y slot.color. */
+  color?: string;
+  onFocus?: () => void;
 }) {
   // Estado local para que la escritura sea instantánea (independiente del re-render del resto del
   // libro); el valor solo se propaga al padre (y de ahí al autoguardado) con un pequeño debounce.
@@ -246,7 +256,7 @@ const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle
     fontSize: `${(slot.size ?? 0.03) * 100}cqh`,
     fontStyle: slot.italic ? 'italic' : 'normal',
     fontWeight: slot.weight ?? 400,
-    color: textStyle?.color ?? slot.color ?? '#333',
+    color: color ?? textStyle?.color ?? slot.color ?? '#333',
     textAlign: slot.align ?? 'left',
     lineHeight: 1.25,
     whiteSpace: 'pre-line',
@@ -263,13 +273,15 @@ const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle
     );
   }
 
-  // Texto editable en modo preview: muestra el placeholder tenue, sin interacción.
+  // Texto editable en modo preview, sin que el cliente lo haya tocado todavía: si el diseño trae
+  // un valor de fábrica (preset, ej. "Feliz aniversario"), se muestra tal cual en vez de quedar en
+  // blanco; si es un campo pensado para que el cliente lo llene desde cero, se ve el placeholder tenue.
   if (!editable) {
     return (
-      <div style={{ ...base, opacity: 0.6, display: 'flex', alignItems: 'flex-start',
+      <div style={{ ...base, opacity: value || slot.preset ? 1 : 0.6, display: 'flex', alignItems: 'flex-start',
         justifyContent: slot.align === 'center' ? 'center' : slot.align === 'right' ? 'flex-end' : 'flex-start',
         pointerEvents: 'none' }}>
-        {value || slot.placeholder}
+        {value || slot.preset || slot.placeholder}
       </div>
     );
   }
@@ -280,6 +292,7 @@ const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle
       value={local}
       onChange={(e) => handleChange(e.target.value)}
       onBlur={(e) => flush(e.target.value)}
+      onFocus={onFocus}
       placeholder={slot.placeholder ?? slot.preset ?? ''}
       style={{ ...base, background: 'transparent', border: 'none', resize: 'none', outline: 'none', padding: 0 }}
     />

@@ -29,7 +29,7 @@ export const parejas: PlantillaLayout = {
       frame: { src: '/images/plantillas/marcos/12.svg', size: '200% 100%', position: 'right center' },
       slots: [{ n: 1, x: 0.2, y: 0.28, w: 0.6, h: 0.5 }],
       texts: [
-        { key: 't-titulo-1', x: 0.1, y: 0.12, w: 0.8, h: 0.08, preset: 'Gracias por ser tú', align: 'center', italic: true, weight: 700, size: 0.045, color: BROWN },
+        { key: 't-titulo-1', x: 0.1, y: 0.12, w: 0.8, h: 0.08, preset: 'Gracias por ser tú', editable: true, align: 'center', italic: true, weight: 700, size: 0.045, color: BROWN },
         { key: 'texto-1', x: 0.15, y: 0.21, w: 0.7, h: 0.05, placeholder: 'Tu dedicatoria...', editable: true, align: 'center', size: 0.026, color: '#888' },
         { key: 'texto-2', x: 0.15, y: 0.82, w: 0.7, h: 0.1, placeholder: 'Mensaje especial...', editable: true, align: 'center', size: 0.024, color: '#666' },
       ],
@@ -39,7 +39,7 @@ export const parejas: PlantillaLayout = {
       bg: '#C0392B',
       slots: [],
       texts: [
-        { key: 't-titulo-2', x: 0.12, y: 0.32, w: 0.76, h: 0.16, preset: 'Feliz\naniversario', align: 'left', weight: 800, size: 0.07, color: '#fff' },
+        { key: 't-titulo-2', x: 0.12, y: 0.32, w: 0.76, h: 0.16, preset: 'Feliz\naniversario', editable: true, align: 'left', weight: 800, size: 0.07, color: '#fff' },
         { key: 'texto-3', x: 0.12, y: 0.52, w: 0.76, h: 0.05, placeholder: 'Subtítulo', editable: true, align: 'left', size: 0.026, color: '#fff' },
         { key: 'texto-4', x: 0.12, y: 0.58, w: 0.76, h: 0.1, placeholder: 'Dedicatoria para esa persona especial', editable: true, align: 'left', size: 0.022, color: '#f5d5d0' },
       ],
@@ -81,7 +81,7 @@ export const parejas: PlantillaLayout = {
       bg: '#ffffff',
       slots: [],
       texts: [
-        { key: 't-titulo-6', x: 0.12, y: 0.22, w: 0.76, h: 0.1, preset: 'Nuestra\nprimera cita', align: 'left', weight: 800, size: 0.055, color: '#2E7D5B' },
+        { key: 't-titulo-6', x: 0.12, y: 0.22, w: 0.76, h: 0.1, preset: 'Nuestra\nprimera cita', editable: true, align: 'left', weight: 800, size: 0.055, color: '#2E7D5B' },
         { key: 'texto-6', x: 0.12, y: 0.42, w: 0.76, h: 0.24, placeholder: 'Cuéntanos la historia de su primera cita...', editable: true, align: 'left', size: 0.024, color: '#555' },
         { key: 'texto-7', x: 0.12, y: 0.7, w: 0.76, h: 0.06, placeholder: 'Frase de cierre', editable: true, align: 'left', size: 0.024, color: '#2E7D5B' },
       ],
@@ -104,7 +104,7 @@ export const parejas: PlantillaLayout = {
         { n: 13, x: 0.52, y: 0.54, w: 0.42, h: 0.36 },
       ],
       texts: [
-        { key: 't-titulo-7', x: 0.06, y: 0.04, w: 0.88, h: 0.08, preset: 'recuerda ese verano', align: 'center', italic: true, size: 0.032, color: BROWN },
+        { key: 't-titulo-7', x: 0.06, y: 0.04, w: 0.88, h: 0.08, preset: 'recuerda ese verano', editable: true, align: 'center', italic: true, size: 0.032, color: BROWN },
       ],
     },
     // ── P8a: columna 14,15,16 — empareja con P8b ──
@@ -130,7 +130,7 @@ export const parejas: PlantillaLayout = {
         { n: 20, x: 0.14, y: 0.54, w: 0.36, h: 0.32, shape: 'polaroid', rotate: -4 },
       ],
       texts: [
-        { key: 't-together-9', x: 0.1, y: 0.88, w: 0.5, h: 0.08, preset: 'together', align: 'center', italic: true, size: 0.04, color: '#333' },
+        { key: 't-together-9', x: 0.1, y: 0.88, w: 0.5, h: 0.08, preset: 'together', editable: true, align: 'center', italic: true, size: 0.04, color: '#333' },
       ],
     },
     // ── P9b: grilla 2x2 (21,22,23,24) ──
@@ -192,7 +192,7 @@ export const parejas: PlantillaLayout = {
       bg: '#1a1410',
       slots: [{ n: 39, x: 0.1, y: 0.28, w: 0.8, h: 0.62 }],
       texts: [
-        { key: 't-titulo-13', x: 0.55, y: 0.06, w: 0.4, h: 0.14, preset: 'lo nuestro\nes único', align: 'right', italic: true, size: 0.035, color: '#fff' },
+        { key: 't-titulo-13', x: 0.55, y: 0.06, w: 0.4, h: 0.14, preset: 'lo nuestro\nes único', editable: true, align: 'right', italic: true, size: 0.035, color: '#fff' },
         { key: 'texto-11', x: 0.1, y: 0.14, w: 0.4, h: 0.1, placeholder: 'Frase final', editable: true, align: 'left', size: 0.022, color: '#e8dcc8' },
       ],
     },

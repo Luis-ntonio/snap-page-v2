@@ -3,13 +3,13 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
-import type { PlantillaLayout } from '@/types';
+import type { PlantillaLayout, TextSlot } from '@/types';
 import { loadDraft, saveDraft, clearDraft } from '@/lib/album/draftStore';
 import { composeAlbumPdf, downloadBlob } from '@/lib/album/pdf';
 import { submitAlbumOrder } from '@/lib/album/submit';
 import { useAuth } from '@/lib/auth';
 import { useDemo } from '@/lib/demo';
-import { waLink, WA_MESSAGES, PORTADAS, TEXT_STYLE_PRESETS } from '@/lib/data';
+import { waLink, WA_MESSAGES, PORTADAS, TEXT_STYLE_PRESETS, TEXT_COLOR_PALETTE } from '@/lib/data';
 import { mediaUrl } from '@/lib/media';
 import { PLAN_PRICES } from '@/types';
 import { AlbumPageCanvas } from './album/AlbumPageCanvas';
@@ -32,6 +32,10 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [stylePresetId, setStylePresetId] = useState<string | null>(null);
   const [dragSlot, setDragSlot] = useState<number | null>(null);
+  // Color por bloque de texto (key → color), separado del estilo global de arriba: no repinta
+  // todo el álbum, solo el bloque que el cliente esté editando en ese momento.
+  const [textColors, setTextColors] = useState<Record<string, string>>({});
+  const [activeText, setActiveText] = useState<TextSlot | null>(null);
 
   const portadas = PORTADAS.filter((p) => p.categorias.includes(layout.categoria));
   const portadaSel = portadas.find((p) => p.id === portadaId) ?? null;
@@ -126,6 +130,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
       if (cancelled || !draft) { setHydrated(true); return; }
       setPhotos(draft.photos ?? {});
       setTexts(draft.texts ?? {});
+      setTextColors(draft.textColors ?? {});
       setPortadaId(draft.portadaId ?? null);
       setStylePresetId(draft.stylePresetId ?? null);
       const nextUrls: Record<number, string> = {};
@@ -150,10 +155,10 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     if (!hydrated) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveDraft({ plantillaId: layout.id, photos, texts, portadaId, stylePresetId, updatedAt: Date.now() });
+      saveDraft({ plantillaId: layout.id, photos, texts, textColors, portadaId, stylePresetId, updatedAt: Date.now() });
     }, 600);
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  }, [photos, texts, portadaId, stylePresetId, hydrated, layout.id]);
+  }, [photos, texts, textColors, portadaId, stylePresetId, hydrated, layout.id]);
 
   const openPicker = (n: number) => {
     activeSlot.current = n;
@@ -204,7 +209,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     setSending(true);
     try {
       const portadaParaPdf = portadaSel ? { ...portadaSel, imagen: mediaUrl(portadaSel.imagen) } : null;
-      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaParaPdf, textStyle);
+      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaParaPdf, textStyle, textColors);
       let waMessage = WA_MESSAGES.personalizado(layout.nombre, portadaSel?.nombre ?? 'a definir');
 
       // Solo se intenta registrar en Supabase si hay una sesión REAL (no demo) — usuario.id debe ser un auth.uid() válido.
@@ -312,6 +317,41 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                 );
               })}
             </div>
+          </div>
+
+          <div>
+            <p style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--texto-3)', margin: '0 0 8px' }}>COLOR DE TEXTO</p>
+            {activeText ? (
+              <>
+                <p style={{ fontSize: 11.5, color: 'var(--texto-3)', margin: '0 0 10px' }}>
+                  Editando: <strong style={{ color: 'var(--marron)' }}>{activeText.placeholder ?? activeText.preset ?? 'este texto'}</strong>
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {TEXT_COLOR_PALETTE.map((c) => {
+                    const active = textColors[activeText.key] === c.color;
+                    return (
+                      <button key={c.color} type="button" onClick={() => setTextColors((prev) => ({ ...prev, [activeText.key]: c.color }))}
+                        title={c.nombre} aria-label={c.nombre} style={{
+                          width: 28, height: 28, borderRadius: '50%', background: c.color, cursor: 'pointer', padding: 0,
+                          border: active ? '3px solid var(--coral)' : '1.5px solid var(--borde-2)',
+                        }} />
+                    );
+                  })}
+                  {textColors[activeText.key] && (
+                    <button type="button" onClick={() => setTextColors((prev) => {
+                      const next = { ...prev }; delete next[activeText.key]; return next;
+                    })} title="Color original de la plantilla" aria-label="Quitar color" style={{
+                      width: 28, height: 28, borderRadius: '50%', background: '#fff', cursor: 'pointer',
+                      border: '1.5px dashed var(--borde-2)', color: 'var(--texto-3)', fontSize: 12, padding: 0,
+                    }}>✕</button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <p style={{ fontSize: 11.5, color: 'var(--texto-3)', margin: 0 }}>
+                Toca un texto en la página para cambiarle el color, sin afectar al resto del álbum.
+              </p>
+            )}
           </div>
 
           <div className="editor-tip-card" style={{ background: 'var(--crema)', borderRadius: 14, padding: 16 }}>
@@ -423,6 +463,8 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                     selectedSlot={selectedSlot}
                     onSelectSlot={onSelectSlot}
                     textStyle={textStyle}
+                    textColors={textColors}
+                    onTextFocus={setActiveText}
                     maxWidth={9999}
                   />
                 </div>

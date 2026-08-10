@@ -199,6 +199,7 @@ export interface AlbumDraft {
   plantillaId: string;
   photos: Record<number, Blob>; // slot.n → imagen
   texts: Record<string, string>; // textSlot.key → valor
+  textColors?: Record<string, string>; // textSlot.key → color elegido para ESE bloque (no todo el álbum)
   portadaId?: string | null;
   stylePresetId?: string | null;
   updatedAt: number;
