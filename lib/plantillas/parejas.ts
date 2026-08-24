@@ -146,17 +146,17 @@ export const parejas: PlantillaLayout = {
         { src: '/images/plantillas/marcos/parejas-together-stamp.png', layer: 'front', x: 0.3092, y: 0.7559, w: 0.4044, h: 0.1451, rotate: -16.3 },
       ],
     },
-    // ── P9b: "together" — 4 slots de foto en grilla 2x2 (36-39) sobre el fondo de nubes/colinas; el
-    // corazón central va como `decorations` front (recorte con alfa, mismo criterio que el rótulo de
-    // P9a) para que no quede tapado por las fotos del cliente. ──
+    // ── P9b: "together" — 4 slots de foto a página completa, grilla 2x2 sin separación ni fondo de
+    // nubes/colinas (las 4 fotos del cliente cubren toda la página). El corazón central va como
+    // `decorations` front (recorte con alfa, mismo criterio que el rótulo de P9a) para que no quede
+    // tapado por las fotos del cliente. ──
     {
       bg: '#f3f1ec',
-      frame: { src: '/images/plantillas/marcos/parejas-together-right.jpg', size: '100% 100%', position: 'center' },
       slots: [
-        { n: 36, x: 0.04, y: 0.04, w: 0.45, h: 0.45 },
-        { n: 37, x: 0.51, y: 0.04, w: 0.45, h: 0.45 },
-        { n: 38, x: 0.04, y: 0.51, w: 0.45, h: 0.45 },
-        { n: 39, x: 0.51, y: 0.51, w: 0.45, h: 0.45 },
+        { n: 36, x: 0, y: 0, w: 0.5, h: 0.5 },
+        { n: 37, x: 0.5, y: 0, w: 0.5, h: 0.5 },
+        { n: 38, x: 0, y: 0.5, w: 0.5, h: 0.5 },
+        { n: 39, x: 0.5, y: 0.5, w: 0.5, h: 0.5 },
       ],
       decorations: [
         { src: '/images/plantillas/marcos/parejas-together-heart.png', layer: 'front', x: 0.421, y: 0.4501, w: 0.1575, h: 0.0988 },
