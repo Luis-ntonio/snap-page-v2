@@ -65,7 +65,7 @@ export const PLANTILLAS: Plantilla[] = [
     nombre: 'Aventuras',
     categoria: 'viajes',
     hojas: 10,
-    fotos: 49,
+    fotos: 60,
     imagen_preview: 'plantillas/viajes-1-preview.jpg',
     imagen_muestra: 'plantillas/viajes-1-muestra.jpg',
     imagenes_interiores: [],
