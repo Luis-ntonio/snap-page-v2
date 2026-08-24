@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import type { AlbumPageLayout, DecorationLayer, PhotoSlot, PlantillaLayout, TextSlot, TextStylePreset } from '@/types';
+import { getDominantColor } from './coverColor';
 
 // Compone el álbum completo (fondo + fotos + textos de cada página) en un PDF, del lado del cliente.
 // Cada página de la plantilla se dibuja en un <canvas> del tamaño exacto de página que usa jsPDF,
@@ -57,6 +58,19 @@ async function renderCoverCanvas(portadaImagen: string, nombre: string, pageW: n
   ctx.textBaseline = 'middle';
   ctx.fillText(nombre, pageW / 2, pageH * 0.91);
   ctx.restore();
+  return canvas;
+}
+
+// Página lisa de un solo color — guardas (reverso de la tapa dura) y contraportada, que va sin la
+// imagen de portada, solo su color principal (ver lib/album/coverColor.ts).
+function renderSolidCanvas(color: string, pageW: number, pageH: number): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = pageW * RENDER_SCALE;
+  canvas.height = pageH * RENDER_SCALE;
+  const ctx = canvas.getContext('2d')!;
+  ctx.scale(RENDER_SCALE, RENDER_SCALE);
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, pageW, pageH);
   return canvas;
 }
 
@@ -244,8 +258,9 @@ async function renderPageCanvas(
 }
 
 /** Compone el álbum completo en un PDF A4. Devuelve el Blob listo para descargar o subir.
- *  Si se pasa `portada`, se antepone como tapa dura (imagen + nombre del álbum) y se agrega la misma
- *  imagen como contraportada al final — como un libro real, tapa dura adelante y atrás. */
+ *  Si se pasa `portada`, el PDF queda como un libro real con tapa dura: portada (imagen + nombre) →
+ *  guarda en blanco (color principal de la portada) → páginas interiores → guarda en blanco →
+ *  contraportada (mismo color liso, SIN repetir la imagen). */
 export async function composeAlbumPdf(
   layout: PlantillaLayout,
   photos: Record<number, Blob>,
@@ -263,12 +278,18 @@ export async function composeAlbumPdf(
   const doc = new jsPDF({ unit: 'px', format: 'a4', compress: true });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const total = layout.pages.length + (portada ? 2 : 0);
+  const total = layout.pages.length + (portada ? 4 : 0);
   let done = 0;
+  const coverColor = portada ? await getDominantColor(portada.imagen) : null;
 
-  if (portada) {
+  if (portada && coverColor) {
     const cover = await renderCoverCanvas(portada.imagen, portada.nombre, pageW, pageH);
     doc.addImage(cover.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, pageW, pageH);
+    onProgress?.(++done, total);
+
+    doc.addPage();
+    const frontGuard = renderSolidCanvas(coverColor, pageW, pageH);
+    doc.addImage(frontGuard.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, pageW, pageH);
     onProgress?.(++done, total);
   }
 
@@ -280,9 +301,14 @@ export async function composeAlbumPdf(
     onProgress?.(++done, total);
   }
 
-  if (portada) {
-    const backCover = await renderCoverCanvas(portada.imagen, portada.nombre, pageW, pageH);
+  if (portada && coverColor) {
     doc.addPage();
+    const backGuard = renderSolidCanvas(coverColor, pageW, pageH);
+    doc.addImage(backGuard.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, pageW, pageH);
+    onProgress?.(++done, total);
+
+    doc.addPage();
+    const backCover = renderSolidCanvas(coverColor, pageW, pageH);
     doc.addImage(backCover.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, pageW, pageH);
     onProgress?.(++done, total);
   }

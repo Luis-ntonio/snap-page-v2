@@ -5,6 +5,7 @@ import { ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
 import type { PlantillaLayout, TextSlot } from '@/types';
 import { loadDraft, saveDraft, clearDraft } from '@/lib/album/draftStore';
+import { getDominantColor } from '@/lib/album/coverColor';
 import { composeAlbumPdf } from '@/lib/album/pdf';
 import { submitAlbumOrder } from '@/lib/album/submit';
 import { useAuth } from '@/lib/auth';
@@ -35,15 +36,42 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
   // Tamaño por bloque de texto (key → multiplicador sobre slot.size), mismo patrón que textColors.
   const [textSizes, setTextSizes] = useState<Record<string, number>>({});
   const [activeText, setActiveText] = useState<TextSlot | null>(null);
+  // Color de fondo de la contraportada y las guardas de la tapa dura — resuelto de forma perezosa
+  // (no en el cuerpo del efecto: `resolvedFor` solo se actualiza dentro del callback async, así el
+  // efecto nunca hace un setState síncrono) y expresado como estado derivado más abajo.
+  const [coverColorState, setCoverColorState] = useState<{ portadaId: string | null; color: string }>({ portadaId: null, color: '#2b2b2b' });
 
   const portadas = PORTADAS.filter((p) => p.categorias.includes(layout.categoria));
   const portadaSel = portadas.find((p) => p.id === portadaId) ?? null;
   const textStyle = TEXT_STYLE_PRESETS.find((p) => p.id === stylePresetId) ?? null;
-  // Con portada elegida, el libro simulado lleva tapa dura adelante y atrás (misma imagen — la
-  // contraportada "del mismo color" que la tapa) antes/después de las páginas interiores, como un
-  // libro real. slotPageIndex() sigue devolviendo el índice DENTRO de layout.pages (sin la tapa); se
-  // le suma coverOffset en cada uso que interactúa con el flipbook (flipTo, resaltado de miniatura).
-  const coverOffset = portadaSel ? 1 : 0;
+
+  const coverColor = coverColorState.color;
+  // true en cuanto coverColor queda resuelto para LA portada actualmente seleccionada (o si no hay
+  // portada). Gatea el montaje del flipbook — ver por qué en el comentario del efecto.
+  const coverColorReady = !portadaSel || coverColorState.portadaId === portadaSel.id;
+
+  // Color de fondo de la contraportada y las guardas — se calcula de la portada elegida (promedio de
+  // sus píxeles), no un color curado a mano por plantilla. Igual que con `hydrated` más abajo: si el
+  // flipbook montara ANTES de que este color resuelva y luego cambiara el prop `color` de las tapas
+  // en blanco vía un re-render normal, react-pageflip (que ya movió esos nodos DOM a su propia
+  // estructura interna) pierde el rastro y el nodo queda vacío/roto — por eso el flipbook completo
+  // espera a coverColorReady, no solo a hydrated.
+  useEffect(() => {
+    if (!portadaSel || coverColorState.portadaId === portadaSel.id) return;
+    let cancelled = false;
+    getDominantColor(mediaUrl(portadaSel.imagen)).then((c) => {
+      if (cancelled) return;
+      setCoverColorState({ portadaId: portadaSel.id, color: c });
+    });
+    return () => { cancelled = true; };
+  }, [portadaSel, coverColorState.portadaId]);
+
+  // Con portada elegida, el libro simulado lleva tapa dura real: portada (imagen) + guarda en blanco
+  // (color liso) adelante, guarda en blanco + contraportada (color liso, SIN la imagen — así queda de
+  // verdad como un libro impreso) atrás, y recién ahí empiezan las páginas interiores. slotPageIndex()
+  // sigue devolviendo el índice DENTRO de layout.pages (sin las tapas); se le suma coverOffset en cada
+  // uso que interactúa con el flipbook (flipTo, resaltado de miniatura).
+  const coverOffset = portadaSel ? 2 : 0;
   const totalFlipPages = layout.pages.length + coverOffset * 2;
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -465,7 +493,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                 manual aparte. useMouseEvents=false ya desactiva TODO el manejo propio de click/mouse de page-flip
                 (ver page-flip UI.ts), así que el modo landscape no interfiere con el clic/drag&drop de fotos. */}
             <div style={{ width: '100%', maxWidth: 720, position: 'relative' }}>
-            {hydrated ? (
+            {hydrated && coverColorReady ? (
               <>
                 <div style={{
                   position: 'absolute', top: 10, right: 14, fontSize: 10, fontWeight: 700, color: '#C9B8A8', zIndex: 2,
@@ -511,7 +539,10 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                   onFlip={(e: any) => setPageIdx(e.data)}
                 >
                   {[
-                    ...(portadaSel ? [<CoverPage key="cover-front" url={mediaUrl(portadaSel.imagen)} label={portadaSel.nombre} />] : []),
+                    ...(portadaSel ? [
+                      <CoverPage key="cover-front" url={mediaUrl(portadaSel.imagen)} label={portadaSel.nombre} />,
+                      <CoverBlankPage key="guard-front" color={coverColor} />,
+                    ] : []),
                     ...layout.pages.map((p, i) => (
                       <div key={i} style={{ background: p.bg ?? '#fff' }}>
                         <AlbumPageCanvas
@@ -534,7 +565,10 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                         />
                       </div>
                     )),
-                    ...(portadaSel ? [<CoverPage key="cover-back" url={mediaUrl(portadaSel.imagen)} label={portadaSel.nombre} />] : []),
+                    ...(portadaSel ? [
+                      <CoverBlankPage key="guard-back" color={coverColor} />,
+                      <CoverBlankPage key="cover-back" color={coverColor} />,
+                    ] : []),
                   ]}
                 </HTMLFlipBook>
               </>
@@ -652,11 +686,28 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
 // (se ve como un bloque estático apilado debajo del libro en vez de la tapa dura animada). forwardRef
 // es obligatorio acá, a diferencia de AlbumPageCanvas que ya vive dentro de un <div> nativo (los
 // elementos DOM sí aceptan ref sin envoltura).
+// El nodo con `ref` es el que page-flip pasa a controlar directo: en cada frame le reescribe TODO
+// el atributo `style` (`element.style.cssText = ...`, ver node_modules/page-flip/src/Page/HTMLPage.ts
+// draw()) para animar posición/rotación — cualquier estilo visual (fondo, tamaño) puesto ahí se pierde
+// en cuanto la librería dibuja el primer frame. Por eso el contenido real va SIEMPRE en un div anidado
+// aparte, nunca en el nodo raíz que recibe el ref.
 const CoverPage = forwardRef<HTMLDivElement, { url: string; label: string }>(function CoverPage({ url, label }, ref) {
   return (
-    <div ref={ref} style={{ position: 'relative', width: '100%', maxWidth: 9999, aspectRatio: '0.707', background: '#2b2b2b', overflow: 'hidden' }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+    <div ref={ref}>
+      <div style={{ width: '100%', height: '100%', background: '#2b2b2b', overflow: 'hidden' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      </div>
+    </div>
+  );
+});
+
+// Guarda en blanco (reverso de la tapa dura, adelante y atrás) y contraportada: color liso, sin
+// imagen — la contraportada NO repite la foto de portada, solo su color principal.
+const CoverBlankPage = forwardRef<HTMLDivElement, { color: string }>(function CoverBlankPage({ color }, ref) {
+  return (
+    <div ref={ref}>
+      <div style={{ width: '100%', height: '100%', background: color }} />
     </div>
   );
 });

@@ -125,18 +125,18 @@ export const parejas: PlantillaLayout = {
       slots: [{ n: 17, x: 0, y: -0.0175, w: 1, h: 1.0175 }],
     },
     // ── P9a: "together" — decorativa, sin fotos del cliente (el diseño original trae un stack de
-    // polaroids gráficos genéricos + corazón que no tenemos como asset — se deja el fondo plano en vez
-    // del patrón de corazones tileado, que se veía mal/no correspondía al diseño real) ──
+    // polaroids gráficos genéricos + corazón, recortado directo de la página 7 del PDF de ejemplo).
+    // Sin texto editable: el rótulo "together." ya viene impreso en el recorte, agregar uno propio
+    // encima duplicaba el texto en pantalla. ──
     {
       bg: '#f3f1ec',
+      frame: { src: '/images/plantillas/marcos/parejas-together-left.jpg', size: '100% 100%', position: 'center' },
       slots: [],
-      texts: [
-        { key: 't-together-9', x: 0.1, y: 0.88, w: 0.5, h: 0.08, preset: 'together', editable: true, align: 'center', italic: true, size: 0.04, color: '#333' },
-      ],
     },
-    // ── P9b: "together" — decorativa, sin fotos del cliente ──
+    // ── P9b: "together" — decorativa, sin fotos del cliente (recortada de la misma página 7) ──
     {
       bg: '#f3f1ec',
+      frame: { src: '/images/plantillas/marcos/parejas-together-right.jpg', size: '100% 100%', position: 'center' },
       slots: [],
     },
     // ── P10a: foto grande (18) — empareja con P10b ──
