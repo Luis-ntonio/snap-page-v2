@@ -1,12 +1,14 @@
 import type { PlantillaLayout } from '@/types';
 
-// Plantilla "Mi Pareja" — 10 hojas, 35 fotos, textos 1-11.
+// Plantilla "Mi Pareja" — 10 hojas, 39 fotos, textos 1-11.
 // Coordenadas en fracciones 0-1 (página A4 vertical), transcritas de
 // plantillas/Documentacion/parejas_posiciones (1).xlsx (posición/tamaño exactos por foto, provisto
 // por Malú). Las posiciones son fijas; el cliente solo asigna sus fotos a cada slot numerado.
-// La página "together" tiene 3 slots tipo polaroid (33,34,35) — las coordenadas/rotación de cada uno
-// se sacaron directo de los paths vectoriales del PDF (página 7) con PyMuPDF, no del Excel (que las
-// marcaba como decorativas). El corazón y el fondo de nubes/colinas sí son puramente decorativos.
+// La página "together" tiene 7 slots de foto: 3 polaroids (33,34,35, P9a) + grilla 2x2 (36-39, P9b).
+// Las coordenadas/rotación de cada uno se sacaron directo de los paths/imágenes vectoriales del PDF
+// (página 7) con PyMuPDF, no del Excel (que las marcaba como decorativas). El rótulo "together." y el
+// corazón son recortes con alfa (`decorations`, layer front) extraídos del mismo PDF — solo esos dos
+// elementos siguen siendo puramente decorativos, el resto del fondo de nubes/colinas ya no.
 // IMPORTANTE: cada objeto de `pages` es UNA página física (una cara). El PDF de origen muestra varias
 // páginas ya emparejadas visualmente como "spread" (p.ej. foto grande + grilla, o texto + foto) — esas se
 // modelan aquí como DOS páginas separadas (a/b) para que el visor de doble página (react-pageflip) las
@@ -24,7 +26,7 @@ export const parejas: PlantillaLayout = {
   categoria: 'parejas',
   nombre: 'Mi Pareja',
   hojas: 10,
-  fotos: 35,
+  fotos: 39,
   aspect: 0.707,
   pages: [
     // ── P1: portada interior "Gracias por ser tú" ──
@@ -129,8 +131,9 @@ export const parejas: PlantillaLayout = {
     // el marco/sombra/clip de cada polaroid impresos con una foto de nubes y colinas de relleno; como
     // cada slot polaroid pinta una tarjeta blanca opaca del mismo tamaño/rotación encima —ver
     // AlbumPageCanvas.tsx `isPolaroid`/pdf.ts `drawSlot`—, la foto real del cliente tapa ese relleno
-    // sin necesidad de tocar el recorte). Sin texto editable: el rótulo "together." ya viene impreso
-    // en el recorte, agregar uno propio encima duplicaba el texto en pantalla. ──
+    // sin necesidad de tocar el recorte). El rótulo "together." SÍ va como `decorations` (layer:
+    // 'front', recorte con alfa extraído del PDF con PyMuPDF) en vez de solo el que trae el recorte de
+    // fondo — así queda siempre encima del polaroid 35, que si no lo tapa. ──
     {
       bg: '#f3f1ec',
       frame: { src: '/images/plantillas/marcos/parejas-together-left.jpg', size: '100% 100%', position: 'center' },
@@ -139,12 +142,25 @@ export const parejas: PlantillaLayout = {
         { n: 34, x: 0.1417, y: 0.3621, w: 0.4172, h: 0.3413, shape: 'polaroid', rotate: 18.8 },
         { n: 35, x: 0.4171, y: 0.5157, w: 0.4172, h: 0.3413, shape: 'polaroid', rotate: -12 },
       ],
+      decorations: [
+        { src: '/images/plantillas/marcos/parejas-together-stamp.png', layer: 'front', x: 0.3092, y: 0.7559, w: 0.4044, h: 0.1451, rotate: -16.3 },
+      ],
     },
-    // ── P9b: "together" — decorativa, sin fotos del cliente (recortada de la misma página 7) ──
+    // ── P9b: "together" — 4 slots de foto en grilla 2x2 (36-39) sobre el fondo de nubes/colinas; el
+    // corazón central va como `decorations` front (recorte con alfa, mismo criterio que el rótulo de
+    // P9a) para que no quede tapado por las fotos del cliente. ──
     {
       bg: '#f3f1ec',
       frame: { src: '/images/plantillas/marcos/parejas-together-right.jpg', size: '100% 100%', position: 'center' },
-      slots: [],
+      slots: [
+        { n: 36, x: 0.04, y: 0.04, w: 0.45, h: 0.45 },
+        { n: 37, x: 0.51, y: 0.04, w: 0.45, h: 0.45 },
+        { n: 38, x: 0.04, y: 0.51, w: 0.45, h: 0.45 },
+        { n: 39, x: 0.51, y: 0.51, w: 0.45, h: 0.45 },
+      ],
+      decorations: [
+        { src: '/images/plantillas/marcos/parejas-together-heart.png', layer: 'front', x: 0.421, y: 0.4501, w: 0.1575, h: 0.0988 },
+      ],
     },
     // ── P10a: foto grande (18) — empareja con P10b ──
     {
