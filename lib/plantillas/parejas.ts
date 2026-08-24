@@ -1,11 +1,12 @@
 import type { PlantillaLayout } from '@/types';
 
-// Plantilla "Mi Pareja" — 10 hojas, 32 fotos, textos 1-11.
+// Plantilla "Mi Pareja" — 10 hojas, 35 fotos, textos 1-11.
 // Coordenadas en fracciones 0-1 (página A4 vertical), transcritas de
 // plantillas/Documentacion/parejas_posiciones (1).xlsx (posición/tamaño exactos por foto, provisto
 // por Malú). Las posiciones son fijas; el cliente solo asigna sus fotos a cada slot numerado.
-// La página "together" (stack de polaroids genéricos + corazón) es decorativa, sin fotos reales del
-// cliente, según nota del Excel — por eso no tiene slots (antes tenía 7 slots de más, ver git log).
+// La página "together" tiene 3 slots tipo polaroid (33,34,35) — las coordenadas/rotación de cada uno
+// se sacaron directo de los paths vectoriales del PDF (página 7) con PyMuPDF, no del Excel (que las
+// marcaba como decorativas). El corazón y el fondo de nubes/colinas sí son puramente decorativos.
 // IMPORTANTE: cada objeto de `pages` es UNA página física (una cara). El PDF de origen muestra varias
 // páginas ya emparejadas visualmente como "spread" (p.ej. foto grande + grilla, o texto + foto) — esas se
 // modelan aquí como DOS páginas separadas (a/b) para que el visor de doble página (react-pageflip) las
@@ -23,7 +24,7 @@ export const parejas: PlantillaLayout = {
   categoria: 'parejas',
   nombre: 'Mi Pareja',
   hojas: 10,
-  fotos: 32,
+  fotos: 35,
   aspect: 0.707,
   pages: [
     // ── P1: portada interior "Gracias por ser tú" ──
@@ -124,14 +125,20 @@ export const parejas: PlantillaLayout = {
       bg: '#0b1020',
       slots: [{ n: 17, x: 0, y: -0.0175, w: 1, h: 1.0175 }],
     },
-    // ── P9a: "together" — decorativa, sin fotos del cliente (el diseño original trae un stack de
-    // polaroids gráficos genéricos + corazón, recortado directo de la página 7 del PDF de ejemplo).
-    // Sin texto editable: el rótulo "together." ya viene impreso en el recorte, agregar uno propio
-    // encima duplicaba el texto en pantalla. ──
+    // ── P9a: "together" — stack de 3 polaroids con las fotos del cliente (el fondo del recorte trae
+    // el marco/sombra/clip de cada polaroid impresos con una foto de nubes y colinas de relleno; como
+    // cada slot polaroid pinta una tarjeta blanca opaca del mismo tamaño/rotación encima —ver
+    // AlbumPageCanvas.tsx `isPolaroid`/pdf.ts `drawSlot`—, la foto real del cliente tapa ese relleno
+    // sin necesidad de tocar el recorte). Sin texto editable: el rótulo "together." ya viene impreso
+    // en el recorte, agregar uno propio encima duplicaba el texto en pantalla. ──
     {
       bg: '#f3f1ec',
       frame: { src: '/images/plantillas/marcos/parejas-together-left.jpg', size: '100% 100%', position: 'center' },
-      slots: [],
+      slots: [
+        { n: 33, x: 0.4171, y: 0.1286, w: 0.4172, h: 0.3413, shape: 'polaroid', rotate: -12 },
+        { n: 34, x: 0.1417, y: 0.3621, w: 0.4172, h: 0.3413, shape: 'polaroid', rotate: 18.8 },
+        { n: 35, x: 0.4171, y: 0.5157, w: 0.4172, h: 0.3413, shape: 'polaroid', rotate: -12 },
+      ],
     },
     // ── P9b: "together" — decorativa, sin fotos del cliente (recortada de la misma página 7) ──
     {
