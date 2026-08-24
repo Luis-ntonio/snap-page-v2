@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { forwardRef, useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
@@ -39,6 +39,12 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
   const portadas = PORTADAS.filter((p) => p.categorias.includes(layout.categoria));
   const portadaSel = portadas.find((p) => p.id === portadaId) ?? null;
   const textStyle = TEXT_STYLE_PRESETS.find((p) => p.id === stylePresetId) ?? null;
+  // Con portada elegida, el libro simulado lleva tapa dura adelante y atrás (misma imagen — la
+  // contraportada "del mismo color" que la tapa) antes/después de las páginas interiores, como un
+  // libro real. slotPageIndex() sigue devolviendo el índice DENTRO de layout.pages (sin la tapa); se
+  // le suma coverOffset en cada uso que interactúa con el flipbook (flipTo, resaltado de miniatura).
+  const coverOffset = portadaSel ? 1 : 0;
+  const totalFlipPages = layout.pages.length + coverOffset * 2;
 
   const fileRef = useRef<HTMLInputElement>(null);
   const activeSlot = useRef<number | null>(null);
@@ -195,7 +201,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
   };
   const onCarouselClick = (n: number) => {
     if (reorderMode) onSelectSlot(n);
-    else flipTo(slotPageIndex(n));
+    else flipTo(slotPageIndex(n) + coverOffset);
   };
 
   const filled = Object.keys(photos).length;
@@ -459,62 +465,82 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                 manual aparte. useMouseEvents=false ya desactiva TODO el manejo propio de click/mouse de page-flip
                 (ver page-flip UI.ts), así que el modo landscape no interfiere con el clic/drag&drop de fotos. */}
             <div style={{ width: '100%', maxWidth: 720, position: 'relative' }}>
-            <div style={{
-              position: 'absolute', top: 10, right: 14, fontSize: 10, fontWeight: 700, color: '#C9B8A8', zIndex: 2,
-            }} className="editor-page-badge">
-              página {pageIdx + 1} / {layout.pages.length}
-            </div>
-            <HTMLFlipBook
-              ref={bookRef}
-              width={280}
-              height={396}
-              size="stretch"
-              minWidth={240}
-              maxWidth={320}
-              minHeight={340}
-              maxHeight={453}
-              startPage={0}
-              drawShadow
-              flippingTime={500}
-              usePortrait
-              startZIndex={0}
-              autoSize
-              maxShadowOpacity={0.4}
-              showCover
-              mobileScrollSupport={false}
-              clickEventForward
-              useMouseEvents={false}
-              swipeDistance={30}
-              showPageCorners={false}
-              disableFlipByClick
-              className=""
-              style={{}}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onFlip={(e: any) => setPageIdx(e.data)}
-            >
-              {layout.pages.map((p, i) => (
-                <div key={i} style={{ background: p.bg ?? '#fff' }}>
-                  <AlbumPageCanvas
-                    page={p}
-                    urls={urls}
-                    texts={texts}
-                    editable
-                    onSlot={openPicker}
-                    onRemove={removePhoto}
-                    onDropFile={(n, file) => setPhotoBlob(n, file)}
-                    onText={(k, v) => setTexts((prev) => ({ ...prev, [k]: v }))}
-                    reorderMode={reorderMode}
-                    selectedSlot={selectedSlot}
-                    onSelectSlot={onSelectSlot}
-                    textStyle={textStyle}
-                    textColors={textColors}
-                    textSizes={textSizes}
-                    onTextFocus={setActiveText}
-                    maxWidth={9999}
-                  />
+            {hydrated ? (
+              <>
+                <div style={{
+                  position: 'absolute', top: 10, right: 14, fontSize: 10, fontWeight: 700, color: '#C9B8A8', zIndex: 2,
+                }} className="editor-page-badge">
+                  página {pageIdx + 1} / {totalFlipPages}
                 </div>
-              ))}
-            </HTMLFlipBook>
+                <HTMLFlipBook
+                  // react-pageflip lee sus children UNA sola vez al montar (no reactivamente en cada
+                  // render) — si portadaSel llega recién tras la rehidratación async del borrador
+                  // (loadDraft), un HTMLFlipBook montado ANTES de eso queda con 20 páginas para siempre
+                  // aunque coverOffset después pase a 1 (la tapa nunca aparece, sin error visible).
+                  // Por eso este bloque entero espera a `hydrated`: para cuando HTMLFlipBook monta por
+                  // primera vez, portadaSel ya es el valor final y sus children (con o sin tapa) son
+                  // correctos desde el arranque. `key` sigue forzando remount si coverOffset cambia
+                  // DESPUÉS (el cliente elige/quita portada en vivo), evitando el crash de "insertBefore"
+                  // que la librería tira al reconciliar in-place un cambio de conteo de páginas.
+                  key={coverOffset}
+                  ref={bookRef}
+                  width={280}
+                  height={396}
+                  size="stretch"
+                  minWidth={240}
+                  maxWidth={320}
+                  minHeight={340}
+                  maxHeight={453}
+                  startPage={0}
+                  drawShadow
+                  flippingTime={500}
+                  usePortrait
+                  startZIndex={0}
+                  autoSize
+                  maxShadowOpacity={0.4}
+                  showCover
+                  mobileScrollSupport={false}
+                  clickEventForward
+                  useMouseEvents={false}
+                  swipeDistance={30}
+                  showPageCorners={false}
+                  disableFlipByClick
+                  className=""
+                  style={{}}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  onFlip={(e: any) => setPageIdx(e.data)}
+                >
+                  {[
+                    ...(portadaSel ? [<CoverPage key="cover-front" url={mediaUrl(portadaSel.imagen)} label={portadaSel.nombre} />] : []),
+                    ...layout.pages.map((p, i) => (
+                      <div key={i} style={{ background: p.bg ?? '#fff' }}>
+                        <AlbumPageCanvas
+                          page={p}
+                          urls={urls}
+                          texts={texts}
+                          editable
+                          onSlot={openPicker}
+                          onRemove={removePhoto}
+                          onDropFile={(n, file) => setPhotoBlob(n, file)}
+                          onText={(k, v) => setTexts((prev) => ({ ...prev, [k]: v }))}
+                          reorderMode={reorderMode}
+                          selectedSlot={selectedSlot}
+                          onSelectSlot={onSelectSlot}
+                          textStyle={textStyle}
+                          textColors={textColors}
+                          textSizes={textSizes}
+                          onTextFocus={setActiveText}
+                          maxWidth={9999}
+                        />
+                      </div>
+                    )),
+                    ...(portadaSel ? [<CoverPage key="cover-back" url={mediaUrl(portadaSel.imagen)} label={portadaSel.nombre} />] : []),
+                  ]}
+                </HTMLFlipBook>
+              </>
+            ) : (
+              <div style={{ width: '100%', maxWidth: 320, aspectRatio: '0.707', margin: '0 auto', borderRadius: 4, background: '#f2e9e0' }} />
+            )}
             </div>
           </div>
 
@@ -527,7 +553,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
               <ChevronLeft size={16} />
             </NavBtn>
             <div style={{ display: 'flex', gap: 7 }}>
-              {layout.pages.map((_, i) => {
+              {Array.from({ length: totalFlipPages }, (_, i) => {
                 const active = i === pageIdx;
                 return (
                   <button key={i} onClick={() => flipTo(i)} aria-label={`Página ${i + 1}`} style={{
@@ -537,7 +563,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                 );
               })}
             </div>
-            <NavBtn onClick={() => bookRef.current?.pageFlip()?.flipNext()} disabled={pageIdx >= layout.pages.length - 2}>
+            <NavBtn onClick={() => bookRef.current?.pageFlip()?.flipNext()} disabled={pageIdx >= totalFlipPages - 2}>
               <ChevronRight size={16} />
             </NavBtn>
           </div>
@@ -563,7 +589,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                     style={{
                       flexShrink: 0, width: 48, height: 60, borderRadius: 6, overflow: 'hidden', position: 'relative',
                       cursor: 'grab', opacity: isDragging ? 0.4 : 1,
-                      border: `2px solid ${isSelected ? 'var(--coral)' : pageIdx === slotPageIndex(n) ? 'var(--marron)' : 'var(--borde)'}`,
+                      border: `2px solid ${isSelected ? 'var(--coral)' : pageIdx === slotPageIndex(n) + coverOffset ? 'var(--marron)' : 'var(--borde)'}`,
                       background: url ? undefined : 'rgba(0,0,0,0.06)',
                     }}>
                     {url ? (
@@ -616,6 +642,24 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     </div>
   );
 }
+
+// Tapa dura (portada/contraportada) del libro simulado: la imagen de portada elegida a página
+// completa, sin recuadros de foto ni texto editable (es un asset fijo, no una AlbumPageLayout).
+// react-pageflip toma posesión de cada página clonándola con React.cloneElement(child, { ref }) para
+// agarrar su nodo DOM (ver node_modules/react-pageflip/build/index.es.js) — un componente de función
+// plano NO puede recibir esa ref (React la descarta en silencio), así que la librería nunca se entera
+// de que esta página existe y la deja renderizada tal cual, fuera del mecanismo de flip/posicionamiento
+// (se ve como un bloque estático apilado debajo del libro en vez de la tapa dura animada). forwardRef
+// es obligatorio acá, a diferencia de AlbumPageCanvas que ya vive dentro de un <div> nativo (los
+// elementos DOM sí aceptan ref sin envoltura).
+const CoverPage = forwardRef<HTMLDivElement, { url: string; label: string }>(function CoverPage({ url, label }, ref) {
+  return (
+    <div ref={ref} style={{ position: 'relative', width: '100%', maxWidth: 9999, aspectRatio: '0.707', background: '#2b2b2b', overflow: 'hidden' }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+    </div>
+  );
+});
 
 function NavBtn({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: React.ReactNode }) {
   return (

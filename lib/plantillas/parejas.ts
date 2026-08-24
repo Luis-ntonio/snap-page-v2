@@ -57,13 +57,13 @@ export const parejas: PlantillaLayout = {
     // Mitad IZQUIERDA del marco de corazones-confeti (spread completo con P4).
     {
       bg: '#ffffff',
-      frame: { src: '/images/plantillas/marcos/14.svg', size: '200% 100%', position: 'left center' },
+      frame: { src: '/images/plantillas/marcos/14-overlay.svg', size: '200% 100%', position: 'left center', onTop: true },
       slots: [{ n: 3, x: 0, y: 0, w: 1, h: 1 }],
     },
     // ── P4: grilla 2x2 (4,5,6,7) — mitad DERECHA del marco de corazones-confeti (spread con P3) ──
     {
       bg: '#ffffff',
-      frame: { src: '/images/plantillas/marcos/14.svg', size: '200% 100%', position: 'right center' },
+      frame: { src: '/images/plantillas/marcos/14-overlay.svg', size: '200% 100%', position: 'right center', onTop: true },
       slots: [
         { n: 4, x: 0.0686, y: 0.0774, w: 0.4043, h: 0.4145 },
         { n: 5, x: 0.5057, y: 0.0774, w: 0.4043, h: 0.4145 },
@@ -125,11 +125,10 @@ export const parejas: PlantillaLayout = {
       slots: [{ n: 17, x: 0, y: -0.0175, w: 1, h: 1.0175 }],
     },
     // ── P9a: "together" — decorativa, sin fotos del cliente (el diseño original trae un stack de
-    // polaroids gráficos genéricos + corazón que no tenemos como asset; se usa el patrón de corazones
-    // ya existente para que la página no quede en blanco) ──
+    // polaroids gráficos genéricos + corazón que no tenemos como asset — se deja el fondo plano en vez
+    // del patrón de corazones tileado, que se veía mal/no correspondía al diseño real) ──
     {
       bg: '#f3f1ec',
-      pattern: 'hearts',
       slots: [],
       texts: [
         { key: 't-together-9', x: 0.1, y: 0.88, w: 0.5, h: 0.08, preset: 'together', editable: true, align: 'center', italic: true, size: 0.04, color: '#333' },
@@ -138,7 +137,6 @@ export const parejas: PlantillaLayout = {
     // ── P9b: "together" — decorativa, sin fotos del cliente ──
     {
       bg: '#f3f1ec',
-      pattern: 'hearts',
       slots: [],
     },
     // ── P10a: foto grande (18) — empareja con P10b ──

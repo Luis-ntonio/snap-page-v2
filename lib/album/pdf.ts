@@ -210,11 +210,11 @@ async function renderPageCanvas(
   ctx.fillStyle = page.bg ?? '#ffffff';
   ctx.fillRect(0, 0, pageW, pageH);
 
-  // El marco/patrón (marcos/*.svg, corazones) es el fondo COMPLETO de la página (blanco + borde
-  // decorativo, no un recorte transparente) — va detrás de las fotos, que se dibujan encima cubriendo
-  // el centro y dejando ver el borde alrededor. Pintarlo encima de las fotos las tapa por completo
-  // (verificado visualmente: las páginas con marco en parejas quedaban con la foto oculta).
-  if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
+  // El marco (marcos/*.svg) suele ser el fondo COMPLETO de la página (blanco opaco + borde
+  // decorativo) — va detrás de las fotos. frame.onTop es la excepción: un SVG del mismo marco pero
+  // sin su fondo blanco (ver marcos/14-overlay.svg), genuinamente transparente — ese va ENCIMA.
+  const frameOnTop = page.frame?.onTop;
+  if (page.frame && !frameOnTop) await drawFrame(ctx, page.frame, pageW, pageH);
   else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
 
   for (const d of (page.decorations ?? []).filter((d) => d.layer === 'back')) {
@@ -226,6 +226,8 @@ async function renderPageCanvas(
     const img = blob ? await loadImage(blob) : null;
     drawSlot(ctx, slot, img, pageW, pageH);
   }
+
+  if (page.frame && frameOnTop) await drawFrame(ctx, page.frame, pageW, pageH);
 
   for (const t of page.texts ?? []) {
     // Si es editable pero el cliente no lo tocó, se usa el preset de fábrica como valor real (no
@@ -242,7 +244,8 @@ async function renderPageCanvas(
 }
 
 /** Compone el álbum completo en un PDF A4. Devuelve el Blob listo para descargar o subir.
- *  Si se pasa `portada`, se antepone como página de cubierta (imagen + nombre del álbum). */
+ *  Si se pasa `portada`, se antepone como tapa dura (imagen + nombre del álbum) y se agrega la misma
+ *  imagen como contraportada al final — como un libro real, tapa dura adelante y atrás. */
 export async function composeAlbumPdf(
   layout: PlantillaLayout,
   photos: Record<number, Blob>,
@@ -260,7 +263,7 @@ export async function composeAlbumPdf(
   const doc = new jsPDF({ unit: 'px', format: 'a4', compress: true });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const total = layout.pages.length + (portada ? 1 : 0);
+  const total = layout.pages.length + (portada ? 2 : 0);
   let done = 0;
 
   if (portada) {
@@ -274,6 +277,13 @@ export async function composeAlbumPdf(
     const imgData = canvas.toDataURL('image/jpeg', 0.85);
     if (portada || i > 0) doc.addPage();
     doc.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
+    onProgress?.(++done, total);
+  }
+
+  if (portada) {
+    const backCover = await renderCoverCanvas(portada.imagen, portada.nombre, pageW, pageH);
+    doc.addPage();
+    doc.addImage(backCover.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, pageW, pageH);
     onProgress?.(++done, total);
   }
 

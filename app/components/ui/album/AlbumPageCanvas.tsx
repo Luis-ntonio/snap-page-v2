@@ -60,12 +60,16 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
 }) {
   const back = (page.decorations ?? []).filter((d) => d.layer === 'back');
   const front = (page.decorations ?? []).filter((d) => d.layer === 'front');
-  // 'frame' (marcos/*.svg) y 'hearts' son la imagen de fondo COMPLETA de la página (blanco + borde
-  // decorativo, no un recorte transparente) — van detrás de las fotos, que se dibujan encima cubriendo
-  // el centro y dejando ver el borde alrededor. Pintarlos encima de las fotos las tapa por completo
-  // (verificado visualmente: las 4 páginas con marco en parejas quedaban con la foto totalmente oculta).
-  const bgDecor = page.frame
+  // 'frame' (marcos/*.svg) suele ser la imagen de fondo COMPLETA de la página (blanco opaco + borde
+  // decorativo) — va detrás de las fotos, que se dibujan encima cubriendo el centro y dejando ver el
+  // borde alrededor. frame.onTop es la excepción: un SVG del mismo marco pero sin su fondo blanco (ver
+  // marcos/14-overlay.svg), genuinamente transparente — ese sí va ENCIMA de la foto.
+  const frameOnTop = page.frame?.onTop;
+  const frameStyle = page.frame
     ? { backgroundImage: `url(${page.frame.src})`, backgroundSize: page.frame.size, backgroundPosition: page.frame.position, backgroundRepeat: 'no-repeat' as const }
+    : null;
+  const bgDecor = page.frame && !frameOnTop
+    ? frameStyle
     : page.pattern === 'hearts'
       ? { backgroundImage: HEARTS_BG }
       : page.pattern === 'landscape'
@@ -84,6 +88,9 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
         <Slot key={s.n} slot={s} url={urls[s.n]} editable={editable} onSlot={onSlot} onRemove={onRemove} onDropFile={onDropFile}
           reorderMode={reorderMode} selected={selectedSlot === s.n} onSelectSlot={onSelectSlot} />
       ))}
+      {frameOnTop && frameStyle && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', ...frameStyle }} />
+      )}
       {(page.texts ?? []).map((t) => (
         <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} textStyle={textStyle}
           color={textColors[t.key]} sizeScale={textSizes[t.key]} onFocus={onTextFocus ? () => onTextFocus(t) : undefined} />

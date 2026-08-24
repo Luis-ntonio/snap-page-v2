@@ -159,6 +159,11 @@ export interface FrameLayer {
   size?: string;
   /** background-position CSS, ej. 'left center' | 'right center'. */
   position?: string;
+  /** true si el SVG es un overlay de fondo transparente (sin el rect blanco de página completa que
+   *  traen los marcos normales) — va ENCIMA de la foto en vez de detrás. Ver
+   *  marcos/14-overlay.svg (14.svg sin su fondo blanco), usado en el spread de corazones de parejas
+   *  donde el patrón va delante de la foto, confirmado por nota de capas de Malú. */
+  onTop?: boolean;
 }
 
 export interface DecorationLayer extends SlotRect {
