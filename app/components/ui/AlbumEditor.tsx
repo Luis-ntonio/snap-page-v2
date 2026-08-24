@@ -32,6 +32,8 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
   // Color por bloque de texto (key → color), separado del estilo global de arriba: no repinta
   // todo el álbum, solo el bloque que el cliente esté editando en ese momento.
   const [textColors, setTextColors] = useState<Record<string, string>>({});
+  // Tamaño por bloque de texto (key → multiplicador sobre slot.size), mismo patrón que textColors.
+  const [textSizes, setTextSizes] = useState<Record<string, number>>({});
   const [activeText, setActiveText] = useState<TextSlot | null>(null);
 
   const portadas = PORTADAS.filter((p) => p.categorias.includes(layout.categoria));
@@ -128,6 +130,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
       setPhotos(draft.photos ?? {});
       setTexts(draft.texts ?? {});
       setTextColors(draft.textColors ?? {});
+      setTextSizes(draft.textSizes ?? {});
       setPortadaId(draft.portadaId ?? null);
       setStylePresetId(draft.stylePresetId ?? null);
       const nextUrls: Record<number, string> = {};
@@ -152,10 +155,10 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     if (!hydrated) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveDraft({ plantillaId: layout.id, photos, texts, textColors, portadaId, stylePresetId, updatedAt: Date.now() });
+      saveDraft({ plantillaId: layout.id, photos, texts, textColors, textSizes, portadaId, stylePresetId, updatedAt: Date.now() });
     }, 600);
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  }, [photos, texts, textColors, portadaId, stylePresetId, hydrated, layout.id]);
+  }, [photos, texts, textColors, textSizes, portadaId, stylePresetId, hydrated, layout.id]);
 
   const openPicker = (n: number) => {
     activeSlot.current = n;
@@ -210,7 +213,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
     setSending(true);
     try {
       const portadaParaPdf = portadaSel ? { ...portadaSel, imagen: mediaUrl(portadaSel.imagen) } : null;
-      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaParaPdf, textStyle, textColors);
+      const pdf = await composeAlbumPdf(layout, photos, texts, undefined, portadaParaPdf, textStyle, textColors, textSizes);
       let waMessage = WA_MESSAGES.personalizado(layout.nombre, portadaSel?.nombre ?? 'a definir');
 
       try {
@@ -332,6 +335,18 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                         }} />
                     );
                   })}
+                  {/* Color personalizado: selector nativo del navegador, recortado en círculo para
+                      que se vea como un swatch más de la fila. */}
+                  <div title="Color personalizado" style={{
+                    width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', cursor: 'pointer',
+                    border: '1.5px solid var(--borde-2)', flexShrink: 0,
+                    background: 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)',
+                  }}>
+                    <input type="color" aria-label="Color personalizado"
+                      value={textColors[activeText.key] ?? '#7E451B'}
+                      onChange={(e) => setTextColors((prev) => ({ ...prev, [activeText.key]: e.target.value }))}
+                      style={{ width: '160%', height: '160%', margin: '-30%', border: 'none', cursor: 'pointer', padding: 0 }} />
+                  </div>
                   {textColors[activeText.key] && (
                     <button type="button" onClick={() => setTextColors((prev) => {
                       const next = { ...prev }; delete next[activeText.key]; return next;
@@ -345,6 +360,40 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
             ) : (
               <p style={{ fontSize: 11.5, color: 'var(--texto-3)', margin: 0 }}>
                 Toca un texto en la página para cambiarle el color, sin afectar al resto del álbum.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <p style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--texto-3)', margin: '0 0 8px' }}>TAMAÑO DE TEXTO</p>
+            {activeText ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button type="button" aria-label="Reducir tamaño" onClick={() => setTextSizes((prev) => ({
+                  ...prev, [activeText.key]: Math.max(0.5, Math.round(((prev[activeText.key] ?? 1) - 0.1) * 100) / 100),
+                }))} style={{
+                  width: 32, height: 32, borderRadius: '50%', border: '1.5px solid var(--borde-2)', background: '#fff',
+                  cursor: 'pointer', fontSize: 12, fontWeight: 800, color: 'var(--marron)',
+                }}>A-</button>
+                <span style={{ fontSize: 12.5, color: 'var(--texto-2)', minWidth: 40, textAlign: 'center' }}>
+                  {Math.round((textSizes[activeText.key] ?? 1) * 100)}%
+                </span>
+                <button type="button" aria-label="Aumentar tamaño" onClick={() => setTextSizes((prev) => ({
+                  ...prev, [activeText.key]: Math.min(2.5, Math.round(((prev[activeText.key] ?? 1) + 0.1) * 100) / 100),
+                }))} style={{
+                  width: 32, height: 32, borderRadius: '50%', border: '1.5px solid var(--borde-2)', background: '#fff',
+                  cursor: 'pointer', fontSize: 15, fontWeight: 800, color: 'var(--marron)',
+                }}>A+</button>
+                {textSizes[activeText.key] !== undefined && (
+                  <button type="button" onClick={() => setTextSizes((prev) => {
+                    const next = { ...prev }; delete next[activeText.key]; return next;
+                  })} title="Tamaño original de la plantilla" aria-label="Restablecer tamaño" style={{
+                    fontSize: 11, color: 'var(--texto-3)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline',
+                  }}>restablecer</button>
+                )}
+              </div>
+            ) : (
+              <p style={{ fontSize: 11.5, color: 'var(--texto-3)', margin: 0 }}>
+                Toca un texto en la página para agrandarlo o achicarlo, sin afectar al resto del álbum.
               </p>
             )}
           </div>
@@ -459,6 +508,7 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                     onSelectSlot={onSelectSlot}
                     textStyle={textStyle}
                     textColors={textColors}
+                    textSizes={textSizes}
                     onTextFocus={setActiveText}
                     maxWidth={9999}
                   />

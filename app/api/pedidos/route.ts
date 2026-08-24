@@ -29,6 +29,7 @@ export async function POST(req: Request) {
   const { data: pedido, error } = await supabase.from('pedidos').insert({
     ...(id ? { id } : {}),
     usuario_id: user.id,
+    canal: 'web',
     plan,
     tematica: tematica ?? null,
     plantilla_id: plantilla_id ?? null,

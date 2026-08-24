@@ -32,6 +32,7 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
   onSelectSlot,
   textStyle,
   textColors = {},
+  textSizes = {},
   onTextFocus,
   maxWidth = 380,
 }: {
@@ -51,34 +52,41 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
   textStyle?: TextStylePreset | null;
   /** Color elegido para UN bloque de texto en particular (key → color), pisa textStyle.color. */
   textColors?: Record<string, string>;
-  /** Avisa qué bloque de texto se está editando, para mostrar la paleta de color de ESE bloque. */
+  /** Multiplicador de tamaño para UN bloque de texto en particular (key → factor, ej. 1.25). */
+  textSizes?: Record<string, number>;
+  /** Avisa qué bloque de texto se está editando, para mostrar la paleta de color/tamaño de ESE bloque. */
   onTextFocus?: (slot: TextSlot) => void;
   maxWidth?: number;
 }) {
   const back = (page.decorations ?? []).filter((d) => d.layer === 'back');
   const front = (page.decorations ?? []).filter((d) => d.layer === 'front');
+  // El patrón 'landscape' SÍ va de fondo a propósito (simula un fondo fijo detrás de fotos que no cubren
+  // toda la página) — pero 'frame' (marcos/*.svg) y 'hearts' son un adorno que en el diseño original va
+  // ENCIMA de la foto, así que se pintan después de los slots, no como background del contenedor.
+  const overlayDecor = page.frame
+    ? { backgroundImage: `url(${page.frame.src})`, backgroundSize: page.frame.size, backgroundPosition: page.frame.position, backgroundRepeat: 'no-repeat' as const }
+    : page.pattern === 'hearts'
+      ? { backgroundImage: HEARTS_BG }
+      : null;
   return (
     <div style={{
       position: 'relative', width: '100%', maxWidth, aspectRatio: '0.707',
       containerType: 'size', // habilita la unidad cqh en los textos
       background: page.bg ?? '#fff', borderRadius: 4, overflow: 'hidden',
       boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-      backgroundImage: page.frame ? `url(${page.frame.src})`
-        : page.pattern === 'hearts' ? HEARTS_BG
-        : page.pattern === 'landscape' ? LANDSCAPE_BG
-        : undefined,
-      backgroundSize: page.frame?.size,
-      backgroundPosition: page.frame?.position,
-      backgroundRepeat: page.frame ? 'no-repeat' : undefined,
+      backgroundImage: page.pattern === 'landscape' ? LANDSCAPE_BG : undefined,
     }}>
       {back.map((d, i) => <Decoration key={`back-${i}`} d={d} />)}
       {page.slots.map((s) => (
         <Slot key={s.n} slot={s} url={urls[s.n]} editable={editable} onSlot={onSlot} onRemove={onRemove} onDropFile={onDropFile}
           reorderMode={reorderMode} selected={selectedSlot === s.n} onSelectSlot={onSelectSlot} />
       ))}
+      {overlayDecor && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', ...overlayDecor }} />
+      )}
       {(page.texts ?? []).map((t) => (
         <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} textStyle={textStyle}
-          color={textColors[t.key]} onFocus={onTextFocus ? () => onTextFocus(t) : undefined} />
+          color={textColors[t.key]} sizeScale={textSizes[t.key]} onFocus={onTextFocus ? () => onTextFocus(t) : undefined} />
       ))}
       {front.map((d, i) => <Decoration key={`front-${i}`} d={d} />)}
     </div>
@@ -214,11 +222,13 @@ function CameraBodyButtons() {
 
 const TEXT_SAVE_DEBOUNCE_MS = 400;
 
-const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle, color, onFocus }: {
+const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle, color, sizeScale, onFocus }: {
   slot: TextSlot; value: string; editable: boolean; onText?: (key: string, value: string) => void;
   textStyle?: TextStylePreset | null;
   /** Color elegido para ESTE bloque en particular — pisa textStyle.color y slot.color. */
   color?: string;
+  /** Multiplicador sobre slot.size para ESTE bloque en particular (ej. 1.25 = 25% más grande). */
+  sizeScale?: number;
   onFocus?: () => void;
 }) {
   // Estado local para que la escritura sea instantánea (independiente del re-render del resto del
@@ -253,7 +263,7 @@ const TextBox = memo(function TextBox({ slot, value, editable, onText, textStyle
     left: `${slot.x * 100}%`, top: `${slot.y * 100}%`,
     width: `${slot.w * 100}%`, height: `${slot.h * 100}%`,
     fontFamily: textStyle?.fontFamily ?? "'Raleway', Arial, sans-serif",
-    fontSize: `${(slot.size ?? 0.03) * 100}cqh`,
+    fontSize: `${(slot.size ?? 0.03) * (sizeScale ?? 1) * 100}cqh`,
     fontStyle: slot.italic ? 'italic' : 'normal',
     fontWeight: slot.weight ?? 400,
     color: color ?? textStyle?.color ?? slot.color ?? '#333',

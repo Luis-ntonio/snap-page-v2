@@ -1,5 +1,5 @@
 'use client';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
@@ -22,6 +22,19 @@ const AlbumPreview = forwardRef<AlbumPreviewHandle, { layout: PlantillaLayout }>
   const flipTo = (n: number) => bookRef.current?.pageFlip()?.flip(n);
 
   useImperativeHandle(ref, () => ({ flipTo }));
+
+  // Fotos de ejemplo (picsum, mismo patrón que Hero/Carrusel/Galería en el resto del sitio) para que
+  // la vista previa se vea como un álbum ya armado, no como recuadros numerados vacíos. Semilla estable
+  // por plantilla+slot para que no cambien de foto entre renders.
+  const urls = useMemo(() => {
+    const map: Record<number, string> = {};
+    for (const p of layout.pages) {
+      for (const s of p.slots) {
+        map[s.n] = `https://picsum.photos/seed/${layout.id}-slot-${s.n}/500/700`;
+      }
+    }
+    return map;
+  }, [layout]);
 
   return (
     <div>
@@ -64,7 +77,7 @@ const AlbumPreview = forwardRef<AlbumPreviewHandle, { layout: PlantillaLayout }>
         >
           {layout.pages.map((p, i) => (
             <div key={i} style={{ background: p.bg ?? '#fff' }}>
-              <AlbumPageCanvas page={p} editable={false} maxWidth={9999} />
+              <AlbumPageCanvas page={p} urls={urls} editable={false} maxWidth={9999} />
             </div>
           ))}
         </HTMLFlipBook>

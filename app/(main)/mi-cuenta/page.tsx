@@ -5,7 +5,7 @@ import { useDemo, DEMO_PEDIDOS, DEMO_FOTOS } from '@/lib/demo';
 import { useAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
 import { uploadFoto, signedUrl, BUCKET_FOTOS } from '@/lib/supabase/storage';
-import { waLink, WA_MESSAGES } from '@/lib/data';
+import { waLink, WA_MESSAGES, DISTRITOS_LIMA } from '@/lib/data';
 import { FolderOpen, Plus, Upload, Download, Pencil, Check, X } from 'lucide-react';
 import type { Pedido, FotoSubida, EstadoPedido, Tematica } from '@/types';
 import { PLAN_LABELS } from '@/types';
@@ -42,6 +42,8 @@ export default function MiCuentaPage() {
   const [loadingPedidos, setLoadingPedidos] = useState(!!user);
   const [editNombre, setEditNombre] = useState(sesion?.nombre ?? '');
   const [editTel, setEditTel] = useState(sesion?.telefono ?? '');
+  const [editDistrito, setEditDistrito] = useState(sesion?.distrito ?? '');
+  const [editDireccion, setEditDireccion] = useState(sesion?.direccion ?? '');
   const [profileMsg, setProfileMsg] = useState('');
 
   useEffect(() => {
@@ -79,7 +81,9 @@ export default function MiCuentaPage() {
   const saveProfile = async () => {
     if (user) {
       const supabase = createClient();
-      const { error } = await supabase.from('profiles').update({ nombre: editNombre, telefono: editTel }).eq('id', user.id);
+      const { error } = await supabase.from('profiles').update({
+        nombre: editNombre, telefono: editTel, distrito: editDistrito || null, direccion: editDireccion || null,
+      }).eq('id', user.id);
       setProfileMsg(error ? 'No se pudo guardar' : '¡Datos actualizados!');
     } else {
       setProfileMsg('¡Datos actualizados!');
@@ -279,6 +283,17 @@ export default function MiCuentaPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <Field label="NOMBRE" value={editNombre} onChange={setEditNombre} />
               <Field label="TELÉFONO" value={editTel} onChange={setEditTel} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                <label style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--texto-3)' }}>DISTRITO</label>
+                <select value={editDistrito} onChange={e => setEditDistrito(e.target.value)} style={{
+                  border: '1.5px solid var(--borde-2)', borderRadius: 12, padding: '13px 16px', fontSize: 14,
+                  fontFamily: 'var(--font-body)', background: 'var(--crema)', outline: 'none',
+                }}>
+                  <option value="">Elige tu distrito</option>
+                  {DISTRITOS_LIMA.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <Field label="DIRECCIÓN DE ENVÍO" value={editDireccion} onChange={setEditDireccion} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 <label style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--texto-3)' }}>CORREO</label>
                 <input value={sesion.email ?? ''} disabled style={{

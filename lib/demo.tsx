@@ -8,6 +8,8 @@ export const DEMO_USER = {
   nombre: 'María García',
   email: 'maria@demo.com',
   telefono: '+51 999 888 777',
+  distrito: 'Chorrillos',
+  direccion: 'Av. Defensores del Morro 1234',
   role: 'cliente',
 };
 
@@ -16,6 +18,8 @@ export const DEMO_ADMIN = {
   nombre: 'Administradora',
   email: 'admin@snappageph.com',
   telefono: '+51 922 272 439',
+  distrito: '',
+  direccion: '',
   role: 'admin',
 };
 

@@ -1,10 +1,11 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
+import { Plus, X } from 'lucide-react';
 import { DEMO_ADMIN_PEDIDOS } from '@/lib/demo';
 import { useAuth } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
-import { ESTADO_LABELS } from '@/types';
-import type { Plan, EstadoPedido, Tematica } from '@/types';
+import { ESTADO_LABELS, PLAN_LABELS } from '@/types';
+import type { Plan, EstadoPedido, Tematica, CanalPedido } from '@/types';
 
 const ESTADOS = ['pedido-realizado', 'diseno', 'produccion', 'entrega', 'entregado'] as const;
 const RESP = ['mari', 'malú', 'malú y mari'];
@@ -26,6 +27,11 @@ const TEMA_STYLES: Record<Tematica, [string, string]> = {
 };
 const AVATARES = ['#E8795A', '#7C9A72', '#5B8FA8', '#B05A1F', '#A03E6B', '#5B4B9E', '#8A6D00'];
 
+const CANAL_LABELS: Record<CanalPedido, string> = { web: 'Web', whatsapp: 'WhatsApp' };
+const CANAL_STYLES: Record<CanalPedido, [string, string]> = {
+  web: ['#1D5F8A', '#D9EBF5'], whatsapp: ['#25873F', '#DBF0DE'],
+};
+
 interface Row {
   id: string;
   numero: string;
@@ -36,6 +42,7 @@ interface Row {
   nota_admin?: string | null;
   precio: number;
   cliente_nombre: string;
+  canal: CanalPedido;
 }
 
 export default function AdminPedidosPage() {
@@ -45,15 +52,16 @@ export default function AdminPedidosPage() {
   const [lote, setLote] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<'todos' | EstadoPedido>('todos');
   const [busqueda, setBusqueda] = useState('');
+  const [showNuevo, setShowNuevo] = useState(false);
 
-  useEffect(() => {
+  const load = () => {
     if (!user) {
       // Sin sesión Supabase real (modo demo): datos de muestra, edición solo local.
       Promise.resolve().then(() => {
         setRows(DEMO_ADMIN_PEDIDOS.map((p) => ({
           id: p.id, numero: p.numero, plan: p.plan, tematica: p.tematica as Tematica | undefined,
           estado: p.estado, responsable: p.responsable, nota_admin: p.nota_admin,
-          precio: p.precio, cliente_nombre: p.profiles?.nombre ?? '—',
+          precio: p.precio, cliente_nombre: p.profiles?.nombre ?? '—', canal: 'web',
         })));
         setLoading(false);
       });
@@ -64,25 +72,28 @@ export default function AdminPedidosPage() {
       .then(({ data }) => setLote(data?.nombre ?? null));
     supabase
       .from('pedidos')
-      .select('id, numero, plan, tematica, estado, responsable, nota_admin, precio, profiles(nombre)')
+      .select('id, numero, plan, tematica, estado, responsable, nota_admin, precio, canal, cliente_nombre_manual, profiles(nombre)')
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (!error && data) {
           setRows(
             (data as unknown as Array<{
               id: string; numero: string; plan: Plan; tematica: Tematica | null; estado: EstadoPedido;
-              responsable: string | null; nota_admin: string | null; precio: number;
-              profiles: { nombre: string } | null;
+              responsable: string | null; nota_admin: string | null; precio: number; canal: CanalPedido | null;
+              cliente_nombre_manual: string | null; profiles: { nombre: string } | null;
             }>).map((r) => ({
               id: r.id, numero: r.numero, plan: r.plan, tematica: r.tematica, estado: r.estado,
               responsable: r.responsable, nota_admin: r.nota_admin, precio: r.precio,
-              cliente_nombre: r.profiles?.nombre ?? '—',
+              cliente_nombre: r.profiles?.nombre ?? r.cliente_nombre_manual ?? '—',
+              canal: r.canal ?? 'web',
             })),
           );
         }
         setLoading(false);
       });
-  }, [user]);
+  };
+
+  useEffect(() => { load(); }, [user]);
 
   const upd = (id: string, field: 'estado' | 'responsable' | 'nota_admin', value: string) => {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
@@ -121,8 +132,8 @@ export default function AdminPedidosPage() {
             border: '1.5px solid var(--borde-2)', borderRadius: 999, padding: '11px 20px', fontSize: 13,
             fontFamily: 'var(--font-body)', background: '#fff', outline: 'none', width: 230,
           }} />
-          <button className="btn-primary" style={{ background: 'var(--marron)', padding: '12px 22px', fontSize: 11.5 }}>
-            + NUEVO PEDIDO
+          <button onClick={() => setShowNuevo(true)} className="btn-primary" style={{ background: 'var(--marron)', padding: '12px 22px', fontSize: 11.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Plus size={13} /> NUEVO PEDIDO
           </button>
         </div>
       </div>
@@ -168,7 +179,7 @@ export default function AdminPedidosPage() {
           <div className="admin-tabla-row admin-tabla-head" style={{
             background: 'var(--crema-2)', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.12em', color: '#8A7568',
           }}>
-            <span>N.º</span><span>CLIENTE</span><span>PLAN</span><span>TEMÁTICA</span><span>ESTADO</span><span>RESPONSABLE</span><span></span>
+            <span>N.º</span><span>CLIENTE</span><span>PLAN</span><span>TEMÁTICA</span><span>CANAL</span><span>ESTADO</span><span>RESPONSABLE</span><span></span>
           </div>
           {visibles.map((row, i) => (
             <div key={row.id} className="admin-tabla-row admin-tabla-body-row" style={{ borderTop: '1px solid #F3EBE0' }}>
@@ -194,6 +205,13 @@ export default function AdminPedidosPage() {
                 borderRadius: 999, padding: '5px 12px', justifySelf: 'start',
               }}>
                 {row.tematica ? TEMA_LABELS[row.tematica] : '—'}
+              </span>
+              <span style={{
+                fontSize: 11, fontWeight: 700,
+                color: CANAL_STYLES[row.canal][0], background: CANAL_STYLES[row.canal][1],
+                borderRadius: 999, padding: '5px 12px', justifySelf: 'start',
+              }}>
+                {CANAL_LABELS[row.canal]}
               </span>
               <select value={row.estado} onChange={e => upd(row.id, 'estado', e.target.value)} style={{
                 fontSize: 11, fontWeight: 800, letterSpacing: '0.04em', color: ESTADO_STYLES[row.estado][0],
@@ -226,9 +244,16 @@ export default function AdminPedidosPage() {
         cambia el estado de un pedido directo desde la tabla — el cliente lo ve al instante en su cuenta
       </p>
 
+      {showNuevo && (
+        <NuevoPedidoModal
+          onClose={() => setShowNuevo(false)}
+          onCreated={() => { setShowNuevo(false); load(); }}
+        />
+      )}
+
       <style>{`
         .admin-tabla-row {
-          display: grid; grid-template-columns: 90px 1.3fr 1.1fr 1fr 1.1fr 1fr 40px; gap: 14px;
+          display: grid; grid-template-columns: 90px 1.2fr 1fr 0.9fr 0.9fr 1fr 0.9fr 40px; gap: 12px;
           padding: 15px 24px; align-items: center;
         }
         .admin-tabla-body-row:hover { background: #FDFAF5; }
@@ -249,3 +274,88 @@ function StatCard({ label, valor, sub, color }: { label: string; valor: string; 
     </div>
   );
 }
+
+const PLANES_OPCIONES: Plan[] = ['minimal', 'personalizado', 'tengo-mi-diseno', 'premium'];
+const TEMATICAS_OPCIONES: Tematica[] = ['parejas', 'cumpleanos', 'viajes', 'familia', 'otro'];
+
+// Registro manual de un pedido que llegó solo por WhatsApp (el cliente no pasó por el sitio, no
+// tiene cuenta) — usuario_id queda null, se guarda el nombre/teléfono a mano (ver migración 006).
+function NuevoPedidoModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [nombre, setNombre] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [plan, setPlan] = useState<Plan>('minimal');
+  const [tematica, setTematica] = useState<Tematica | ''>('');
+  const [precio, setPrecio] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const save = async () => {
+    if (!nombre.trim()) { setError('Ingresa el nombre del cliente.'); return; }
+    setSaving(true);
+    setError('');
+    const supabase = createClient();
+    const { error: insertError } = await supabase.from('pedidos').insert({
+      usuario_id: null,
+      cliente_nombre_manual: nombre.trim(),
+      cliente_telefono_manual: telefono.trim() || null,
+      canal: 'whatsapp',
+      plan,
+      tematica: tematica || null,
+      precio: precio ? Number(precio) : null,
+      estado: 'pedido-realizado',
+      numero: '',
+    });
+    setSaving(false);
+    if (insertError) { setError('No se pudo guardar: ' + insertError.message); return; }
+    onCreated();
+  };
+
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,33,28,0.55)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+    }}>
+      <div onClick={(e) => e.stopPropagation()} style={{
+        background: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, position: 'relative',
+      }}>
+        <button onClick={onClose} aria-label="Cerrar" style={{
+          position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--texto-3)',
+        }}><X size={18} /></button>
+        <h2 style={{ fontWeight: 800, fontSize: 19, color: 'var(--tinta)', margin: '0 0 4px' }}>Nuevo pedido</h2>
+        <p style={{ fontSize: 12, color: 'var(--texto-3)', margin: '0 0 20px' }}>
+          Para un pedido que llegó solo por WhatsApp, sin que el cliente use el sitio.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del cliente"
+            style={inputStyle} />
+          <input value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Teléfono (opcional)"
+            style={inputStyle} />
+          <select value={plan} onChange={(e) => setPlan(e.target.value as Plan)} style={inputStyle}>
+            {PLANES_OPCIONES.map((p) => <option key={p} value={p}>{PLAN_LABELS[p]}</option>)}
+          </select>
+          <select value={tematica} onChange={(e) => setTematica(e.target.value as Tematica | '')} style={inputStyle}>
+            <option value="">Temática (opcional)</option>
+            {TEMATICAS_OPCIONES.map((t) => <option key={t} value={t}>{TEMA_LABELS[t]}</option>)}
+          </select>
+          <input value={precio} onChange={(e) => setPrecio(e.target.value)} placeholder="Precio (S/, opcional)"
+            type="number" min="0" style={inputStyle} />
+        </div>
+
+        {error && <p style={{ fontSize: 12, color: '#c0392b', margin: '12px 0 0' }}>{error}</p>}
+
+        <button onClick={save} disabled={saving} className="btn-primary" style={{
+          background: 'var(--marron)', width: '100%', marginTop: 20, padding: '13px 0',
+          opacity: saving ? 0.6 : 1, cursor: saving ? 'default' : 'pointer',
+        }}>
+          {saving ? 'Guardando…' : 'Guardar pedido'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', boxSizing: 'border-box', border: '1.5px solid var(--borde-2)', borderRadius: 12,
+  padding: '12px 14px', fontSize: 13.5, fontFamily: 'var(--font-body)', background: '#fff', outline: 'none',
+};

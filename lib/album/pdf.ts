@@ -5,6 +5,13 @@ import type { AlbumPageLayout, DecorationLayer, PhotoSlot, PlantillaLayout, Text
 // Cada página de la plantilla se dibuja en un <canvas> del tamaño exacto de página que usa jsPDF,
 // así las coordenadas fraccionales (0-1) de los slots mapean 1:1 sin distorsión.
 
+// jsPDF con unit:'px' calcula el tamaño de página A4 a 96 DPI (~794×1123px) — suficiente para pantalla
+// pero bajo para imprenta (300dpi ideal). En vez de subir pageW/pageH (rompería el layout en puntos del
+// PDF), se renderiza el <canvas> más grande con ctx.scale() y se sigue insertando en el mismo tamaño de
+// página física — el resto del código de dibujo no cambia porque sigue usando pageW/pageH "lógicos".
+// 2.5x ≈ 240dpi: buen balance nitidez/tiempo de generación en el navegador del cliente.
+const RENDER_SCALE = 2.5;
+
 function loadImage(blob: Blob): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(blob);
@@ -27,9 +34,10 @@ function loadImageUrl(src: string): Promise<HTMLImageElement> {
 
 async function renderCoverCanvas(portadaImagen: string, nombre: string, pageW: number, pageH: number): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas');
-  canvas.width = pageW;
-  canvas.height = pageH;
+  canvas.width = pageW * RENDER_SCALE;
+  canvas.height = pageH * RENDER_SCALE;
   const ctx = canvas.getContext('2d')!;
+  ctx.scale(RENDER_SCALE, RENDER_SCALE);
   ctx.fillStyle = '#1a1a1a';
   ctx.fillRect(0, 0, pageW, pageH);
   try {
@@ -144,10 +152,10 @@ function drawHeartsPattern(ctx: CanvasRenderingContext2D, pageW: number, pageH: 
   ctx.restore();
 }
 
-function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pageW: number, pageH: number, textStyle?: TextStylePreset | null, colorOverride?: string) {
+function drawText(ctx: CanvasRenderingContext2D, t: TextSlot, value: string, pageW: number, pageH: number, textStyle?: TextStylePreset | null, colorOverride?: string, sizeScale?: number) {
   if (!value) return;
   const rect = { x: t.x * pageW, y: t.y * pageH, w: t.w * pageW, h: t.h * pageH };
-  const fontPx = (t.size ?? 0.03) * pageH;
+  const fontPx = (t.size ?? 0.03) * (sizeScale ?? 1) * pageH;
   const weight = t.weight && t.weight >= 700 ? 'bold' : 'normal';
   const style = t.italic ? 'italic' : 'normal';
   ctx.save();
@@ -191,16 +199,16 @@ async function renderPageCanvas(
   pageH: number,
   textStyle?: TextStylePreset | null,
   textColors?: Record<string, string>,
+  textSizes?: Record<string, number>,
 ): Promise<HTMLCanvasElement> {
   const canvas = document.createElement('canvas');
-  canvas.width = pageW;
-  canvas.height = pageH;
+  canvas.width = pageW * RENDER_SCALE;
+  canvas.height = pageH * RENDER_SCALE;
   const ctx = canvas.getContext('2d')!;
+  ctx.scale(RENDER_SCALE, RENDER_SCALE);
 
   ctx.fillStyle = page.bg ?? '#ffffff';
   ctx.fillRect(0, 0, pageW, pageH);
-  if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
-  else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
 
   for (const d of (page.decorations ?? []).filter((d) => d.layer === 'back')) {
     await drawDecoration(ctx, d, pageW, pageH);
@@ -212,11 +220,17 @@ async function renderPageCanvas(
     drawSlot(ctx, slot, img, pageW, pageH);
   }
 
+  // El marco/patrón decorativo va ENCIMA de las fotos (confirmado con la nota de capas de Malú: en el
+  // diseño original el patrón de corazones es la capa de más adelante, la foto la de más atrás) — antes
+  // se pintaba primero y las fotos grandes lo tapaban.
+  if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
+  else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
+
   for (const t of page.texts ?? []) {
     // Si es editable pero el cliente no lo tocó, se usa el preset de fábrica como valor real (no
     // solo como placeholder) para que el PDF final no salga con ese bloque en blanco.
     const value = t.editable ? (texts[t.key] || t.preset || '') : (t.preset ?? '');
-    drawText(ctx, t, value, pageW, pageH, textStyle, textColors?.[t.key]);
+    drawText(ctx, t, value, pageW, pageH, textStyle, textColors?.[t.key], textSizes?.[t.key]);
   }
 
   for (const d of (page.decorations ?? []).filter((d) => d.layer === 'front')) {
@@ -236,6 +250,7 @@ export async function composeAlbumPdf(
   portada?: { imagen: string; nombre: string } | null,
   textStyle?: TextStylePreset | null,
   textColors?: Record<string, string>,
+  textSizes?: Record<string, number>,
 ): Promise<Blob> {
   if (typeof document !== 'undefined' && document.fonts) {
     await document.fonts.ready.catch(() => {});
@@ -254,7 +269,7 @@ export async function composeAlbumPdf(
   }
 
   for (let i = 0; i < layout.pages.length; i++) {
-    const canvas = await renderPageCanvas(layout.pages[i], photos, texts, pageW, pageH, textStyle, textColors);
+    const canvas = await renderPageCanvas(layout.pages[i], photos, texts, pageW, pageH, textStyle, textColors, textSizes);
     const imgData = canvas.toDataURL('image/jpeg', 0.85);
     if (portada || i > 0) doc.addPage();
     doc.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);

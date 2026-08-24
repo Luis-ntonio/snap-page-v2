@@ -8,6 +8,8 @@ export interface AuthProfile {
   nombre: string;
   email?: string;
   telefono?: string;
+  distrito?: string;
+  direccion?: string;
   role: 'cliente' | 'admin';
 }
 
@@ -51,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, nombre, email, telefono, role')
+      .select('id, nombre, email, telefono, distrito, direccion, role')
       .eq('id', authUser.id)
       .single();
 

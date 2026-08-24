@@ -14,13 +14,18 @@ export interface Usuario {
   nombre: string;
   email?: string;
   telefono?: string;
+  distrito?: string;
+  direccion?: string;
   created_at: string;
 }
+
+export type CanalPedido = 'web' | 'whatsapp';
 
 export interface Pedido {
   id: string;
   numero: string;
-  usuario_id: string;
+  /** Ausente en pedidos cargados a mano por el admin (canal='whatsapp', sin cuenta asociada). */
+  usuario_id?: string | null;
   usuario?: Usuario;
   plan: Plan;
   tematica?: Tematica;
@@ -34,6 +39,10 @@ export interface Pedido {
   nota_admin?: string;
   canva_link?: string;
   pdf_path?: string;
+  canal?: CanalPedido;
+  /** Solo cuando usuario_id es null: nombre/teléfono ingresados a mano por el admin. */
+  cliente_nombre_manual?: string;
+  cliente_telefono_manual?: string;
   created_at: string;
   updated_at: string;
 }
@@ -200,6 +209,7 @@ export interface AlbumDraft {
   photos: Record<number, Blob>; // slot.n → imagen
   texts: Record<string, string>; // textSlot.key → valor
   textColors?: Record<string, string>; // textSlot.key → color elegido para ESE bloque (no todo el álbum)
+  textSizes?: Record<string, number>; // textSlot.key → multiplicador sobre el tamaño original del bloque (ej. 1.25)
   portadaId?: string | null;
   stylePresetId?: string | null;
   updatedAt: number;

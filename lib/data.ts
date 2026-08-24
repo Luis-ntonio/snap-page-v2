@@ -35,7 +35,7 @@ export const PLANTILLAS: Plantilla[] = [
     nombre: 'Mi Pareja',
     categoria: 'parejas',
     hojas: 10,
-    fotos: 39,
+    fotos: 32,
     imagen_preview: 'plantillas/parejas-1-preview.jpg',
     imagen_muestra: 'plantillas/parejas-1-muestra.jpg',
     imagenes_interiores: [],
@@ -55,7 +55,7 @@ export const PLANTILLAS: Plantilla[] = [
     nombre: 'Feliz Cumpleaños',
     categoria: 'cumpleanos',
     hojas: 10,
-    fotos: 25,
+    fotos: 24,
     imagen_preview: 'plantillas/cumple-1-preview.jpg',
     imagen_muestra: 'plantillas/cumple-1-muestra.jpg',
     imagenes_interiores: [],
@@ -65,7 +65,7 @@ export const PLANTILLAS: Plantilla[] = [
     nombre: 'Aventuras',
     categoria: 'viajes',
     hojas: 10,
-    fotos: 35,
+    fotos: 49,
     imagen_preview: 'plantillas/viajes-1-preview.jpg',
     imagen_muestra: 'plantillas/viajes-1-muestra.jpg',
     imagenes_interiores: [],
@@ -174,6 +174,18 @@ export const DATOS_GENERALES = {
   tapa: 'Dura',
   cantidad: '10 hojas (20 páginas llenas de recuerdos)',
 };
+
+// Distritos de Lima Metropolitana, para el selector de dirección de envío (registro / Mi cuenta).
+export const DISTRITOS_LIMA = [
+  'Ate', 'Barranco', 'Breña', 'Carabayllo', 'Chorrillos', 'Cieneguilla', 'Comas',
+  'El Agustino', 'Independencia', 'Jesús María', 'La Molina', 'La Victoria', 'Lima Cercado',
+  'Lince', 'Los Olivos', 'Lurigancho (Chosica)', 'Lurín', 'Magdalena del Mar', 'Miraflores',
+  'Pachacámac', 'Pucusana', 'Pueblo Libre', 'Puente Piedra', 'Punta Hermosa', 'Punta Negra',
+  'Rímac', 'San Bartolo', 'San Borja', 'San Isidro', 'San Juan de Lurigancho',
+  'San Juan de Miraflores', 'San Luis', 'San Martín de Porres', 'San Miguel',
+  'Santa Anita', 'Santa María del Mar', 'Santa Rosa', 'Santiago de Surco', 'Surquillo',
+  'Villa El Salvador', 'Villa María del Triunfo',
+];
 
 export const PASOS = [
   {

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { DISTRITOS_LIMA } from '@/lib/data';
 
 // Lee ?next= desde la URL en el momento de la acción (mismo patrón que login/page.tsx).
 const getNext = (fallback = '/mi-cuenta') =>
@@ -25,6 +26,8 @@ export default function RegisterPage() {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [distrito, setDistrito] = useState('');
+  const [direccion, setDireccion] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,7 +44,7 @@ export default function RegisterPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { nombre, telefono } },
+      options: { data: { nombre, telefono, distrito, direccion } },
     });
     setLoading(false);
 
@@ -79,6 +82,11 @@ export default function RegisterPage() {
           <input type="text" required placeholder="Tu nombre" value={nombre} onChange={e => setNombre(e.target.value)} style={inputStyle} {...focusHandlers} />
           <input type="email" required placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} {...focusHandlers} />
           <input type="tel" placeholder="Celular (opcional)" value={telefono} onChange={e => setTelefono(e.target.value)} style={inputStyle} {...focusHandlers} />
+          <select value={distrito} onChange={e => setDistrito(e.target.value)} style={inputStyle}>
+            <option value="">Distrito (opcional)</option>
+            {DISTRITOS_LIMA.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+          <input type="text" placeholder="Dirección de envío (opcional)" value={direccion} onChange={e => setDireccion(e.target.value)} style={inputStyle} {...focusHandlers} />
           <input type="password" required placeholder="Contraseña (mín. 6 caracteres)" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} {...focusHandlers} />
           <input type="password" required placeholder="Repetir contraseña" value={password2} onChange={e => setPassword2(e.target.value)} style={inputStyle} {...focusHandlers} />
           <button type="submit" disabled={loading} className="btn-primary" style={{ background: 'var(--marron)', border: 'none', width: '100%', padding: '16px 0' }}>

@@ -1,8 +1,9 @@
 import type { PlantillaLayout } from '@/types';
 
 // Plantilla "Mi Cumpleaños" — 10 hojas, 24 fotos, textos 1-9 (dedicatorias por familiar/amigos).
-// Transcrita de ./plantillas/PLANTILLA CUMPLEAÑOS.pdf. Coordenadas en fracciones 0-1 (página A4 vertical).
-// Posiciones fijas y fidelidad de layout razonable (no pixel-perfect).
+// Coordenadas en fracciones 0-1 (página A4 vertical), transcritas de
+// plantillas/Documentacion/cumpleanos_posiciones.xlsx (posición/tamaño exactos por foto, provisto por Malú).
+// Las posiciones son fijas; el cliente solo asigna sus fotos a cada slot numerado.
 // IMPORTANTE: cada objeto de `pages` es UNA página física (una cara). El PDF de origen muestra casi todas
 // las páginas ya emparejadas visualmente como "spread" (texto + foto(s), o foto grande + grilla/columna) —
 // esas se modelan aquí como DOS páginas separadas (a/b) para que el visor de doble página (react-pageflip)
@@ -23,7 +24,7 @@ export const cumpleanos: PlantillaLayout = {
     // ── P1: portada — foto del cumpleañero (sola) ──
     {
       bg: '#1a1a1a',
-      slots: [{ n: 1, x: 0.1, y: 0.08, w: 0.8, h: 0.84 }],
+      slots: [{ n: 1, x: 0.1871, y: 0.1, w: 0.6557, h: 0.6189 }],
       texts: [
         { key: 'texto-1', x: 0.1, y: 0.9, w: 0.8, h: 0.06, placeholder: 'Frase de portada', editable: true, align: 'center', size: 0.022, color: '#fff' },
       ],
@@ -41,14 +42,14 @@ export const cumpleanos: PlantillaLayout = {
     {
       bg: '#ffffff',
       slots: [
-        { n: 2, x: 0.1, y: 0.06, w: 0.8, h: 0.42 },
-        { n: 3, x: 0.1, y: 0.52, w: 0.8, h: 0.42 },
+        { n: 2, x: 0.1724, y: 0.131, w: 0.6719, h: 0.3465 },
+        { n: 3, x: 0.1724, y: 0.4946, w: 0.6719, h: 0.3465 },
       ],
     },
     // ── P3a: foto del abuelo (4) — empareja con P3b ──
     {
       bg: '#ffffff',
-      slots: [{ n: 4, x: 0.06, y: 0.06, w: 0.88, h: 0.88 }],
+      slots: [{ n: 4, x: 0, y: 0, w: 1, h: 1 }],
     },
     // ── P3b: "De tu abuelo" — texto ──
     {
@@ -72,14 +73,14 @@ export const cumpleanos: PlantillaLayout = {
     {
       bg: '#ffffff',
       slots: [
-        { n: 5, x: 0.1, y: 0.06, w: 0.8, h: 0.42 },
-        { n: 6, x: 0.1, y: 0.52, w: 0.8, h: 0.42 },
+        { n: 5, x: 0.2029, y: 0.131, w: 0.5971, h: 0.3242 },
+        { n: 6, x: 0.2029, y: 0.5094, w: 0.5971, h: 0.3242 },
       ],
     },
     // ── P5a: "¡Feliz cumpleaños! tus mejores amigos" + foto grande (7) — empareja con P5b ──
     {
       bg: '#f7f5f2',
-      slots: [{ n: 7, x: 0.08, y: 0.3, w: 0.84, h: 0.62 }],
+      slots: [{ n: 7, x: 0, y: -0.0024, w: 1, h: 1.0024 }],
       texts: [
         { key: 't-titulo-5', x: 0.06, y: 0.05, w: 0.88, h: 0.14, preset: '¡Feliz\ncumpleaños!', editable: true, align: 'left', italic: true, weight: 800, size: 0.05, color: INK },
         { key: 'texto-5', x: 0.06, y: 0.2, w: 0.7, h: 0.06, preset: 'tus mejores amigos', editable: true, align: 'left', italic: true, size: 0.026, color: '#888' },
@@ -89,16 +90,16 @@ export const cumpleanos: PlantillaLayout = {
     {
       bg: '#f7f5f2',
       slots: [
-        { n: 8, x: 0.06, y: 0.08, w: 0.42, h: 0.4 },
-        { n: 9, x: 0.52, y: 0.08, w: 0.42, h: 0.4 },
-        { n: 10, x: 0.06, y: 0.52, w: 0.42, h: 0.4 },
-        { n: 11, x: 0.52, y: 0.52, w: 0.42, h: 0.4 },
+        { n: 8, x: 0, y: 0, w: 0.5, h: 0.5 },
+        { n: 9, x: 0.5, y: 0, w: 0.5, h: 0.5 },
+        { n: 10, x: 0, y: 0.5, w: 0.5, h: 0.5 },
+        { n: 11, x: 0.5, y: 0.5, w: 0.5, h: 0.5 },
       ],
     },
     // ── P6a: foto grande (12) — empareja con P6b ──
     {
       bg: '#ffffff',
-      slots: [{ n: 12, x: 0.06, y: 0.06, w: 0.88, h: 0.88 }],
+      slots: [{ n: 12, x: 0, y: 0, w: 1, h: 1 }],
     },
     // ── P6b: "De tu hermana favorita" — texto ──
     {
@@ -112,15 +113,15 @@ export const cumpleanos: PlantillaLayout = {
     // ── P7a: foto grande (13) — empareja con P7b ──
     {
       bg: '#ffffff',
-      slots: [{ n: 13, x: 0.06, y: 0.06, w: 0.88, h: 0.88 }],
+      slots: [{ n: 13, x: 0, y: 0, w: 1, h: 1 }],
     },
     // ── P7b: foto 14 arriba + 15,16 abajo en par ──
     {
       bg: '#ffffff',
       slots: [
-        { n: 14, x: 0.08, y: 0.06, w: 0.84, h: 0.42 },
-        { n: 15, x: 0.08, y: 0.52, w: 0.4, h: 0.42 },
-        { n: 16, x: 0.52, y: 0.52, w: 0.4, h: 0.42 },
+        { n: 14, x: 0.0952, y: 0.0892, w: 0.8162, h: 0.402 },
+        { n: 15, x: 0.0952, y: 0.5155, w: 0.3924, h: 0.402 },
+        { n: 16, x: 0.519, y: 0.5155, w: 0.3924, h: 0.402 },
       ],
     },
     // ── P8a: "Con amor, de la abuela" — texto (empareja con P8b) ──
@@ -135,7 +136,7 @@ export const cumpleanos: PlantillaLayout = {
     // ── P8b: foto grande (17) ──
     {
       bg: '#ffffff',
-      slots: [{ n: 17, x: 0.06, y: 0.06, w: 0.88, h: 0.88 }],
+      slots: [{ n: 17, x: 0, y: 0, w: 1, h: 1 }],
     },
     // ── P9a: "De tu viejo querido" — texto (empareja con P9b) ──
     {
@@ -150,28 +151,28 @@ export const cumpleanos: PlantillaLayout = {
     {
       bg: '#ffffff',
       slots: [
-        { n: 18, x: 0.1, y: 0.06, w: 0.8, h: 0.42 },
-        { n: 19, x: 0.1, y: 0.52, w: 0.8, h: 0.42 },
+        { n: 18, x: 0.2029, y: 0.131, w: 0.5971, h: 0.3242 },
+        { n: 19, x: 0.2029, y: 0.5094, w: 0.5971, h: 0.3242 },
       ],
     },
     // ── P10a: columna 20,21,22 — empareja con P10b ──
     {
       bg: '#ffffff',
       slots: [
-        { n: 20, x: 0.08, y: 0.05, w: 0.84, h: 0.29 },
-        { n: 21, x: 0.08, y: 0.36, w: 0.84, h: 0.29 },
-        { n: 22, x: 0.08, y: 0.67, w: 0.84, h: 0.29 },
+        { n: 20, x: 0.0952, y: 0.0943, w: 0.8, h: 0.2434 },
+        { n: 21, x: 0.0952, y: 0.3785, w: 0.8, h: 0.2434 },
+        { n: 22, x: 0.0952, y: 0.6623, w: 0.8, h: 0.2434 },
       ],
     },
     // ── P10b: foto grande (23) ──
     {
       bg: '#ffffff',
-      slots: [{ n: 23, x: 0.06, y: 0.06, w: 0.88, h: 0.88 }],
+      slots: [{ n: 23, x: 0, y: -0.0024, w: 1, h: 1.0024 }],
     },
     // ── P11: contraportada — foto final (sola, showCover la deja al cierre) ──
     {
       bg: '#1a1a1a',
-      slots: [{ n: 24, x: 0.15, y: 0.15, w: 0.7, h: 0.7 }],
+      slots: [{ n: 24, x: 0, y: 0, w: 1, h: 1 }],
       texts: [
         { key: 'texto-9', x: 0.15, y: 0.87, w: 0.7, h: 0.06, placeholder: 'Frase de cierre', editable: true, align: 'center', size: 0.022, color: '#fff' },
       ],
