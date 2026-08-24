@@ -2,10 +2,11 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { waLink, WA_MESSAGES, PLANTILLAS, PORTADAS } from '@/lib/data';
+import { waLink, WA_MESSAGES, PLANTILLAS, PORTADAS, PLANTILLA_EJEMPLO_PAGINAS } from '@/lib/data';
 import { mediaUrl } from '@/lib/media';
 import { getPlantillaLayout } from '@/lib/plantillas';
 import AlbumPreview, { type AlbumPreviewHandle } from '@/app/components/ui/AlbumPreview';
+import PdfPagePreview from '@/app/components/ui/PdfPagePreview';
 import type { Tematica } from '@/types';
 
 const LABELS: Record<string,string> = { parejas:'Mi Pareja', cumpleanos:'Feliz Cumpleaños', viajes:'Aventuras' };
@@ -54,6 +55,10 @@ export default function PlantillaDetallePage() {
 
   const portadas = PORTADAS.filter(p => p.categorias.includes(categoria as Tematica));
   const portadasList = portadas.length ? portadas : PORTADAS;
+  const ejemploCount = PLANTILLA_EJEMPLO_PAGINAS[categoria];
+  const ejemploImages = ejemploCount
+    ? Array.from({ length: ejemploCount }, (_, i) => mediaUrl(`plantillas-ejemplo/${categoria}/${i + 1}.jpg`))
+    : null;
 
   return (
     <main style={{ padding: '48px 32px 88px' }}>
@@ -118,9 +123,16 @@ export default function PlantillaDetallePage() {
               <PreviewImageBlock src={mediaUrl(plantilla.imagen_muestra)} label="ASÍ SE VE CON FOTOS" />
             )}
 
-            {/* Preview del libro — visor interactivo existente, solo re-envuelto */}
+            {/* Preview del libro: si hay álbum de ejemplo real (fotos curadas por Malú), se muestra ese
+                en vez del lienzo con fotos genéricas — mismo visor, pero con el álbum ya diseñado. */}
             <div style={{ background: 'var(--crema)', borderRadius: 24, padding: 32, marginBottom: 28 }}>
-              {layout ? (
+              {ejemploImages ? (
+                <PdfPagePreview
+                  images={ejemploImages}
+                  editorHref={layout ? `/editor/${categoria}` : '/planes'}
+                  totalFotos={fotos}
+                />
+              ) : layout ? (
                 <AlbumPreview ref={previewRef} layout={layout} />
               ) : (
                 <div style={{ maxWidth: 560, margin: '0 auto', background: '#fff', borderRadius: 6, boxShadow: '0 24px 48px rgba(75,46,26,0.22)', aspectRatio: '210/148', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

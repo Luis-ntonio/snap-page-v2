@@ -124,9 +124,12 @@ export const parejas: PlantillaLayout = {
       bg: '#0b1020',
       slots: [{ n: 17, x: 0, y: -0.0175, w: 1, h: 1.0175 }],
     },
-    // ── P9a: "together" — decorativa, sin fotos del cliente (polaroids/cielo genéricos de diseño) ──
+    // ── P9a: "together" — decorativa, sin fotos del cliente (el diseño original trae un stack de
+    // polaroids gráficos genéricos + corazón que no tenemos como asset; se usa el patrón de corazones
+    // ya existente para que la página no quede en blanco) ──
     {
       bg: '#f3f1ec',
+      pattern: 'hearts',
       slots: [],
       texts: [
         { key: 't-together-9', x: 0.1, y: 0.88, w: 0.5, h: 0.08, preset: 'together', editable: true, align: 'center', italic: true, size: 0.04, color: '#333' },
@@ -135,6 +138,7 @@ export const parejas: PlantillaLayout = {
     // ── P9b: "together" — decorativa, sin fotos del cliente ──
     {
       bg: '#f3f1ec',
+      pattern: 'hearts',
       slots: [],
     },
     // ── P10a: foto grande (18) — empareja con P10b ──

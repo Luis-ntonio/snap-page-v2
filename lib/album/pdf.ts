@@ -210,6 +210,13 @@ async function renderPageCanvas(
   ctx.fillStyle = page.bg ?? '#ffffff';
   ctx.fillRect(0, 0, pageW, pageH);
 
+  // El marco/patrón (marcos/*.svg, corazones) es el fondo COMPLETO de la página (blanco + borde
+  // decorativo, no un recorte transparente) — va detrás de las fotos, que se dibujan encima cubriendo
+  // el centro y dejando ver el borde alrededor. Pintarlo encima de las fotos las tapa por completo
+  // (verificado visualmente: las páginas con marco en parejas quedaban con la foto oculta).
+  if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
+  else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
+
   for (const d of (page.decorations ?? []).filter((d) => d.layer === 'back')) {
     await drawDecoration(ctx, d, pageW, pageH);
   }
@@ -219,12 +226,6 @@ async function renderPageCanvas(
     const img = blob ? await loadImage(blob) : null;
     drawSlot(ctx, slot, img, pageW, pageH);
   }
-
-  // El marco/patrón decorativo va ENCIMA de las fotos (confirmado con la nota de capas de Malú: en el
-  // diseño original el patrón de corazones es la capa de más adelante, la foto la de más atrás) — antes
-  // se pintaba primero y las fotos grandes lo tapaban.
-  if (page.frame) await drawFrame(ctx, page.frame, pageW, pageH);
-  else if (page.pattern === 'hearts') drawHeartsPattern(ctx, pageW, pageH);
 
   for (const t of page.texts ?? []) {
     // Si es editable pero el cliente no lo tocó, se usa el preset de fábrica como valor real (no

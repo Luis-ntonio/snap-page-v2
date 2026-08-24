@@ -60,30 +60,30 @@ export const AlbumPageCanvas = memo(function AlbumPageCanvas({
 }) {
   const back = (page.decorations ?? []).filter((d) => d.layer === 'back');
   const front = (page.decorations ?? []).filter((d) => d.layer === 'front');
-  // El patrón 'landscape' SÍ va de fondo a propósito (simula un fondo fijo detrás de fotos que no cubren
-  // toda la página) — pero 'frame' (marcos/*.svg) y 'hearts' son un adorno que en el diseño original va
-  // ENCIMA de la foto, así que se pintan después de los slots, no como background del contenedor.
-  const overlayDecor = page.frame
+  // 'frame' (marcos/*.svg) y 'hearts' son la imagen de fondo COMPLETA de la página (blanco + borde
+  // decorativo, no un recorte transparente) — van detrás de las fotos, que se dibujan encima cubriendo
+  // el centro y dejando ver el borde alrededor. Pintarlos encima de las fotos las tapa por completo
+  // (verificado visualmente: las 4 páginas con marco en parejas quedaban con la foto totalmente oculta).
+  const bgDecor = page.frame
     ? { backgroundImage: `url(${page.frame.src})`, backgroundSize: page.frame.size, backgroundPosition: page.frame.position, backgroundRepeat: 'no-repeat' as const }
     : page.pattern === 'hearts'
       ? { backgroundImage: HEARTS_BG }
-      : null;
+      : page.pattern === 'landscape'
+        ? { backgroundImage: LANDSCAPE_BG }
+        : null;
   return (
     <div style={{
       position: 'relative', width: '100%', maxWidth, aspectRatio: '0.707',
       containerType: 'size', // habilita la unidad cqh en los textos
       background: page.bg ?? '#fff', borderRadius: 4, overflow: 'hidden',
       boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-      backgroundImage: page.pattern === 'landscape' ? LANDSCAPE_BG : undefined,
+      ...bgDecor,
     }}>
       {back.map((d, i) => <Decoration key={`back-${i}`} d={d} />)}
       {page.slots.map((s) => (
         <Slot key={s.n} slot={s} url={urls[s.n]} editable={editable} onSlot={onSlot} onRemove={onRemove} onDropFile={onDropFile}
           reorderMode={reorderMode} selected={selectedSlot === s.n} onSelectSlot={onSelectSlot} />
       ))}
-      {overlayDecor && (
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', ...overlayDecor }} />
-      )}
       {(page.texts ?? []).map((t) => (
         <TextBox key={t.key} slot={t} value={texts[t.key] ?? ''} editable={editable} onText={onText} textStyle={textStyle}
           color={textColors[t.key]} sizeScale={textSizes[t.key]} onFocus={onTextFocus ? () => onTextFocus(t) : undefined} />

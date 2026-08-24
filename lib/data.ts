@@ -72,6 +72,18 @@ export const PLANTILLAS: Plantilla[] = [
   },
 ];
 
+// Álbum de ejemplo REAL (diseñado por Malú, con fotos curadas), pre-rasterizado a JPEGs — se muestra
+// en /plantillas/[categoria] en vez del lienzo con fotos genéricas de picsum. Las imágenes viven en
+// plantillas-ejemplo/{categoria}/{1..count}.jpg dentro del bucket `assets`, generadas una sola vez con
+// scripts/render-plantilla-pdfs.mjs a partir de los PDF que envió Malú (no versionados en git, pesan
+// 30-45MB) — pre-rasterizar en vez de cargar el PDF completo en el navegador de cada visitante evita
+// ~60-90s de espera por render de pdfjs-dist en cliente.
+export const PLANTILLA_EJEMPLO_PAGINAS: Record<string, number> = {
+  parejas: 20,
+  cumpleanos: 20,
+  viajes: 20,
+};
+
 // Presets de tipografía/color para los textos del álbum Personalizado — selector limitado (no
 // tipografía libre) para poder resolver el pedido más frecuente de "cambiar la letra/color" sin
 // necesitar un pedido manual por WhatsApp. Usa solo las 3 familias ya cargadas en app/layout.tsx.
