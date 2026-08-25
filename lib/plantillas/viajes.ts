@@ -54,13 +54,17 @@ export const viajes: PlantillaLayout = {
         { key: 'texto-2', x: 0.12, y: 0.62, w: 0.76, h: 0.28, placeholder: 'Un recuerdo de este viaje...', editable: true, align: 'center', size: 0.022, color: INK },
       ],
     },
-    // ── P5: cascada de polaroids 6-11 (posiciones del Excel, sin tocar) + 12 nueva (foto que el Excel no
-    // registraba, en el hueco libre arriba a la derecha) + "Julio 2024" ──
+    // ── P5: cascada de polaroids 6-11 (posiciones del Excel, sin tocar salvo la 6, ver nota abajo) +
+    // 12 nueva (foto que el Excel no registraba, en el hueco libre arriba a la derecha) + "Julio 2024" ──
     // La foto 7 ya no usa el shape:'camera' genérico (caja negra abstracta): en su lugar, la foto va
     // dentro de la pantalla de una cámara Sony real (marcos/viajes-camara-sony.png, recorte con la
     // pantalla LCD vaciada a transparente) pintada como `decorations` front — el slot 7 solo cubre el
     // hueco de la pantalla (x/y/w/h calculados a partir del bbox de esa zona en el PNG), y el marco de
-    // la cámara se dibuja encima, tapando el borde del slot igual que un marco real. ──
+    // la cámara se dibuja encima, tapando el borde del slot igual que un marco real.
+    // La foto 6 se agrandó (era la polaroid más chica de la cascada) centrada en el mismo punto, mismo
+    // aspect ratio 4:3.29 y misma rotación -2° — el padding del marco polaroid es un % del propio slot
+    // (AlbumPageCanvas.tsx/pdf.ts), así que agrandar el slot agranda foto y marco juntos en proporción;
+    // no hay forma de agrandar solo la foto sin también agrandar el marco. ──
     {
       bg: '#f3f1ec',
       slots: [
@@ -68,7 +72,7 @@ export const viajes: PlantillaLayout = {
         { n: 10, x: 0.4879, y: 0.4529, w: 0.3538, h: 0.2906, shape: 'polaroid', rotate: 11.9 },
         { n: 11, x: 0.2904, y: 0.5829, w: 0.3979, h: 0.3268, shape: 'polaroid', rotate: -2 },
         { n: 9, x: 0.119, y: 0.443, w: 0.3519, h: 0.289, shape: 'polaroid' },
-        { n: 6, x: 0.142, y: 0.1938, w: 0.2253, h: 0.1851, shape: 'polaroid', rotate: -2 },
+        { n: 6, x: 0.0947, y: 0.1549, w: 0.32, h: 0.263, shape: 'polaroid', rotate: -2 },
         { n: 7, x: 0.5877, y: 0.2359, w: 0.177, h: 0.0945 },
       ],
       texts: [
@@ -177,7 +181,12 @@ export const viajes: PlantillaLayout = {
       bg: '#ffffff',
       slots: [{ n: 45, x: 0, y: 0, w: 1, h: 1 }],
     },
-    // ── P17: cascada de polaroids 47-52 (mismo diseño que P5, posiciones del Excel) + 53 nueva + "Julio 2024" ──
+    // ── P17: cascada de polaroids 47-52 (mismo diseño que P5, posiciones del Excel salvo la 46, ver
+    // nota en P5) + 53 nueva + "Julio 2024" ──
+    // La foto 47 usa el mismo marco de cámara Sony que la 7 de P5, pero con una imagen PRE-ROTADA 90°
+    // (marcos/viajes-camara-sony-90.png, generada rotando el recorte original con PIL y detectando de
+    // nuevo el hueco de la pantalla ahí) en vez de aplicar `rotate` por CSS — mucho más simple que
+    // calcular a mano dónde cae el hueco de la pantalla tras rotar la decoración y el slot por separado. ──
     {
       bg: '#f3f1ec',
       slots: [
@@ -185,11 +194,14 @@ export const viajes: PlantillaLayout = {
         { n: 50, x: 0.4879, y: 0.4529, w: 0.3538, h: 0.2906, shape: 'polaroid', rotate: 11.9 },
         { n: 51, x: 0.2904, y: 0.5829, w: 0.3979, h: 0.3268, shape: 'polaroid', rotate: -2 },
         { n: 49, x: 0.119, y: 0.443, w: 0.3519, h: 0.289, shape: 'polaroid' },
-        { n: 46, x: 0.142, y: 0.1938, w: 0.2253, h: 0.1851, shape: 'polaroid', rotate: -2 },
-        { n: 47, x: 0.5398, y: 0.1938, w: 0.2331, h: 0.1215, shape: 'camera', rotate: -90 },
+        { n: 46, x: 0.0947, y: 0.1549, w: 0.32, h: 0.263, shape: 'polaroid', rotate: -2 },
+        { n: 47, x: 0.5843, y: 0.2052, w: 0.1589, h: 0.1488 },
       ],
       texts: [
         { key: 'texto-6', x: 0.08, y: 0.0, w: 0.6, h: 0.06, placeholder: 'Julio 2024', editable: true, align: 'left', size: 0.022, color: '#999' },
+      ],
+      decorations: [
+        { src: '/images/plantillas/marcos/viajes-camara-sony-90.png', layer: 'front', x: 0.5136, y: 0.1146, w: 0.2856, h: 0.28 },
       ],
     },
     // ── P18: foto suelta (54) con descripción tipo postal — empareja con P19 (la flor rosa del diseño es
