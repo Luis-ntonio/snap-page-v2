@@ -632,7 +632,7 @@ function PdfFlipBook({ pages }: { pages: PdfPreviewPage[] }) {
 
 function SpreadBook({ cur, isSingle }: { cur: ({url:string}|null)[]; isSingle: boolean }) {
   return (
-    <div style={{ display:'flex', justifyContent:'center', marginBottom:12 }}>
+    <div style={{ display:'flex', justifyContent:'flex-start', marginBottom:12 }}>
       {isSingle ? (
         <div style={{ width:200,height:260,background:'var(--crema-2)',borderRadius:2,boxShadow:'0 4px 20px rgba(75,46,26,0.15)', overflow:'hidden', position:'relative' }}>
           {cur[0] && <img src={cur[0].url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" />}
@@ -655,7 +655,7 @@ function SpreadNav({ spread, total, onPrev, onNext, label }: {
   spread:number; total:number; onPrev:()=>void; onNext:()=>void; label:string;
 }) {
   return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-start', gap:16, marginBottom:12 }}>
       <button onClick={onPrev} disabled={spread===0}
         style={{ width:32,height:32,borderRadius:'50%',border:'1px solid var(--borde-2)',background:'#fff',
           cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',opacity:spread===0?0.3:1 }}>
