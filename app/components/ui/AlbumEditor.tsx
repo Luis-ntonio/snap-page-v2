@@ -374,12 +374,12 @@ export default function AlbumEditor({ layout }: { layout: PlantillaLayout }) {
                   <div title="Color personalizado" style={{
                     width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', cursor: 'pointer',
                     border: '1.5px solid var(--borde-2)', flexShrink: 0,
-                    background: 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)',
+                    background: textColors[activeText.key] ?? 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)',
                   }}>
                     <input type="color" aria-label="Color personalizado"
-                      value={textColors[activeText.key] ?? '#7E451B'}
+                      value={textColors[activeText.key] ?? '#dd6917'}
                       onChange={(e) => setTextColors((prev) => ({ ...prev, [activeText.key]: e.target.value }))}
-                      style={{ width: '160%', height: '160%', margin: '-30%', border: 'none', cursor: 'pointer', padding: 0 }} />
+                      style={{ width: '160%', height: '160%', margin: '-30%', border: 'none', cursor: 'pointer', padding: 0, opacity: 0 }} />
                   </div>
                   {textColors[activeText.key] && (
                     <button type="button" onClick={() => setTextColors((prev) => {

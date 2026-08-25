@@ -183,10 +183,10 @@ export const viajes: PlantillaLayout = {
     },
     // ── P17: cascada de polaroids 47-52 (mismo diseño que P5, posiciones del Excel salvo la 46, ver
     // nota en P5) + 53 nueva + "Julio 2024" ──
-    // La foto 47 usa el mismo marco de cámara Sony que la 7 de P5, pero con una imagen PRE-ROTADA 90°
-    // (marcos/viajes-camara-sony-90.png, generada rotando el recorte original con PIL y detectando de
-    // nuevo el hueco de la pantalla ahí) en vez de aplicar `rotate` por CSS — mucho más simple que
-    // calcular a mano dónde cae el hueco de la pantalla tras rotar la decoración y el slot por separado. ──
+    // La foto 47 usa el mismo marco de cámara Sony que la 7 de P5 (mismo recorte sin rotar, misma
+    // posición/tamaño) — al ser el mismo diseño de cascada que P5, el hueco libre queda en el mismo
+    // sitio, así que no hace falta la variante rotada 90° (marcos/viajes-camara-sony-90.png, que quedó
+    // sin usar; se probó para esta página pero se prefirió mantener el mismo marco que P5). ──
     {
       bg: '#f3f1ec',
       slots: [
@@ -195,13 +195,13 @@ export const viajes: PlantillaLayout = {
         { n: 51, x: 0.2904, y: 0.5829, w: 0.3979, h: 0.3268, shape: 'polaroid', rotate: -2 },
         { n: 49, x: 0.119, y: 0.443, w: 0.3519, h: 0.289, shape: 'polaroid' },
         { n: 46, x: 0.0947, y: 0.1549, w: 0.32, h: 0.263, shape: 'polaroid', rotate: -2 },
-        { n: 47, x: 0.5843, y: 0.2052, w: 0.1589, h: 0.1488 },
+        { n: 47, x: 0.5877, y: 0.2359, w: 0.177, h: 0.0945 },
       ],
       texts: [
         { key: 'texto-6', x: 0.08, y: 0.0, w: 0.6, h: 0.06, placeholder: 'Julio 2024', editable: true, align: 'left', size: 0.022, color: '#999' },
       ],
       decorations: [
-        { src: '/images/plantillas/marcos/viajes-camara-sony-90.png', layer: 'front', x: 0.5136, y: 0.1146, w: 0.2856, h: 0.28 },
+        { src: '/images/plantillas/marcos/viajes-camara-sony.png', layer: 'front', x: 0.5398, y: 0.1938, w: 0.3331, h: 0.1699 },
       ],
     },
     // ── P18: foto suelta (54) con descripción tipo postal — empareja con P19 (la flor rosa del diseño es
